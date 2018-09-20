@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <random>
+#include <chrono>
+#include <limits>
 
 class Matrix{
 public:
@@ -94,6 +96,8 @@ public:
 	}
 
 	friend Matrix Multiply(const Matrix& lhs, const Matrix& rhs, const std::string& mode);
+	friend bool Compare(const Matrix& lhs, const Matrix& rhs);
+	
 	size_t getPos(size_t row, size_t col) const {
 		return row * Cols() + col;
 	}
@@ -134,7 +138,7 @@ private:
 	float* floatBuf;
 };
 
-class DoubleMatrix : Matrix{
+class DoubleMatrix :  public Matrix{
 public:
 	DoubleMatrix(const Matrix& other) : Matrix(other){
 		// _n = other._n;
@@ -147,6 +151,12 @@ public:
 		return doubleBuf[pos];
 	}
 	double& operator()(size_t row, size_t col){
+		return doubleBuf[getPos(row, col)];
+	}
+	const double& operator[](size_t pos) const{
+		return doubleBuf[pos];
+	}
+	const double& operator()(size_t row, size_t col) const{
 		return doubleBuf[getPos(row, col)];
 	}
 
@@ -178,12 +188,37 @@ std::ostream& operator<<(std::ostream& ofs, const Matrix& m){
 	return ofs;
 }
 
+
+class MyTimer{
+public:
+	 static std::chrono::high_resolution_clock::time_point t1;
+	 static std::chrono::high_resolution_clock::time_point t2;
+	 static double GetSeconds(){
+
+	 	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+	 	return time_span.count();
+	 }
+	 static void Tick(){
+	 	MyTimer::t1 = std::chrono::high_resolution_clock::now();
+	 }
+	 static void Tock(){
+	 	MyTimer::t2 = std::chrono::high_resolution_clock::now();
+	 }
+};
+
+std::chrono::high_resolution_clock::time_point MyTimer::t1 = std::chrono::high_resolution_clock::now();
+std::chrono::high_resolution_clock::time_point MyTimer::t2 = std::chrono::high_resolution_clock::now();
+
 FloatMatrix MultiplyFloat(const FloatMatrix& lhs, const FloatMatrix& rhs, const std::string& mode){
+	
 	Matrix tmp(lhs.Rows(), rhs.Cols(), 'f', nullptr);
 	FloatMatrix res(tmp);
 	std::cout << "MultiplyFloat init done" << std::endl;
 	std::cout << res.Rows() << " " << res.Cols() << std::endl;
 	if(mode == "ijk"){
+		
+		MyTimer::Tick();
+		
 		for(size_t i =0 ; i < lhs.Rows(); i++){
 			for(size_t j = 0; j < rhs.Cols(); j++){
 				for(size_t k = 0; k < lhs.Cols(); k++){
@@ -191,7 +226,10 @@ FloatMatrix MultiplyFloat(const FloatMatrix& lhs, const FloatMatrix& rhs, const 
 				}
 			}
 		}
-		return res;
+
+		MyTimer::Tock();
+		
+  		return res;
 	}
 	if(mode == "jik"){
 		for(size_t i =0 ; i < lhs.Rows(); i++){
@@ -250,12 +288,12 @@ FloatMatrix MultiplyFloat(const FloatMatrix& lhs, const FloatMatrix& rhs, const 
 	return res;
 }
 
-FloatMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, const std::string& mode){
+DoubleMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, const std::string& mode){
 	Matrix tmp(lhs.Rows(), rhs.Cols(), 'd', nullptr);
 	DoubleMatrix res(tmp);
-	std::cout << "MultiplyFloat init done" << std::endl;
-	std::cout << res.Rows() << " " << res.Cols() << std::endl;
-	iif(mode == "ijk"){
+	// std::cout << "MultiplyFloat init done" << std::endl;
+	// std::cout << res.Rows() << " " << res.Cols() << std::endl;
+	if(mode == "ijk"){
 		for(size_t i =0 ; i < lhs.Rows(); i++){
 			for(size_t j = 0; j < rhs.Cols(); j++){
 				for(size_t k = 0; k < lhs.Cols(); k++){
@@ -325,11 +363,50 @@ FloatMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, con
 
 Matrix Multiply(const Matrix& lhs, const Matrix& rhs, const std::string& mode){
 	char type = std::min(lhs._type, rhs._type);
-	std::cout << mode << std::endl;
+	// std::cout << mode << std::endl;
 	if(type == 'f'){
 		return MultiplyFloat( FloatMatrix(lhs), FloatMatrix(rhs), mode);
 	}else{
 		return MultiplyDouble( DoubleMatrix(lhs), DoubleMatrix(rhs), mode);
+	}
+}
+
+
+bool CompareDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs)
+{
+		for(size_t i =0 ; i < lhs.Rows(); i++){
+			for(size_t j = 0; j < lhs.Cols(); j++){
+				//std::cout << "looping" << std::endl;
+				//std::cout << fabs( lhs(i, j) - rhs(i, j) ) << std::endl;
+				if( fabs( lhs(i, j) - rhs(i, j) >= 1e-6 ) )
+						return false;
+			}
+		}
+		return true;
+}
+
+bool CompareFloat(const FloatMatrix& lhs, const FloatMatrix& rhs)
+{
+		for(size_t i =0 ; i < lhs.Rows(); i++){
+			for(size_t j = 0; j < lhs.Cols(); j++){
+				//std::cout << "looping" << std::endl;
+				//std::cout << fabs( lhs(i, j) - rhs(i, j) ) << std::endl;
+				if( fabs( lhs(i, j) - rhs(i, j) ) >= 1e-6 )
+						return false;
+			}
+		}
+		return true;
+}
+
+bool Compare(const Matrix& lhs, const Matrix& rhs){
+	if(lhs._type != rhs._type || lhs.Cols() != rhs.Cols() || lhs.Rows() != rhs.Rows() ){
+		return false;
+	}
+	char type = lhs._type;
+	if(type == 'f'){
+		return CompareFloat( FloatMatrix(lhs), FloatMatrix(rhs) );
+	}else{
+		return CompareDouble( DoubleMatrix(lhs), DoubleMatrix(rhs) );
 	}
 }
 
