@@ -7,15 +7,15 @@ using namespace std;
 
 int main(int argc, char * argv[]) {
 	
-	if(argc < 4){
-		cout << "use ./main A.in B.in C.out" << endl;
+	if(argc < 5){
+		cout << "use ./main A.in B.in C.out ijk" << endl;
 		return 0;
 	}
 	// cout << "main.cpp" << endl;
 	string inputFileA(argv[1]);
 	string inputFileB(argv[2]);
 	string outputFileName(argv[3]);
-	string mode = "ijk";
+	string mode(argv[4]);
 
 	Matrix a(inputFileA);
 	Matrix b(inputFileB);

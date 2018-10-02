@@ -34,7 +34,8 @@ int main(int argc, char * argv[]) {
 
 	Matrix a(rows, cols, type);
 	Matrix b(rows, cols, type);
-	// std::cout << "Init done" << std::endl;
+	// std::cout << "Init done" << std:
+
 	vector<double> times;
 	for(int i=0 ; i < reps; i++) {
 		a.MakeRandom();
