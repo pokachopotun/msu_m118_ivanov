@@ -16,7 +16,7 @@ public:
 		ifs.read(reinterpret_cast<char *>( &_n ), sizeof(size_t)/sizeof(char));
 		ifs.read(reinterpret_cast<char *>( &_m ), sizeof(size_t)/sizeof(char));
 		size_t bufSize = BufferSize();
-		std::cout << bufSize << std::endl;
+		// std::cout << bufSize << std::endl;
 		_charBuf = new char[bufSize];
 		ifs.read(_charBuf, bufSize);
 	}
@@ -64,6 +64,57 @@ public:
 				for(size_t j = 0; j < Cols(); j++){
 					size_t pos = i * Cols() + j;
 					doubleBuf[pos] = static_cast<double>( dis(gen) );
+				}	
+			}
+		}
+	}
+
+	void ReadInTxt(const std::string& fileName){
+		using namespace std;
+		ifstream txt(fileName);
+		if(_type == 'f'){
+			float * floatBuf = reinterpret_cast< float * >(_charBuf);
+			for(size_t i = 0 ; i < Rows(); i++){
+				for(size_t j = 0; j < Cols(); j++){
+					size_t pos = i * Cols() + j;
+					txt >> floatBuf[pos];
+				}	
+			}
+		}else{
+			double * doubleBuf = reinterpret_cast< double * >(_charBuf);
+			for(size_t i=0 ; i < Rows(); i++){
+				for(size_t j = 0; j < Cols(); j++){
+					size_t pos = i * Cols() + j;
+					txt >> doubleBuf[pos];
+				}	
+			}
+		}
+	}
+
+	void MakeUno(){
+		using namespace std;
+		if(_type == 'f'){
+			float * floatBuf = reinterpret_cast< float * >(_charBuf);
+			for(size_t i = 0 ; i < Rows(); i++){
+				for(size_t j = 0; j < Cols(); j++){
+					size_t pos = i * Cols() + j;
+					if(i == j){
+						floatBuf[pos] = 1.0f;
+					}else{
+						floatBuf[pos] = 0.0f;
+					}
+				}	
+			}
+		}else{
+			double * doubleBuf = reinterpret_cast< double * >(_charBuf);
+			for(size_t i=0 ; i < Rows(); i++){
+				for(size_t j = 0; j < Cols(); j++){
+					size_t pos = i * Cols() + j;
+					if(i == j){
+						doubleBuf[pos] = 1.0;
+					}else{
+						doubleBuf[pos] = 0.0;
+					}
 				}	
 			}
 		}
@@ -213,8 +264,8 @@ FloatMatrix MultiplyFloat(const FloatMatrix& lhs, const FloatMatrix& rhs, const 
 	
 	Matrix tmp(lhs.Rows(), rhs.Cols(), 'f', nullptr);
 	FloatMatrix res(tmp);
-	std::cout << "MultiplyFloat init done" << std::endl;
-	std::cout << res.Rows() << " " << res.Cols() << std::endl;
+	// std::cout << "MultiplyFloat init done" << std::endl;
+	// std::cout << res.Rows() << " " << res.Cols() << std::endl;
 	if(mode == "ijk"){
 		
 		MyTimer::Tick();
@@ -232,57 +283,68 @@ FloatMatrix MultiplyFloat(const FloatMatrix& lhs, const FloatMatrix& rhs, const 
   		return res;
 	}
 	if(mode == "jik"){
-		for(size_t i =0 ; i < lhs.Rows(); i++){
-			for(size_t j = 0; j < rhs.Cols(); j++){
+
+		MyTimer::Tick();
+		for(size_t j = 0; j < rhs.Cols(); j++){
+			for(size_t i =0 ; i < lhs.Rows(); i++){
 				for(size_t k = 0; k < lhs.Cols(); k++){
 					res(i, j) += lhs(i, k) * rhs(k, j);
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "ikj"){
+		MyTimer::Tick();
 		for(size_t i =0 ; i < lhs.Rows(); i++){
 			for(size_t k = 0; k < lhs.Cols(); k++){
-				double r = lhs(i, k);
+				float r = lhs(i, k);
 				for(size_t j = 0; j < rhs.Cols(); j++){	
 					res(i, j) += r * rhs(k, j);
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "kij"){
-		for(size_t i =0 ; i < lhs.Rows(); i++){
-			for(size_t k = 0; k < lhs.Cols(); k++){
-				double r = lhs(i, k);
+		MyTimer::Tick();
+		for(size_t k = 0; k < lhs.Cols(); k++){
+			for(size_t i =0 ; i < lhs.Rows(); i++){
+				float r = lhs(i, k);
 				for(size_t j = 0; j < rhs.Cols(); j++){	
 					res(i, j) += r * rhs(k, j);
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "jki"){
+		MyTimer::Tick();
 		for(size_t j = 0; j < rhs.Cols(); j++){	
 			for(size_t k = 0; k < lhs.Cols(); k++){
-				double r = rhs(k, j);
+				float r = rhs(k, j);
 				for(size_t i =0 ; i < lhs.Rows(); i++){
 					res(i, j) += lhs(i, k) * r;
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "kji"){
-		for(size_t j = 0; j < rhs.Cols(); j++){	
-			for(size_t k = 0; k < lhs.Cols(); k++){
-				double r = rhs(k, j);
+		MyTimer::Tick();
+		for(size_t k = 0; k < lhs.Cols(); k++){
+			for(size_t j = 0; j < rhs.Cols(); j++){	
+				float r = rhs(k, j);
 				for(size_t i =0 ; i < lhs.Rows(); i++){
 					res(i, j) += lhs(i, k) * r;
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	return res;
@@ -294,6 +356,7 @@ DoubleMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, co
 	// std::cout << "MultiplyFloat init done" << std::endl;
 	// std::cout << res.Rows() << " " << res.Cols() << std::endl;
 	if(mode == "ijk"){
+		MyTimer::Tick();
 		for(size_t i =0 ; i < lhs.Rows(); i++){
 			for(size_t j = 0; j < rhs.Cols(); j++){
 				for(size_t k = 0; k < lhs.Cols(); k++){
@@ -301,19 +364,23 @@ DoubleMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, co
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "jik"){
-		for(size_t i =0 ; i < lhs.Rows(); i++){
-			for(size_t j = 0; j < rhs.Cols(); j++){
+		MyTimer::Tick();
+		for(size_t j = 0; j < rhs.Cols(); j++){
+			for(size_t i =0 ; i < lhs.Rows(); i++){
 				for(size_t k = 0; k < lhs.Cols(); k++){
 					res(i, j) += lhs(i, k) * rhs(k, j);
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "ikj"){
+		MyTimer::Tick();
 		for(size_t i =0 ; i < lhs.Rows(); i++){
 			for(size_t k = 0; k < lhs.Cols(); k++){
 				double r = lhs(i, k);
@@ -322,20 +389,24 @@ DoubleMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, co
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "kij"){
-		for(size_t i =0 ; i < lhs.Rows(); i++){
-			for(size_t k = 0; k < lhs.Cols(); k++){
+		MyTimer::Tick();
+		for(size_t k = 0; k < lhs.Cols(); k++){
+			for(size_t i =0 ; i < lhs.Rows(); i++){
 				double r = lhs(i, k);
 				for(size_t j = 0; j < rhs.Cols(); j++){	
 					res(i, j) += r * rhs(k, j);
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "jki"){
+		MyTimer::Tick();
 		for(size_t j = 0; j < rhs.Cols(); j++){	
 			for(size_t k = 0; k < lhs.Cols(); k++){
 				double r = rhs(k, j);
@@ -344,17 +415,20 @@ DoubleMatrix MultiplyDouble(const DoubleMatrix& lhs, const DoubleMatrix& rhs, co
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	if(mode == "kji"){
-		for(size_t j = 0; j < rhs.Cols(); j++){	
-			for(size_t k = 0; k < lhs.Cols(); k++){
+		MyTimer::Tick();
+		for(size_t k = 0; k < lhs.Cols(); k++){
+			for(size_t j = 0; j < rhs.Cols(); j++){	
 				double r = rhs(k, j);
 				for(size_t i =0 ; i < lhs.Rows(); i++){
 					res(i, j) += lhs(i, k) * r;
 				}
 			}
 		}
+		MyTimer::Tock();
 		return res;
 	}
 	return res;
