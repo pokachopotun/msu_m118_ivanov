@@ -33,19 +33,12 @@ define gen_test_size
 	./print B_$(1)x$(1).test
 endef
 
+matrix.o: matrix.h matrix.cpp
+	g++ -c -I./ -std=c++11 matrix.h matrix.cpp
 
-timeit: timeit.cpp matrix.h matrix.cpp
-	g++ -I./ -O3 -std=c++11 matrix.h matrix.cpp timeit.cpp -o timeit
-print: print.cpp matrix.h matrix.cpp
-	g++ -I./ -std=c++11 matrix.h matrix.cpp print.cpp -o print
-gen: gen.cpp matrix.h matrix.cpp
-	g++ -I./ -std=c++11 matrix.h matrix.cpp gen.cpp -o gen
-fromtxt: fromtxt.cpp matrix.h matrix.cpp
-	g++ -I./ -std=c++11 matrix.h  matrix.cpp fromtxt.cpp -o fromtxt
-compare: compare.cpp matrix.h matrix.cpp
-	g++ -I./ -std=c++11 matrix.h  matrix.cpp compare.cpp -o compare
-main: main.cpp 
-	g++ -I./ -std=c++11 matrix.h  matrix.cpp main.cpp -o main
+%: %.cpp matrix.o
+	g++ -I./ -O3 -std=c++11 -o $@ matrix.o $<
+
 test: main compare	
 	$(call test_mode,ijk)
 	$(call test_mode,jik)
@@ -65,4 +58,4 @@ report: timeit
 	$(call report_size,500)
 	$(call report_size,1000)
 clean:
-	rm -f main print compare gen fromtxt timeit *.time *.dat *.out *.svg
+	rm -f main print compare gen fromtxt timeit *.o *.gch *.time *.dat *.out *.svg
