@@ -19,8 +19,8 @@ endef
 
 define test_size
 	#test $(1)x$(1) mode $(2)
-	./main A_$(1)x$(1).test B_$(1)x$(1).test $(1)x$(1).test.out $(2)
-	./compare C0_$(1)x$(1).test $(1)x$(1).test.out
+	@./main A_$(1)x$(1).test B_$(1)x$(1).test $(1)x$(1).test.out $(2)
+	@./compare C0_$(1)x$(1).test $(1)x$(1).test.out
 endef
 
 define gen_test_size
@@ -34,18 +34,18 @@ define gen_test_size
 endef
 
 
-timeit: timeit.cpp matrix.h
-	g++ -I./ -O3 -std=c++11 matrix.h timeit.cpp -o timeit
-print: print.cpp matrix.h
-	g++ -I./ -std=c++11 matrix.h print.cpp -o print
-gen: gen.cpp matrix.h
-	g++ -I./ -std=c++11 matrix.h gen.cpp -o gen
-fromtxt: fromtxt.cpp matrix.h
-	g++ -I./ -std=c++11 matrix.h fromtxt.cpp -o fromtxt
-compare: compare.cpp matrix.h
-	g++ -I./ -std=c++11 matrix.h compare.cpp -o compare
-main: main.cpp matrix.h
-	g++ -I./ -std=c++11 matrix.h main.cpp -o main
+timeit: timeit.cpp matrix.h matrix.cpp
+	g++ -I./ -O3 -std=c++11 matrix.h matrix.cpp timeit.cpp -o timeit
+print: print.cpp matrix.h matrix.cpp
+	g++ -I./ -std=c++11 matrix.h matrix.cpp print.cpp -o print
+gen: gen.cpp matrix.h matrix.cpp
+	g++ -I./ -std=c++11 matrix.h matrix.cpp gen.cpp -o gen
+fromtxt: fromtxt.cpp matrix.h matrix.cpp
+	g++ -I./ -std=c++11 matrix.h  matrix.cpp fromtxt.cpp -o fromtxt
+compare: compare.cpp matrix.h matrix.cpp
+	g++ -I./ -std=c++11 matrix.h  matrix.cpp compare.cpp -o compare
+main: main.cpp 
+	g++ -I./ -std=c++11 matrix.h  matrix.cpp main.cpp -o main
 test: main compare	
 	$(call test_mode,ijk)
 	$(call test_mode,jik)
@@ -65,4 +65,4 @@ report: timeit
 	$(call report_size,500)
 	$(call report_size,1000)
 clean:
-	rm -f main print compare gen fromtxt timeit *.time *.dat *.out
+	rm -f main print compare gen fromtxt timeit *.time *.dat *.out *.svg

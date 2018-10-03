@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
 		return 0;
 	}
 
-	cout << "A == B is " << endl;
+	// cout << "A == B is " << endl;
 
 	const string inFileNameA(argv[1]);
 	const string inFileNameB(argv[2]);
