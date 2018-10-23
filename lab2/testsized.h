@@ -8,6 +8,14 @@ public:
 		_a = new float[N * N];
 		_b = new float[N * N];
 		_c = new float[N * N];
+		srand(time(nullptr));
+		for(int i = 0;i < N; i++){
+			for(int j=0 ; j < N; j++){
+				a(i, j) = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+				b(i, j) = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+				c(i, j) = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			}
+		}
 	}
 	int Multiply(int bSize, const std::string& mode){
 		if(mode == "ijk"){
@@ -63,6 +71,15 @@ public:
 		delete[] _a;
 		delete[] _b;
 		delete[] _c;
+	}
+
+	void Print(){
+		for(int i = 0;i < N; i++){
+			for(int j=0 ; j < N; j++){
+				printf("%2.2f ", a(i, j));
+			}
+			printf("\n");
+		}
 	}
 
 private:

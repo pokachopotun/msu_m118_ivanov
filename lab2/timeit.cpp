@@ -12,17 +12,18 @@ const int reps = 1;
 
 
 void timeit(int mSize, int bSize, const string& mode){
-	double time = 0;
+	double worktime = 0;
 	for(int i=0 ;i < reps; i++){
 		unique_ptr< TestSized > a( new TestSized(mSize) );
+		// a->Print();
 		auto t1 = Clock::now();
 		a->Multiply(bSize, mode);
 		auto t2 = Clock::now();
 		double s = std::chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
-		time += s;
+		worktime += s;
 	}
 	// printf("Size %d Block %d Mode %s Time %6.1f ms\n", mSize, bSize, mode.c_str(), time);
-	printf("Size %d Block %d Mode %s Time %6.1f ms\n", mSize, bSize, mode.c_str(), time);
+	printf("Size %d Block %d Mode %s Time %6.1f ms\n", mSize, bSize, mode.c_str(), worktime);
 }
 
 int main(int argc, char * argv[]) {
