@@ -16,9 +16,14 @@ int main(int argc, char* argv[]){
 	MPI_Init(&argc, &argv);
 
 	double localTime = MPI_Wtime();
+	int * numbers;
+	int lastNum = 0;
 
 	int first = atoi(argv[1]);
 	int last = atoi(argv[2]);
+	int gFirst = first;
+	int gLast = last;
+
 	const string outputFilename(argv[3]);
 	int rank, size;
 	
@@ -29,48 +34,57 @@ int main(int argc, char* argv[]){
 	int part = total / size + int( total % size != 0 );
 	first += rank * part;
 	last = min( last + 1, first + part);
+
+	if(first > gLast){
+		localTime = MPI_Wtime() - localTime;
+		if(rank > 0){
+			MPI_Send(&localTime, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			MPI_Send(NULL, 0, MPI_INTEGER, 0, 0, MPI_COMM_WORLD);
+		}
+	}else{
 	
-	// cerr << rank << " " << first << " " << last << endl;
-	int n = sqrt(last);
-	vector<bool> prime(n + 1, true);
-	prime[0] = prime[1] = false;
-	for(int i = 2; i <= n; ++i){
-		if(prime[i]){
-			if(static_cast<long long>(i) * i <= n){
-				for(int j = i * i; j <= n; j += i){
-					prime[j] = false;
+		// cerr << rank << " " << first << " " << last << endl;
+		int n = sqrt(last);
+		vector<bool> prime(n + 1, true);
+		prime[0] = prime[1] = false;
+		for(int i = 2; i <= n; ++i){
+			if(prime[i]){
+				if(static_cast<long long>(i) * i <= n){
+					for(int j = i * i; j <= n; j += i){
+						prime[j] = false;
+					}
 				}
 			}
 		}
-	}
-	vector<bool> primeLocal(last - first, true);
-	if(first == 1){
-		primeLocal[0] = false;
-	}
-	for(int i = 1; i <= n; i++){
-		if(!prime[i]){
-			continue;
+		vector<bool> primeLocal(last - first, true);
+		if(first == 1){
+			primeLocal[0] = false;
 		}
-		int s = ( first / i ) * i;
-		if( s < first ){
-			s += i;
+		for(int i = 1; i <= n; i++){
+			if(!prime[i]){
+				continue;
+			}
+			int s = ( first / i ) * i;
+			if( s < first ){
+				s += i;
+			}
+			for(int j = s; j < last; j += i ){
+				primeLocal[j - first] = false;
+			}
+			if(i == s){
+				primeLocal[i - first] = true;
+			}
 		}
-		for(int j = s; j < last; j += i ){
-			primeLocal[j - first] = false;
+		numbers = (int * ) calloc(part, sizeof(int));
+		lastNum = 0;
+		for(int i = 0; i < primeLocal.size(); i++){
+			if(primeLocal[i]){
+				numbers[lastNum++] = i + first;
+			}
 		}
-		if(i == s){
-			primeLocal[i - first] = true;
-		}
-	}
-	int * numbers = (int * ) calloc(part, sizeof(int));
-	int lastNum = 0;
-	for(int i = 0; i < primeLocal.size(); i++){
-		if(primeLocal[i]){
-			numbers[lastNum++] = i + first;
-		}
-	}
 
-	localTime = MPI_Wtime() - localTime;
+		localTime = MPI_Wtime() - localTime;
+	}
 
 	if(rank > 0){
 		MPI_Send(&localTime, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
@@ -97,7 +111,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 		fout << endl;
-		printf("Nums %d maxTime %f sumTime %f \n", lastNum, localTime, sumTime );
+		printf("Nodes %d Range %d %d Nums %d maxTime %f sumTime %f \n", size, gFirst, gLast, lastNum, localTime, sumTime );
 	}
 	MPI_Finalize();
 	return 0;
