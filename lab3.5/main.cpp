@@ -19,8 +19,10 @@ struct threadParams_t{
 };
 
 void* threadFunc(void * args){
+	using namespace std::chrono;
 
-	auto time = high_resolution_clock::now()
+	auto timer = high_resolution_clock::now();
+	duration<double> time;
 
 	threadParams_t* threadParams = (threadParams_t * )args;
 
@@ -36,7 +38,8 @@ void* threadFunc(void * args){
 	last = min( last + 1, first + part);
 
 	if(first > gLast){
-		time = high_resolution_clock::now() - time;
+		auto timer2 = high_resolution_clock::now();
+		time = duration_cast<duration<double>>(timer2 - timer);
 	}else{
 	
 		cerr << rank << " " << first << " " << last << endl;
@@ -76,16 +79,15 @@ void* threadFunc(void * args){
 				threadParams->numbers->push_back( i + first );
 			}
 		}
-		time = high_resolution_clock::now() - time;
+		auto timer2 = high_resolution_clock::now();
+		time = duration_cast<duration<double>>(timer2 - timer);
 	}
-	threadParams->time = static_cast<double>( time );
+	threadParams->time = time.count();
 	return 0;
 }
 
 int main(int argc, char* argv[]){
 	if(argc < 4){
-		int n = sqrt(1);
-		cout << 
 		cout << "Use ./main nThreads first last output.txt" << endl;
 		return 0;
 	}
@@ -102,10 +104,7 @@ int main(int argc, char* argv[]){
 		threadParams[i].numbers = new vector<int>();
 	}
 
-	int* cnt = (int*)calloc(nThreads, sizeof(int));
-	int gCnt = 0;
-
-	for(int i =0 ; i < nThreads; i++){
+	for(int i = 0 ; i < nThreads; i++){
 		pthread_create(&threadIds[i], NULL, threadFunc, &threadParams[i]);
 	}
 
@@ -114,40 +113,18 @@ int main(int argc, char* argv[]){
 	}
 	int totalNums = 0;
 	ofstream fout(outputFilename.c_str());
+	double localTime = 0;
+	double sumTime = 0;
 	for(int i =0; i < nThreads; i++){
 		totalNums += threadParams[i].numbers->size();
 		for(int j = 0; j < threadParams[i].numbers->size(); j++){
 			fout << threadParams[i].numbers->operator[](j) << " ";
 		}
-		
+		localTime = max(localTime, threadParams[i].time);
+		sumTime += localTime;
 	}
 	fout << endl;
-	printf("Nodes %d Range %d %d Nums %d maxTime %f sumTime %f \n", size, gFirst, gLast, totalNums, localTime, sumTime );
-	return 0;
-
-//----------------------------
-
-	// ofstream fout(outputFilename.c_str());
-	// for(int i = 0; i < lastNum; i++){
-	// 	fout << numbers[i] << " ";
-	// }
-	// double sumTime = localTime;
-	// for(int sender = 1; sender < size; sender++){
-	// 	MPI_Status status;
-	// 	int recvCnt;
-	// 	double recvTime;
-	// 	MPI_Recv(&recvTime, 1, MPI_DOUBLE, sender, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	// 	MPI_Recv(numbers, part, MPI_INTEGER, sender, 0, MPI_COMM_WORLD, &status);
-	// 	MPI_Get_count(&status, MPI_INTEGER, &recvCnt);
-	// 	localTime = max(localTime, recvTime);
-	// 	sumTime += recvTime;
-	// 	lastNum += recvCnt;
-	// 	for( int i =0; i < recvCnt; i++){
-	// 		fout << numbers[i] << " ";
-	// 	}
-	// }
-	// fout << endl;
-	
-
+	printf("Threads %d Range %d %d Found Nums %d maxTime %f sumTime %f \n", 
+		nThreads, gFirst, gLast, totalNums, localTime, sumTime );
 	return 0;
 }

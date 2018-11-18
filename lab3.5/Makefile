@@ -23,4 +23,4 @@ run: main
 	$(call submit_n,1024)
 
 main: main.cpp
-	g++ main.cpp -o main -lpthread
+	g++ -std=c++11 main.cpp -o main -lpthread
