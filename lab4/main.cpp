@@ -15,6 +15,8 @@ int main(int argc, char* argv[]){
 	}
 	MPI_Init(&argc, &argv);
 
+	double time = MPI_Wtime();
+
 	const string AinputFileName(argv[1]);
 	const string BinputFileName(argv[2]);
 	const string CoutputFileName(argv[3]);
@@ -94,7 +96,7 @@ int main(int argc, char* argv[]){
 		double* A = new double[localSize];
 		double* B = new double[bwLocal];
 		double* C = new double[bwLocal];
-		double* C1 = new double[bwLocal];
+		// double* C1 = new double[bwLocal];
 
 		MPI_File_set_view(AinputFile, 8, MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
 		for(int row = 0; row < h; row++ ){
@@ -122,7 +124,7 @@ int main(int argc, char* argv[]){
 		for( int iter =0 ; iter < size; iter++ ){
 			MPI_Barrier(MPI_COMM_WORLD);
 			for(int i = 0; i < bwLocal; i++){
-				C[i] = C1[i] = 0.0;
+				C[i] = 0.0;
 			}
 			int rowStartLocal = iter * bwLocal;
 			int rowEndLocal = rowStartLocal + bwLocal;
@@ -136,12 +138,20 @@ int main(int argc, char* argv[]){
 				}
 			}
 			MPI_Barrier(MPI_COMM_WORLD);
-			MPI_Reduce(C, C1, bwLocal, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+			if(rank == 0){
+				MPI_Reduce(MPI_IN_PLACE, C, bwLocal, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+			}else{
+				MPI_Reduce(C, 0, bwLocal, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);	
+			}
 			if( rank == 0 ){
-				MPI_File_write_at(CoutputFile, 8 * iter * bwLocal, C1, bwLocal, MPI_DOUBLE, MPI_STATUS_IGNORE);
+				MPI_File_write_at(CoutputFile, 8 * iter * bwLocal, C, bwLocal, MPI_DOUBLE, MPI_STATUS_IGNORE);
 			}
 		}
 	}
+	MPI_Barrier(MPI_COMM_WORLD);
+	time = MPI_Wtime() - time;
+	if( rank == 0 )
+		printf("Nodes %d rows %d cols %d Time %f\n", size, h, w, time);
 
 	MPI_Finalize();
 
