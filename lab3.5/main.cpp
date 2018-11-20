@@ -121,7 +121,7 @@ int main(int argc, char* argv[]){
 			fout << threadParams[i].numbers->operator[](j) << " ";
 		}
 		localTime = max(localTime, threadParams[i].time);
-		sumTime += localTime;
+		sumTime += threadParams[i].time;
 	}
 	fout << endl;
 	printf("Threads %d Range %d %d Found Nums %d maxTime %f sumTime %f \n", 

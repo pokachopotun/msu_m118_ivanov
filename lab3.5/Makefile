@@ -1,7 +1,7 @@
 all: main
 
 define submit_one
-	mpisubmit.pl -n $(1) -w 00:01 --stdout=$(2).$(3).$(1).out --stderr=$(1).$(2).$(3).err main $(2) $(3) $(4)
+	mpisubmit.pl -n 1 -w 00:03:00 --stdout=$(2).$(3).$(1).out --stderr=$(1).$(2).$(3).err main $(1) $(2) $(3) $(4)
 endef
 
 define submit_n
