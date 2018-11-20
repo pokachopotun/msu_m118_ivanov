@@ -34,6 +34,6 @@ int main(int argc, char* argv[]){
 	ofs.write(reinterpret_cast< const char* >( &cols ), sizeof(int)/sizeof(char));
 	ofs.write(charBuf, rows * cols * sizeof(double)/sizeof(char));
 
-	cout << "Generation done" << endl;
+	cout << "Generation " + to_string(rows) + "x" + to_string(cols) + " done" << endl;
 	return 0;
 }
