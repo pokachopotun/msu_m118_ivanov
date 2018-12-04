@@ -1,0 +1,13 @@
+Nodes 1 rows 1024 cols 1024 Time 77.145931
+Nodes 1 rows 2048 cols 2048 Time 1156.012031
+Nodes 512 rows 1024 cols 1024 Time 0.150861
+Nodes 512 rows 2048 cols 2048 Time 1.196751
+Nodes 512 rows 4096 cols 4096 Time 9.570317
+Nodes 512 rows 8192 cols 8192 Time 77.241271
+Nodes 64 rows 1024 cols 1024 Time 1.200162
+Nodes 64 rows 2048 cols 2048 Time 9.584886
+Nodes 64 rows 4096 cols 4096 Time 77.304128
+Nodes 64 rows 8192 cols 8192 Time 1156.642706
+Nodes 8 rows 1024 cols 1024 Time 9.583211
+Nodes 8 rows 2048 cols 2048 Time 77.298113
+Nodes 8 rows 4096 cols 4096 Time 1156.618784
