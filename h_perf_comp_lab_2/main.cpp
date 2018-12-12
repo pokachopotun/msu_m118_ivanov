@@ -134,9 +134,27 @@ public:
 		MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
 		int NxLocal = Nx / Px, NyLocal = Ny/Py, NzLocal = Nz/Pz;
-		
-		_ownedRows.Assign( Nx * Ny * Nz, -1);
+		int N = Nx * Ny * Nz;
+		_ownedRows.Assign( N, -1);
 
+
+		_owners.Assign( N, -1);
+		for(int k = 0; k < Nz; k++){
+			for(int j = 0; j < Ny; j++){
+				for(int i = 0; i < Nx; i++){
+					int sid = k * (Nx * Ny) + j * Nx + i;
+					int pid = k / NzLocal * (Px * Py) + j / NyLocal * Px + i / NxLocal;
+					_owners[sid] = pid;
+				}
+			}
+		}
+
+		cout << commRank <<" owners: ";
+		for( int i =0 ; i < N; i++){
+			cout << _owners[i] << " ";
+		}
+		cout << endl;
+		exit(0);
 		int px, py, pz;
 		{
 			int slice = Px * Py;
@@ -258,6 +276,8 @@ public:
 		}
 	}
 
+
+
 	void PrintToTxt(){
 		using namespace std;
 		int rank;
@@ -346,6 +366,7 @@ private:
 	MyVec<int> _rowLocal;
 	MyVec<int> _col;
 	MyVec<int> _ownedRows;
+	MyVec<int> _owners;
 };
 
 
