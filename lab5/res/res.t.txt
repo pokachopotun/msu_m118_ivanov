@@ -1,0 +1,8 @@
+Nodes 512 rows 1024 cols 1024 Time 0.150856 input 1.444415 output 2.194453 
+Nodes 512 rows 2048 cols 2048 Time 1.196753 input 2.839515 output 3.602400 
+Nodes 512 rows 4096 cols 4096 Time 9.570302 input 5.992884 output 7.280343 
+Nodes 512 rows 8192 cols 8192 Time 77.241281 input 14.286745 output 15.245295 
+Nodes 64 rows 1024 cols 1024 Time 1.200158 input 2.617363 output 1.280648 
+Nodes 64 rows 2048 cols 2048 Time 9.584884 input 5.444558 output 2.661790 
+Nodes 64 rows 4096 cols 4096 Time 77.304134 input 11.416339 output 5.885092 
+Nodes 8 rows 1024 cols 1024 Time 9.583331 input 19.459052 output 19.280524 
