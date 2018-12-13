@@ -135,6 +135,7 @@ public:
 
 		int NxLocal = Nx / Px, NyLocal = Ny/Py, NzLocal = Nz/Pz;
 		int N = Nx * Ny * Nz;
+		int P = Px * Py * Pz;
 		_ownedRows.Assign( N, -1);
 
 
@@ -149,12 +150,12 @@ public:
 			}
 		}
 
-		cout << commRank <<" owners: ";
-		for( int i =0 ; i < N; i++){
-			cout << _owners[i] << " ";
-		}
-		cout << endl;
-		exit(0);
+		// cout << commRank <<" owners: ";
+		// for( int i =0 ; i < N; i++){
+		// 	cout << _owners[i] << " ";
+		// }
+		// cout << endl;
+		// exit(0);
 		int px, py, pz;
 		{
 			int slice = Px * Py;
@@ -184,7 +185,7 @@ public:
 					int idLocal = kLocal * (NxLocal * NyLocal) + jLocal * NxLocal + iLocal;
 					// cout << "global " << idGlobal << " local " << idLocal << endl;
 					_ownedRows[idGlobal] = idLocal;
-					// _L2G[idLocal] = idGlobal;
+					_L2G[idLocal] = idGlobal;
 					// cout << id << endl;
 					int cnt_cur = 
 					+ int(k > 0) 
@@ -274,6 +275,22 @@ public:
 				}
 			}
 		}
+		
+		recvFrom.Resize(P);
+		sendTo.Resize(P);
+
+		for( int row = 0; row < _rowLocal.Size(); row++){
+			int rowStartPos = _rowLocal[row];
+			for( int pos = rowStartPos; pos < _rowLocal[row + 1]; pos++){
+				int c = _col[pos];
+				int owner = _owners[ c ];
+				if( owner != commRank ){
+					recvFrom[ owner ].push_back( c );
+					sendTo[ owner ].push_back( _L2G[ row ] );	
+				}
+			}
+		}
+
 	}
 
 
@@ -367,6 +384,8 @@ private:
 	MyVec<int> _col;
 	MyVec<int> _ownedRows;
 	MyVec<int> _owners;
+	MyVec<int> _L2G;
+	std::vector< std::vector<int> > sendTo, recvFrom;
 };
 
 
