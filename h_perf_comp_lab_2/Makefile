@@ -1,7 +1,8 @@
-all: main
+polus: main.cpp
+	mpixlC -O3 main.cpp -o polus 
 
-main: main.cpp
-	mpic++ -I./ -O3 -std=c++11 -fopenmp -o main main.cpp
+local: main.cpp
+	mpic++ -O3 main.cpp -o local 
 
 clean:
 	rm -f main print compare gen fromtxt timeit *.o *.gch *.time *.dat *.out *.svg
