@@ -17,34 +17,6 @@ void printVector(const vector<T>& x, const string& name){
 		cout << endl;
 }
 
-void axpby(std::vector<double>& X, const std::vector<double>& Y, double a, double b){
-	for(int i=0 ; i < X.size(); i++){
-		X[i] = a * X[i] + b * Y[i];
-	}
-}
-
-double dot(const std::vector<double>& X, const std::vector<double>& Y ){
-
-	double ans = 0;
-	// double sum = 0;
-	for(int i=0 ; i < X.size(); i++){
-		// cout << X[i] << " " << Y[i] << endl;
-		ans += X[i] * Y[i];
-	}
-
-	// MPI_Allreduce(MPI_IN_PLACE, &ans, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-	// cout << "fuck" << endl;
-	// MPI_Finalize();
-	// exit(0);
-	return ans;
-}
-
-void CopyVector(const std::vector<double>& X, std::vector<double>& Y){
-	for(int i=0 ; i < X.size(); i++){
-		Y[i] = X[i];
-	}
-}
-
 void SetVector(std::vector<double>& X, const double c){
 	for(int i=0 ; i < X.size(); i++){
 		X[i] = c;
@@ -67,23 +39,17 @@ int getOwner( int cellGlobal, int Nx, int Ny, int Nz, int Px, int Py, int Pz ){
 	y /= NyLocal;
 	x /= NxLocal;
 
-	// cout << cellGlobal << " " << z << " " << y << " " << x << " " << z * Px * Py + y * Px + x << endl;
 	return z * Px * Py + y * Px + x;
 }
-
-// void GetCoords( int cell, int Nx, int Ny, int Nz, int& x, int& y, int& z){
-// 	int slice = Nx * Ny;
-// 	z = cell / slice;
-// 	int xy = cell % slice;
-// 	y = xy / Nx;
-// 	x = xy / Ny;
-// }
 
 class Matrix{
 public:
 	Matrix(int N, int M, int K, int Px, int Py, int Pz){
-		Generate(N, M, K, Px, Py, Pz);
-		// UpdateHalo( _val );
+		GenerateCSR(N, M, K, Px, Py, Pz);
+		// cout << "Fuck" << endl;
+		// MPI_Finalize();
+		// exit(0);
+		Preprocess();
 		// printVector( _val, "_val");
 		// MPI_Finalize();
 		// exit( 0 );
@@ -102,24 +68,26 @@ public:
 		N = other.N;
 		P = other.P;
 		NLocal = other.NLocal;
-		Halo = other.Halo;
-		_nRows = other._nRows;
-		_nCols = other._nCols;
-		_nRowsLocal = other._nRowsLocal;
-		_nonZerocnt = other._nonZerocnt;
+
+		_owners = other._owners;
+		GlobalRows = other.GlobalRows;
+		// Halo = other.Halo;
+		// _nRows = other._nRows;
+		// _nCols = other._nCols;
+		// _nRowsLocal = other._nRowsLocal;
+		// _nonZerocnt = other._nonZerocnt;
 
 		_rowLocal = other._rowLocal;
-		_haloStart = other._haloStart;
+		// _haloStart = other._haloStart;
 		_col = other._col;
 		_val = other._val;
 
 		// _owners = other._owners;
-		_L2G = other._L2G ;
 		_G2L = other._G2L;
  
-		_nRows = other._nRows;
-		_nCols = other._nCols;
-		_nRowsLocal = other._nRowsLocal;
+		// _nRows = other._nRows;
+		// _nCols = other._nCols;
+		// _nRowsLocal = other._nRowsLocal;
 
 		recvFrom = other.recvFrom;
 		sendTo = other.sendTo;
@@ -127,7 +95,7 @@ public:
 		
 		for(int i=0 ;i < other._rowLocal.size() - 1; i++){
 			for(int j = other._rowLocal[i]; j < other._rowLocal[i + 1]; j++){
-				if( other._col[j] == _L2G[i] ){
+				if( other._col[j] == GlobalRows[i] ){
 					// cout << "FUCK " << other._val[j] << endl;
 					if( other._val[j] != 0.0 )
 						_val[j] = 1.0 / other._val[j];
@@ -145,7 +113,7 @@ public:
 	double MakeVal(double col, double row){
 		return sin(col + row + 1.0);
 	}
-	void Generate(int Nx, int Ny, int Nz, int Px, int Py, int Pz){
+	void GenerateCSR(int Nx, int Ny, int Nz, int Px, int Py, int Pz){
 		using namespace std;
 
 		int commRank, commSize;
@@ -153,105 +121,39 @@ public:
 		MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
 		NxLocal = Nx / Px, NyLocal = Ny/Py, NzLocal = Nz/Pz;
-		NLocal = NxLocal * NyLocal * NzLocal;
-		Halo = NLocal;
+
 		N = Nx * Ny * Nz;
 		P = Px * Py * Pz;
-
-		// _owners.assign( N, -1);
-		// for(int pk = 0; pk < Pz; pk++){
-		// 	for(int pj = 0; pj < Py; pj++){
-		// 		for(int pi = 0; pi < Px; pi++){
-					
-		// 			int pid = pk * Px * Py + pj * Px + pi;
-
-		// 			for(int k = pk * NzLocal; k < ( pk + 1)* NzLocal; k++){
-		// 				for(int j = pj * NyLocal; j < ( pj + 1)* NyLocal; j++){
-		// 					for(int i = pi * NxLocal; i < ( pi + 1) * NxLocal; i++){
-		// 						int sid = k * (Nx * Ny) + j * Nx + i;
-		// 						_owners[sid] = pid;
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-		// cout << " commRank: ";
-		// for( int i = 0; i < _owners.size(); i++ ){
-		// 	cout << _owners[i] << " ";
-		// }
-		// cout << endl;
-		// MPI_Finalize();
-		// exit(0);
 
 		int px, py, pz;
 		{
 			int slice = Px * Py;
 			pz = commRank / slice;
 			int pxpy = commRank % slice;
-			py = pxpy / Py;
-			px = pxpy % Py;
+			py = pxpy / Px;
+			px = pxpy % Px;
 		}
+		// cout << px << " " << py << " " << pz << endl;
+		// MPI_Finalize();
+		// exit(0);
 		
-		_nRowsLocal = NxLocal * NyLocal * NzLocal;
+		// _nonZerocnt  = 0;
+		// _nCols = _nRows = Nx * Ny * Nz;
 		
-		_nonZerocnt  = 0;
-		_nCols = _nRows = Nx * Ny * Nz;
-		// _rowLocal.resize(_nRowsLocal + 1);
-		_L2G.assign( N, -1 );
-		_G2L.assign( N, -1 );
+		// _L2G.assign( N, -1 );
+		// _G2L.assign( N, -1 );
+		// _owners.assign( N, -1 );
 
 		int zRange[] = { pz * NzLocal, (pz+ 1) * NzLocal };
 		int yRange[] = { py * NyLocal, (py+ 1) * NyLocal };
 		int xRange[] = { px * NxLocal, (px+ 1) * NxLocal };
-		// for(int k = kRange[0]; k < kRange[1]; k++){
-		// 	for(int j = yRange[0]; j < yRange[1]; j++){
-		// 		for(int i = xRange[0]; i < xRange[1]; i++){
-		// 			int kLocal = k - kRange[0];
-		// 			int jLocal = j - yRange[0];
-		// 			int iLocal = i - xRange[0];
-		// 			int idGlobal = k * (Nx * Ny) + j * Nx + i;
 
-		// 			int idLocal = kLocal * (NxLocal * NyLocal) + jLocal * NxLocal + iLocal;
-
-		// 			int cnt_cur = 
-		// 			+ int(k > 0) 
-		// 			+ int(j > 0)
-		// 			+ int(i > 0)
-		// 			+ 1
-		// 			+ int(i < Nx - 1)
-		// 			+ int(j < Ny - 1)
-		// 			+ int(k < Nz - 1);
-		// 			_rowLocal[idLocal] = _nonZerocnt;
-		// 			_nonZerocnt += cnt_cur;
-		// 		}
-		// 	}
-		// }
-
-		// _rowLocal.back() = _nonZerocnt;
-		// _col.resize(_rowLocal.back());
-		// _val.resize(_rowLocal.back());
-		// cout << _val.size() << endl;
-		// printVector( _rowLocal, "rowLocal");
-		// MPI_Finalize();
-		// exit( 0 );
 		int shifts[][3] = { {0, 0, -1}, {0, -1, 0}, {-1, 0, 0}, {0, 0, 0},
 							 {1, 0, 0}, {0, 1, 0}, { 0, 0, 1}
 		};
-		// vector< int > shifts[3];
-		// shifts.push_back(  );
-		// shifts.push_back( -Nx );
-		// shifts.push_back( -1 );
-		// shifts.push_back( 0 );
-		// shifts.push_back( 1 );
-		// shifts.push_back( Nx );
-		// shifts.push_back( Nx * Ny );
-
-		recvFrom.resize(P);
-		sendTo.resize(P);
 
 		_rowLocal.push_back( 0 );
-		_haloStart.push_back( 0 );
+		_owners.assign(N, -1);
 		for(int k = zRange[0]; k < zRange[1]; k++){
 			for(int j = yRange[0]; j < yRange[1]; j++){
 				for(int i = xRange[0]; i < xRange[1]; i++){
@@ -259,123 +161,40 @@ public:
 					int jLocal = j - yRange[0];
 					int iLocal = i - xRange[0];
 
-
 					int rowGlobal = k * (Nx * Ny) + j * Nx + i;
 					int rowLocal = kLocal * (NxLocal * NyLocal) + jLocal * NxLocal + iLocal;
-
-					_L2G[rowLocal] = rowGlobal;
-					_G2L[rowGlobal] = rowLocal;
+					// _L2G[rowLocal] = rowGlobal;
+					// _G2L[rowGlobal] = rowLocal;
+					GlobalRows.push_back(rowGlobal);
 					
-					// _rowLocal[ rowLocal ] = _rowLocal[ rowLocal - 1 ];
-					// cout << row << endl;
-					// int rowStartPos = _rowLocal[rowLocal];
-					// int cnt = 0;
 					for( int sh = 0; sh < 7; sh++ ){
 						int x = i + shifts[sh][0];
 						int y = j + shifts[sh][1];
 						int z = k + shifts[sh][2];
-						if( !( 0 <= x && x < Nx ) ){
-							continue;
-						}
-						if( !( 0 <= y && y < Ny ) ){
-							continue;
-						}
-						if( !( 0 <= z && z < Nz ) ){
-							continue;
-						}
+
 						int neighbourGlobal = z * Nx * Ny + y * Nx + x;
 						if( neighbourGlobal < 0 || N <= neighbourGlobal )
 							continue;
 
-						if( commRank == getOwner( neighbourGlobal, Nx, Ny, Nz, Px, Py, Pz ) ){
-							_col.push_back( neighbourGlobal );
-							_val.push_back( MakeVal( neighbourGlobal, rowGlobal ) );
+						if( !( 0 <= x && x < Nx )  || !( 0 <= y && y < Ny ) || !( 0 <= z && z < Nz ) ){
+							continue;
 						}
-					}
-					int cnt = 0;
 
-					for( int sh = 0; sh < 7; sh++ ){
-						int x = i + shifts[sh][0];
-						int y = j + shifts[sh][1];
-						int z = k + shifts[sh][2];
-						if( !( 0 <= x && x < Nx ) ){
-							continue;
-						}
-						if( !( 0 <= y && y < Ny ) ){
-							continue;
-						}
-						if( !( 0 <= z && z < Nz ) ){
-							continue;
-						}
-						int neighbourGlobal = z * Nx * Ny + y * Nx + x;
-						if( neighbourGlobal < 0 || N <= neighbourGlobal )
-							continue;
+						int neighbourOwner = getOwner( neighbourGlobal, Nx, Ny, Nz, Px, Py, Pz );
+						// cout << neighbourOwner << " ";
+						_owners[ neighbourGlobal ] = neighbourOwner;
 						
-						int owner = getOwner( neighbourGlobal, Nx, Ny, Nz, Px, Py, Pz );
-						if( commRank != owner ){
-							Halo++;
-							cnt++;
-							_col.push_back( neighbourGlobal );
-							_val.push_back( MakeVal( neighbourGlobal, rowGlobal ) );
-
-							recvFrom[ owner ].push_back( neighbourGlobal );
-							sendTo[ owner ].push_back( rowGlobal );	
-
-							_G2L[neighbourGlobal] = _col.size() - 1;
-							_L2G[_col.size() - 1] = neighbourGlobal;
-						}
+						_col.push_back( neighbourGlobal );
+						_val.push_back( MakeVal( neighbourGlobal, rowGlobal ) );
+						// if( neighbourOwner != commRank )
+						// 	_val.back() = -1;
 					}
-
-
-					// if(k > 0){
-					// 	int c = rowGlobal - Nx * Ny;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-					// }
-					// if(j > 0){
-					// 	int c = rowGlobal - Nx;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-					// }
-					// if(i > 0){
-					// 	int c = rowGlobal - 1;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-					// }
-					// _col[rowStartPos + cnt] = rowGlobal;
-					// _val[rowStartPos + cnt] = MakeVal(rowGlobal, rowGlobal);
-					// cnt++;
-					// if(i < Nx - 1){
-					// 	int c = rowGlobal + 1;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-					// }
-					// if(j < Ny - 1){
-					// 	int c = rowGlobal + Nx;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-
-					// }
-					// if(k < Nz - 1){
-					// 	int c = rowGlobal + Nx * Ny;
-					// 	_col[rowStartPos + cnt] = c;
-					// 	_val[rowStartPos + cnt] = MakeVal(c, rowGlobal);
-					// 	cnt++;
-					// }
-
 					if( _col.size() > _rowLocal.back() ){
 						_rowLocal.push_back( _col.size() );
-						_haloStart.push_back( _col.size() - cnt );
-						// printVector( _rowLocal, "rowLocal");
 					}
 					int pp = -1;
 					double sum = 0;
-					for( int pos = _rowLocal[rowLocal] ;pos < _rowLocal[rowLocal + 1]; pos++){
+					for( int pos = _rowLocal[rowLocal]; pos < _rowLocal[rowLocal + 1]; pos++){
 						if( _col[pos] == rowGlobal ){
 							pp = pos;
 						}else{
@@ -387,192 +206,188 @@ public:
 				}
 			}
 		}
-		// cout << commRank << ": ";
-		// // for( int i = 0 ; i < sendTo.size(); i++ ){
-		// // 	printVector( sendTo[i], "sendTO");
-		// // }
-		// cout << endl;
-		// // printVector( _L2G, "L2G");
-		// printVector( _G2L, "G2L");
-		// printVector( _rowLocal, "_rowLocal");
-		
-		// printVector( _col, "_col");
-		// printVector( _val, "_val");
+
+		// printVector(_rowLocal, "_rowLocal");
+		// printVector(_col, "_col");
+		// printVector(_val, "_val");
 		// MPI_Finalize();
 		// exit(0);
-
-
-
-		// for( int rowLocal = 0; rowLocal < _rowLocal.size() - 1; rowLocal++){
-		// 	int rowStartPos = _rowLocal[rowLocal];
-		// 	for( int pos = rowStartPos; pos < _rowLocal[rowLocal + 1]; pos++){
-		// 		int cellGlobal = _col[pos];
-
-		// 		int owner = getOwner( cellGlobal, Nx, Ny, Nz, Px, Py, Pz );
-
-		// 		if( _G2L[cellGlobal] == -1 ){
-
-		// 			Halo++;
-		// 		}
-		// 	}
-		// }
-
-		// // add  receivable (halo) cells to our matrix
-		// for( int owner = 0 ; owner < recvFrom.size(); owner++ ){
-		// 	if( recvFrom[owner].size() == 0 || owner == commRank){
-		// 		continue;
-		// 	}
-		// 	// cout << commRank << " " << owner << ": ";
-
-		// 	_rowLocal.push_back( _rowLocal.back() + recvFrom[ owner ].size() );
-		// 	for( int i =0 ; i < recvFrom[owner].size(); i++){
-		// 		int cellGlobal = recvFrom[owner][i];
-		// 		_G2L[cellGlobal] = _col.size();
-		// 		_L2G[_col.size()] = cellGlobal;
-		// 		// _col.push_back( cellGlobal );
-		// 		// _val.push_back( 0.0 );
-		// 	}
-		// 	// cout << endl;
-
-		// }
-
-		// printVector( _L2G, "L2G");
-		// printVector( _G2L, "G2L");
-		// printVector( _rowLocal, "_rowLocal");
-		
-		// printVector( _col, "_col");
-		// printVector( _val, "_val");
-		// MPI_Finalize();
-		// exit(0);
-		// MPI_Finalize();
-		// 	exit(0);
-		
 	}
 
-	void PrintToTxt(){
+	void Preprocess(){
 		using namespace std;
-		int rank;
-		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-		cout << rank << ": ";
-		for(int i =0 ;i < _nRowsLocal; i++){
-			int pos = _rowLocal[i];
-			for(int j =0 ; j < _nCols; j++){
-				if(pos < _rowLocal[i + 1] && _col[pos] == j){
-					// cout << " 1";
-					cout << _val[pos];
-					pos++;
-				}else{
-					cout << " 0.00";
-				}
-				cout << " ";
-			}
-			cout << endl;
-		}
-	}
-
-	void PrintBuffers(){
-
 		int commRank, commSize;
 		MPI_Comm_rank(MPI_COMM_WORLD, &commRank);
 		MPI_Comm_size(MPI_COMM_WORLD, &commSize);
-		using namespace std;
-		cout << "rank " << commRank << " RowSt ";
-		for(int i =0 ;i < _rowLocal.size(); i++){
-			cout << _rowLocal[i] << " ";
+
+		sendTo.resize(P);
+		recvFrom.resize(P);
+		_G2L.assign( N, -1 );
+
+		for( int rowLocal = 0; rowLocal < GlobalRows.size(); rowLocal++){
+			_G2L[ GlobalRows[rowLocal] ] = rowLocal;
 		}
-		cout << "rank " << commRank << " Row ";
-		for(int i =0 ;i < _rowLocal.size(); i++){
-			cout << _L2G[i] << " ";
-		}
-		cout << " Col ";
-		for(int i =0 ;i < _rowLocal.size() - 1; i++){
-			for(int j = _rowLocal[i] ; j < _rowLocal[i + 1]; j++){
-				cout << _col[j]<< " ";
+		for( int rowLocal = 0; rowLocal < _rowLocal.size() - 1; rowLocal++){
+			for( int j = _rowLocal[ rowLocal ]; j < _rowLocal[ rowLocal + 1]; j++ ){
+				int cell = _col[j];
+				if( _G2L[ cell ] == -1 ){
+					int owner = _owners[ cell ];
+					// cout << owner << " ";4
+					recvFrom[ owner ].push_back(cell);
+					sendTo[owner].push_back( GlobalRows[ rowLocal ] );
+				}
 			}
 		}
-		cout << "val ";
-		for(int i =0 ;i < _val.size(); i++){
-			cout << _val[i] << " ";
+		for(int owner = 0; owner < recvFrom.size(); owner++ ){
+			if( recvFrom[owner].size() == 0 ){
+				continue;
+			}
+			for( int i = 0; i < recvFrom[owner].size(); i++ ){
+				int cell = recvFrom[owner][i];
+				_G2L[ cell ] = GlobalRows.size() + _halo.size();
+				_halo.push_back( cell );
+			}
 		}
-		cout << endl;
+
+		for(int owner = 0; owner < sendTo.size(); owner++ ){
+			if( sendTo[owner].size() == 0 ){
+				continue;
+			}
+			for( int i = 0; i < sendTo[owner].size(); i++ ){
+				int cell = sendTo[owner][i];
+				_sendHalo.push_back( cell );
+			}
+		}
+		// printVector(_halo, "_halo");
+		// printVector(_G2L, "_G2L");
+		// MPI_Finalize();
+		// exit(0);
+	}
+
+	// void PrintToTxt(){
+	// 	using namespace std;
+	// 	int rank;
+	// 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	// 	cout << rank << ": ";
+	// 	for(int i =0 ;i < _nRowsLocal; i++){
+	// 		int pos = _rowLocal[i];
+	// 		for(int j =0 ; j < _nCols; j++){
+	// 			if(pos < _rowLocal[i + 1] && _col[pos] == j){
+	// 				// cout << " 1";
+	// 				cout << _val[pos];
+	// 				pos++;
+	// 			}else{
+	// 				cout << " 0.00";
+	// 			}
+	// 			cout << " ";
+	// 		}
+	// 		cout << endl;
+	// 	}
+	// }
+
+	// void PrintBuffers(){
+
+	// 	int commRank, commSize;
+	// 	MPI_Comm_rank(MPI_COMM_WORLD, &commRank);
+	// 	MPI_Comm_size(MPI_COMM_WORLD, &commSize);
+	// 	using namespace std;
+	// 	cout << "rank " << commRank << " RowSt ";
+	// 	for(int i =0 ;i < _rowLocal.size(); i++){
+	// 		cout << _rowLocal[i] << " ";
+	// 	}
+	// 	cout << "rank " << commRank << " Row ";
+	// 	for(int i =0 ;i < _rowLocal.size(); i++){
+	// 		cout << _L2G[i] << " ";
+	// 	}
+	// 	cout << " Col ";
+	// 	for(int i =0 ;i < _rowLocal.size() - 1; i++){
+	// 		for(int j = _rowLocal[i] ; j < _rowLocal[i + 1]; j++){
+	// 			cout << _col[j]<< " ";
+	// 		}
+	// 	}
+	// 	cout << "val ";
+	// 	for(int i =0 ;i < _val.size(); i++){
+	// 		cout << _val[i] << " ";
+	// 	}
+	// 	cout << endl;
 		
-	}
-
-	friend std::ostream& operator<<(std::ostream& ofs, const Matrix& m);
-
-	virtual ~Matrix(){
-	}
-
-	void WriteToFile(const std::string& outFileName);
+	// }
 	
-	void SpMV(const std::vector<double>& X, std::vector<double>& Y){
+	void SpMV( std::vector<double>& X, std::vector<double>& Y){
 		SetVector(Y, 0.0);
 
-		for(int rowLocal =0; rowLocal < _rowLocal.size() - 1; rowLocal++){
-			// cout << _L2G[ rowLocal ] << " += ";
-			for(int j = _rowLocal[rowLocal]; j < _rowLocal[rowLocal + 1]; j++){
-				Y[ _L2G[rowLocal] ] += X[ _col[j] ] * _val[ j ];
-				// cout << " + " << _col[j]<< " * " << _col[j] ;
-			}
-			// cout << endl;
-		}
-		MPI_Allreduce( MPI_IN_PLACE, Y.data(), (int)Y.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-		// UpdateHalo(Y);
-		// printVector(X, "X");
-		// printVector(_val, "val");
-		// printVector(Y, "Y");
-		// // printVector( Y, "Y");
-		// MPI_Finalize();
-		// exit(0);
-		// cout << "_rowLocal ";
-		// for(int rowLocal =0; rowLocal < _rowLocal.size() - 1; rowLocal++){
-		// 	cout << _rowLocal[ rowLocal ] << " ";
-		// }
-		// cout << " _col ";
-		// for(int j = 0; j < _col.size(); j++){
-		// 		cout << _col[j] << " ";
-		// }
-
-		// cout << " Y: ";
-		// for( int i =0 ; i < Y.size(); i++ ){
-		// 	cout << Y[i] << " ";
-		// }
-		// cout << " _G2L ";
-		// for(int j = 0; j < _G2L.size(); j++){
-		// 		cout << _G2L[j] << " ";
-		// }
-		// cout << " _val ";
-		// for(int j = 0; j < _val.size(); j++){
-		// 		cout << _val[j] << " ";
-		// }
-		// cout << endl;
-		// MPI_Finalize();
-		// exit(0);
+		UpdateHalo( X );
 		
+		for(int rowLocal = 0; rowLocal < _rowLocal.size() - 1; rowLocal++){
+			for(int j = _rowLocal[rowLocal]; j < _rowLocal[rowLocal + 1]; j++){
+				Y[ rowLocal ] += X[ _G2L[ _col[j] ] ] * _val[ j ];
+			}
+		}
+
+		UpdateHalo( Y );
+		
+	}
+
+
+	double dot(const std::vector<double>& X, const std::vector<double>& Y ){
+
+		double ans = 0;
+		// double sum = 0;
+		// cout << "ans = ";
+		for( int j = 0; j < GlobalRows.size(); j++){
+			ans += X[j] * Y[j];	
+		}
+		// cout << endl;
+
+		MPI_Allreduce(MPI_IN_PLACE, &ans, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+		// printVector(X, "X");
+		// printVector(Y, "Y");
+		// MPI_Finalize();
+		// exit(0);
+
+		// cout << "fuck" << endl;
+		// MPI_Finalize();
+		// exit(0);
+		return ans;
+	}
+
+	void axpby(std::vector<double>& X, std::vector<double>& Y, double a, double b){
+		UpdateHalo(X);
+		UpdateHalo(Y);
+		for(int i=0 ; i < X.size(); i++){
+			X[i] = a * X[i] + b * Y[i];
+		}
+		UpdateHalo(X);
+		// UpdateHalo(Y);
+	}
+
+
+
+	void CopyVector(std::vector<double>& X, std::vector<double>& Y){
+		UpdateHalo(X);
+		for(int i=0 ; i < X.size(); i++){
+			Y[i] = X[i];
+		}
 	}
 
 	void UpdateHalo(vector<double>& val){
+
 		vector< MPI_Request > req( sendTo.size() + recvFrom.size() );
 		int lastREQ = 0;
 
-		vector< double * > sendBuf( sendTo.size(), 0 );
+		vector< double*  > sendBuf( sendTo.size(), 0 );
 		for( int owner = 0; owner < sendTo.size(); owner++){
+
 			if( sendTo[owner].size() == 0)
 			{
 				continue;
 			}
-
 			int cnt = sendTo[owner].size();
 			sendBuf[owner] = new double[cnt];
-			for(int i =0 ; i < sendTo[owner].size(); i++){
+			for(int i =0 ; i < cnt; i++){
 				int cellGlobal = sendTo[owner][i];
 				int cellLocal = _G2L[cellGlobal];
 				sendBuf[owner][i] = val[cellLocal];
-				// for( int j = _rowLocal[cellLocal]; j < _rowLocal[cellLocal + 1]; j++){
-				// 	if( _col[j] == cellGlobal ){
-				// 		sendBuf[owner][i] = _val[j];
-				// 	}
-				// }
 			}
 			MPI_Isend(sendBuf[owner], cnt, MPI_DOUBLE, owner, 0, MPI_COMM_WORLD, &req[lastREQ]);
 			lastREQ++;
@@ -581,10 +396,12 @@ public:
 		vector< double * > recvBuf(recvFrom.size(), 0 );
 		// cout << ": ";
 		for( int owner = 0; owner < recvFrom.size(); owner++){
+
 			if( recvFrom[owner].size() == 0)
 			{
 				continue;
 			}
+
 			int cnt = recvFrom[owner].size();
 			recvBuf[owner] = new double[cnt];
 			MPI_Irecv( recvBuf[owner], cnt, MPI_DOUBLE, owner, 0, MPI_COMM_WORLD, &req[lastREQ]);
@@ -593,6 +410,9 @@ public:
 
 		MPI_Waitall( lastREQ, req.data(), MPI_STATUSES_IGNORE );
 		// cout << ": ";
+		// 		cout << "fuck" << endl;
+		// MPI_Finalize();
+		// exit(0);
 		for( int owner = 0; owner < recvFrom.size(); owner++){
 			if( recvFrom[owner].size() == 0)
 			{
@@ -603,30 +423,8 @@ public:
 				int cellGlobal = recvFrom[owner][i];
 				int cellLocal = _G2L[ cellGlobal ];
 				val[cellLocal] = recvBuf[owner][i];
-				// cout << recvBuf[owner][i] << " ";
-				// // int r = sid / N;
-				// // if( rowLocal >= _rowLocal.size()){
-				// // 	cout << "FUCK" << endl;
-				// // 		MPI_Finalize();
-				// // 		exit(0);
-				// // }
-				// // r = _G2L[r];
-				// // int c = sid % N;
-				// // cout << rowLocal << " ";
-				// for( int j = _rowLocal[rowLocal]; j < _rowLocal[rowLocal + 1]; j++){
-				// 	if( _col[j] == sid ){
-						
-				// 		// cout << recvBuf[owner][i] << endl;
-				// 	}
-				// }
 			}
-
 		}
-
-		// cout << endl;
-		// printVector( val, "VAL");
-		// MPI_Finalize();
-		// exit(0);	// cout << endl;
 		for( int i =0; i < sendBuf.size(); i++ ){
 			if( sendBuf[i] != 0 )
 				delete[] sendBuf[i];
@@ -636,21 +434,18 @@ public:
 				delete[] recvBuf[i];
 		}	
 	}
-	void Clean();
+	// void Clean();
 
-	int GetNonZeroCnt(){
-		return _nonZerocnt;
-	}
+	// int GetNonZeroCnt(){
+	// 	return _nonZerocnt;
+	// }
 
 	int NxLocal, NyLocal, NzLocal;
-	int N, P, NLocal, Halo;
-	size_t _nRows, _nCols, _nRowsLocal;
-	int _nonZerocnt;
+	int N, P, NLocal;
 	std::vector<double> _val;
-	std::vector<int> _rowLocal, _haloStart;
-	std::vector<int> _col;
-	std::vector<int> _owners;
-	std::vector<int> _L2G, _G2L;
+	std::vector<int> _rowLocal;
+	std::vector<int> _col, _halo, _sendHalo;
+	std::vector<int> _owners, GlobalRows, _G2L;
 	std::vector< std::vector<int> > sendTo, recvFrom;
 };
 
@@ -678,13 +473,17 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int Ny,const int Nz,
 	// cout << " row local size " <<  A._rowLocal.size() << endl;
 	// int NHalo = 
 	// int NLocal = A._rowLocal.size() - 1;
-	int NLocal = N;
+	int ni = A.GlobalRows.size();
+	int nh = A._halo.size();
+	int NLocal =  ni + nh;
 	double mineps = 1e-15;
 	double RhoMin = 1e-60;
 	double Rhoi_1=1.0, alphai = 1.0, wi = 1.0, betai_1 = 1.0, 
 	Rhoi_2=1.0, alphai_1 = 1.0, wi_1 = 1.0;
 	Matrix DD(A);
-	// DD.PrintBuffers();
+	// printVector(A._val, "A");
+	// // printVector(DD._val, "DD");
+	// // DD.PrintBuffers(,);
 	// MPI_Finalize();
 	// exit(0);
 
@@ -692,28 +491,47 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int Ny,const int Nz,
 		PP2(NLocal), RR(NLocal), RR2(NLocal), TT(NLocal), VV(NLocal), SS(NLocal), SS2(NLocal);
 
 
-	// printVector( A._L2G, "L2G");
-	// MPI_Finalize();
-	// exit(0);
-	for(int i=0 ;i < BB.size(); i++){
-		BB[ i ] = sin( static_cast<double>(i + 1));// sin(static_cast<double>(A._L2G[i]));
+
+	for(int i=0 ;i < ni; i++){
+		BB[ i ] = sin(static_cast<double>(A.GlobalRows[i]));
 		// BB[ i ] = A._L2G[i];
 	}
-	// printVector(BB, "BB");
-	// printVector(A._L2G, "L2G");
+
+	for(int i= 0; i < nh; i++){
+		BB[ ni + i ] = sin(static_cast<double>(A._halo[i]));
+		// BB[ i ] = A._L2G[i];
+	}
+	// printVector( BB, "BB");
 	// MPI_Finalize();
 	// exit(0);
+	// printVector(BB, "BB");
+	// printVector(A._haloStart, "haloStart");
+	// printVector(A.sendTo[0], "sednTo");
+	// MPI_Finalize();
+	// exit(0);
+	// printVector(A._L2G, "L2G");
 	int nit;
 
-	CopyVector(BB, RR);
-	CopyVector(BB, RR2);
+	A.CopyVector(BB, RR);
+	// cout << "Fuck" << endl;
+	// MPI_Finalize();
+	// exit(0);
+	A.CopyVector(BB, RR2);
 	// printVector(RR, "RR");
+
+	
 	// printVector(RR2, "RR2");
 
-	double initres = sqrt(dot(RR,RR));
+	double initres = sqrt(A.dot(RR,RR));
+	// cout << initres << endl;
+	// MPI_Finalize();
+	// exit(0);
 	double eps = max(mineps, tol*initres);
-	//cout << "eps " << eps << endl; 
+	// cout << "eps " << eps << endl; 
 	double res = initres;
+	// 	cout << "Init done " << endl;
+	// MPI_Finalize();
+	// exit(0);
 
 	int I;
 	for(I=0; I<maxit; I++){
@@ -721,6 +539,7 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int Ny,const int Nz,
 			printf("It %d: res = %e tol=%e\n", I,res, res/initres);
 		
 		if(res<eps){
+			cout << "Fuck" << endl;
 			// cout << "71" << endl;
 			break;
 		}
@@ -731,44 +550,47 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int Ny,const int Nz,
 		if(I==0) 
 			Rhoi_1 = initres*initres;
 		else 
-			Rhoi_1 = dot(RR2,RR);
+			Rhoi_1 = A.dot(RR2,RR);
 		if(fabs(Rhoi_1)<RhoMin){
-			// cout << "83" << endl;
+			cout << "83" << endl;
 			return -1;
 		}
 		if(I==0){
-			CopyVector(RR, PP);
+			A.CopyVector(RR, PP);
 		}
 		else{
 			betai_1=(Rhoi_1*alphai_1)/(Rhoi_2*wi_1);
-			axpby(PP, RR, betai_1, 1.0); // p=r+betai_1*(p-w1*v)
-			axpby(PP, VV, 1.0, -wi_1*betai_1);
+			A.axpby(PP, RR, betai_1, 1.0); // p=r+betai_1*(p-w1*v)
+			A.axpby(PP, VV, 1.0, -wi_1*betai_1);
 		}
-
-
 				
-		
+		// printVector(PP, "PP");
 		DD.SpMV(PP,PP2);
 		A.SpMV(PP2,VV);
 
-		alphai = dot(RR2,VV);
+		// printVector( PP2, "PP2");
+		// printVector( RR2, "RR2");
+		// printVector( VV, "VV");
+		alphai = A.dot(RR2,VV);
 
+
+		// cout << alphai << endl;
+		// MPI_Finalize();
+		// exit(0);
 		if(fabs(alphai)<RhoMin){
-			// cout << "-3" << endl;
+			cout << "-3" << endl;
 			return -3;
 		}
 
-		// MPI_Finalize();
-		// exit(0);
 
 		alphai = Rhoi_1/alphai;
 
 		// printVector(RR, "RR");
 		// SS=RR; // s=r-alphai*v
-		CopyVector(RR, SS);
+		A.CopyVector(RR, SS);
 		// printVector(SS, "SS");
 		// cout << alphai << endl;
-		axpby(SS, VV, 1.0, -alphai);
+		A.axpby(SS, VV, 1.0, -alphai);
 
 		// printVector(SS, "SS");
 
@@ -784,31 +606,31 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int Ny,const int Nz,
 		// }
 		// cout << endl;
 
-		wi = dot(TT, TT);
+		wi = A.dot(TT, TT);
 
 
 		if(fabs(wi)<RhoMin){
-			// cout << "112" << endl;
+			cout << "112" << endl;
 			return -4;
 		}
 		
-		wi = dot(TT, SS) / wi;
+		wi = A.dot(TT, SS) / wi;
 		if(fabs(wi)<RhoMin) {
-			// cout << "117" << endl;
+			cout << "117" << endl;
 			return -5;
 		}
 		// x=x+alphai*p2+wi*s2
-		axpby(XX, PP2,1.0,alphai);
-		axpby(XX, SS2,1.0,wi);
+		A.axpby(XX, PP2,1.0,alphai);
+		A.axpby(XX, SS2,1.0,wi);
 		
 		//RR=SS; // r=s-wi*t
-		CopyVector(SS, RR);
+		A.CopyVector(SS, RR);
 		
-		axpby(RR, TT, 1.0, -wi);
+		A.axpby(RR, TT, 1.0, -wi);
 		alphai_1=alphai;
 		Rhoi_2=Rhoi_1;
 		wi_1=wi;
-		res = sqrt(dot(RR,RR));
+		res = sqrt(A.dot(RR,RR));
 
 
 	}
@@ -926,11 +748,11 @@ void test_solver( const int Nx, const int Ny,const int Nz,
 
 	double time = MPI_Wtime();
 	double last_iter = Solver_BiCGSTAB(A, Nx, Ny, Nz, Px, Py, Pz, tol, maxit, info);
-	double FLOP = 1e-9 * ( last_iter * ( 34.0 * N + 8.0 * A.GetNonZeroCnt()) + 9.0 * A.GetNonZeroCnt());
+	// double FLOP = 1e-9 * ( last_iter * ( 34.0 * N + 8.0 * A.GetNonZeroCnt()) + 9.0 * A.GetNonZeroCnt());
 
 	time = MPI_Wtime() - time;
 	if( rank == 0 )
-		printf("SOLVER nodes %d time %6.3fs GFLOPS %6.3f \n", Px * Py * Pz, time, FLOP/time);
+		printf("SOLVER nodes %d time %6.3fs GFLOPS %6.3f \n", Px * Py * Pz, time, 0.0);
 
 }
 
