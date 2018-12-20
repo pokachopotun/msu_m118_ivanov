@@ -507,7 +507,7 @@ void test_SpMV( const int Nx, const int Ny,const int Nz,
 	time = MPI_Wtime() - time;
 
 	if( commRank == 0 )
-		printf("SpMV N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
+		printf("System MPI Operation SpM N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
 }
 
 void test_axpby( const int Nx, const int Ny,const int Nz,
@@ -550,7 +550,7 @@ void test_axpby( const int Nx, const int Ny,const int Nz,
 	time = MPI_Wtime() - time;
 
 	if( commRank == 0 )
-		printf("axpby N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
+		printf("System MPI Operation xpy N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
 }
 
 void test_dot( const int Nx, const int Ny,const int Nz,
@@ -594,7 +594,7 @@ void test_dot( const int Nx, const int Ny,const int Nz,
 	time = MPI_Wtime() - time;
 
 	if( commRank == 0 )
-		printf("dot N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
+		printf("System MPI Operation dot N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, niter);
 }
 
 void test_solver( const int Nx, const int Ny,const int Nz,
@@ -621,15 +621,15 @@ void test_solver( const int Nx, const int Ny,const int Nz,
 	time = MPI_Wtime() - time;
 
 	if( commRank == 0 )
-		printf("SOLVER N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f\n", N, Nx, Ny, Nz, P, Px, Py, Pz, time );
+		printf("System MPI Operation sol N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d \n", N, Nx, Ny, Nz, P, Px, Py, Pz, time, 1);
 
 }
 
 
 int main(int argc, char * argv[]) {
 	
-	if(argc < 10){
-		cout << "use ./main Nx Ny Nz Px Py Pz tol maxit info" << endl;
+	if(argc < 11){
+		cout << "use ./main Nx Ny Nz Px Py Pz tol maxit info niter" << endl;
 		return 0;
 	}
 
@@ -647,10 +647,11 @@ int main(int argc, char * argv[]) {
 	const double tol = atof(argv[7]);
 	const int maxit = atoi(argv[8]);
 	const bool info = (bool)atoi(argv[9]);
+	const int niter = atoi(argv[10]);
 
-	test_SpMV(Nx, Ny, Nz, Px, Py, Pz, 100);
-	test_axpby(Nx, Ny, Nz, Px, Py, Pz, 100);
-	test_dot(Nx, Ny, Nz, Px, Py, Pz, 100);
+	test_SpMV(Nx, Ny, Nz, Px, Py, Pz, niter);
+	test_axpby(Nx, Ny, Nz, Px, Py, Pz, niter);
+	test_dot(Nx, Ny, Nz, Px, Py, Pz, niter);
 	test_solver(Nx, Ny, Nz, Px, Py, Pz, tol, maxit, info);
 
 	MPI_Finalize();

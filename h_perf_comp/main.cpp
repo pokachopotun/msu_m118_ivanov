@@ -256,6 +256,7 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int My,const int Kz, int nt
 	double Rhoi_1=1.0, alphai = 1.0, wi = 1.0, betai_1 = 1.0, 
 	Rhoi_2=1.0, alphai_1 = 1.0, wi_1 = 1.0;
 	Matrix DD(A);
+	// DD.PrintToTxt();
 	std::vector<double> BB(N), XX(N), PP(N), 
 		PP2(N), RR(N), RR2(N), TT(N), VV(N), SS(N), SS2(N);
 
@@ -353,39 +354,32 @@ int Solver_BiCGSTAB( Matrix& A,  const int Nx, const int My,const int Kz, int nt
 	return I;
 }
 
-void test_SpMV( const int Nx,const int My,const int Kz, const int niter ){
+void test_SpMV( const int Nx,const int My,const int Kz, const int nt, const int niter ){
 
 	using namespace std;
 	int N = Nx * My * Kz;
 	Matrix A(Nx, My, Kz);
 	vector<double> X(N), Y(N);
+	omp_set_num_threads( nt );
 	for(int i =0 ;i < X.size(); i++){
 		Y[i] = X[i] = sin(static_cast<double>(i));
 	}
-	double totalFLOP = niter * ( N + A.GetNonZeroCnt() * 2 ) * 1e-9;
-	printf("test SpMV N = %d Nx=%d My=%d Kz = %d niter = %d \n", N, Nx, My, Kz, niter);
-	vector<double> time(4, 0);
-	for(int t= 0; t < 4; t++){
-		omp_set_num_threads(t + 1);
-		time[t] = omp_get_wtime();
+	
+	double time = omp_get_wtime();
 
-		for(int i =0 ; i < niter; i++){
-			A.SpMV(X, Y);
-		}
-
-		time[t] = omp_get_wtime() - time[t];
-
-		printf("SpMV threads = %d time = %6.3fs GFLOPS = %6.3f  speedup = %fX\n", t + 1, time[t], totalFLOP / time[t], time[0]/time[t]);
+	for(int i =0 ; i < niter; i++){
+		A.SpMV(X, Y);
 	}
+
+	time = omp_get_wtime() - time;
+
+	printf("System OpenMP Operation SpM N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d \n", N, Nx, My, Kz, nt, 1, 1, 1, time, niter);
 
 }
 
-void test_axpby( const int Nx,const int My,const int Kz, const int niter ){
-	
-	
+void test_axpby( const int Nx,const int My,const int Kz, int nt, const int niter ){
 
 	using namespace std;
-	
 	int N = Nx * My * Kz;
 
 	vector<double> X(N), Y(N);
@@ -393,54 +387,42 @@ void test_axpby( const int Nx,const int My,const int Kz, const int niter ){
 		Y[i] = X[i] = sin(static_cast<double>(i));
 	}
 
-	double totalFLOP = static_cast<double>( niter ) * static_cast<double>( N * 3 ) * 1e-9;
-	
-	printf("test axpby N = %d Nx=%d My=%d Kz = %d niter = %d \n", N, Nx, My, Kz, niter);
-	vector<double> time(4, 0);
-	for(int t= 0; t < 4; t++){
-		omp_set_num_threads(t + 1);
-		time[t] = omp_get_wtime();
+	omp_set_num_threads(nt);
 
-		for(int i =0 ; i < niter; i++){
-			axpby(X, Y, 1.2, 0.5);
-		}
+	double time = omp_get_wtime();
 
-		time[t] = omp_get_wtime() - time[t];
-
-		printf("axpby threads = %d time = %6.3fs GFLOPS = %6.3f  speedup = %fX\n", t + 1, time[t],  totalFLOP / time[t], time[0]/time[t]);
+	for(int i =0 ; i < niter; i++){
+		axpby(X, Y, 1.2, 0.5);
 	}
+
+	time = omp_get_wtime() - time;
+
+	printf("System OpenMP Operation xpy N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d \n", N, Nx, My, Kz, nt, 1, 1, 1, time, niter);
 
 }
 
-void test_dot( const int Nx,const int My,const int Kz, const int niter ){
-	
-	
+void test_dot( const int Nx,const int My,const int Kz, int nt, const int niter ){
 
 	using namespace std;
 	
 	int N = Nx * My * Kz;
 
+	omp_set_num_threads(nt);
+
 	vector<double> X(N), Y(N);
 	for(int i =0 ;i < X.size(); i++){
 		Y[i] = X[i] = sin(static_cast<double>(i));
 	}
+		
+	double time = omp_get_wtime();
 
-	double totalFLOP = static_cast<double>( niter ) * static_cast<double>( N * 2 ) * 1e-9;
-	
-	printf("test dot N = %d Nx=%d My=%d Kz = %d niter = %d \n", N, Nx, My, Kz, niter);
-	vector<double> time(4, 0);
-	for(int t= 0; t < 4; t++){
-		omp_set_num_threads(t + 1);
-		time[t] = omp_get_wtime();
-
-		for(int i =0 ; i < niter; i++){
-			dot(X, Y);
-		}
-
-		time[t] = omp_get_wtime() - time[t];
-
-		printf("dot threads = %d time = %6.3fs GFLOPS = %6.3f  speedup = %fX\n", t + 1, time[t],  totalFLOP / time[t], time[0]/time[t]);
+	for(int i =0 ; i < niter; i++){
+		dot(X, Y);
 	}
+
+	time = omp_get_wtime() - time;
+
+	printf("System OpenMP Operation dot N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d \n", N, Nx, My, Kz, nt, 1, 1, 1, time, niter);
 
 }
 
@@ -451,25 +433,26 @@ void test_solver( const int Nx, const int My,const int Kz, int nt,
 	
 	int N = Nx * My * Kz;
 	
-	printf("test SOLVER N = %d Nx=%d My=%d Kz = %d niter = %d \n", N, Nx, My, Kz, 1);
+	// printf("test SOLVER N = %d Nx=%d My=%d Kz = %d niter = %d \n", N, Nx, My, Kz, 1);
 	omp_set_num_threads(nt);
 
 	Matrix A(Nx, My, Kz);
+	
 	double time = omp_get_wtime();
-	double last_iter = Solver_BiCGSTAB(A, Nx, My, Kz, nt, tol, maxit, info);
-	double FLOP = 1e-9 * ( last_iter * ( 34.0 * N + 8.0 * A.GetNonZeroCnt()) + 9.0 * A.GetNonZeroCnt());
+
+	double last_iter = Solver_BiCGSTAB(A, Nx, My, Kz, nt, tol, maxit, 0);
 
 	time = omp_get_wtime() - time;
 
-	printf("SOLVER threads = %d time = %6.3fs GFLOPS = %6.3f \n", nt, time, FLOP/time);
+	printf("System OpenMP Operation sol N %d Nx %d Ny %d Nz %d P %d Px %d Py %d Pz %d Time %6.3f niter %d \n", N, Nx, My, Kz, nt, 1, 1, 1, time, 1);
 
 }
 
 
 int main(int argc, char * argv[]) {
 	
-	if(argc < 8){
-		cout << "use ./main N M K num_threads tol maxit info" << endl;
+	if(argc < 9){
+		cout << "use ./main N M K num_threads tol maxit info niter" << endl;
 		return 0;
 	}
 	const int Nx = atoi(argv[1]);
@@ -479,10 +462,11 @@ int main(int argc, char * argv[]) {
 	const double tol = atof(argv[5]);
 	const int maxit = atoi(argv[6]);
 	const bool info = (bool)atoi(argv[7]);
+	const int niter = atoi(argv[8]);
 
-	test_SpMV(Nx, My, Kz, 100);
-	test_axpby(Nx, My, Kz, 1000);
-	test_dot(Nx, My, Kz, 1000);
+	test_SpMV(Nx, My, Kz, nt, niter);
+	test_axpby(Nx, My, Kz, nt, niter);
+	test_dot(Nx, My, Kz, nt, niter);
 
 	test_solver(Nx, My, Kz, nt, tol, maxit, info);
 
