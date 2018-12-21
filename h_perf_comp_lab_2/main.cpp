@@ -239,22 +239,11 @@ public:
 	double dot(const std::vector<double>& X, const std::vector<double>& Y ){
 
 		double ans = 0;
-		// double sum = 0;
-		// cout << "ans = ";
 		for( int j = 0; j < GlobalRows.size(); j++){
 			ans += X[j] * Y[j];	
 		}
-		// cout << endl;
 
 		MPI_Allreduce(MPI_IN_PLACE, &ans, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		// printVector(X, "X");
-		// printVector(Y, "Y");
-		// MPI_Finalize();
-		// exit(0);
-
-		// cout << "fuck" << endl;
-		// MPI_Finalize();
-		// exit(0);
 		return ans;
 	}
 
@@ -265,7 +254,6 @@ public:
 			X[i] = a * X[i] + b * Y[i];
 		}
 		UpdateHalo(X);
-		// UpdateHalo(Y);
 	}
 
 
