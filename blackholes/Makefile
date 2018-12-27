@@ -1,4 +1,4 @@
-all: blackholes
+all: main
 
-blackholes: main.cpp
-	g++ -std=c++11 main.cpp -o blackholes
+main: Source.cpp
+	g++ -O3 -std=c++11 Source.cpp -o main
