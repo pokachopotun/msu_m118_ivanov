@@ -83,8 +83,8 @@ std::function< double(const vector<double>&)> getTargetFunc( TTargetFunctionType
 			return []( const vector<double>& a ){ 
 				double sum = 0;
 				for( int i = 0; i < int( a.size() ) - 1; i++ ){
-					int val  = ( a[i] * a[i] - a[i + 1]);
-					sum += 100 * val * val + ( a[i] - 1 ) * ( a[i] - 1 );
+					double val  = ( a[i] * a[i] - a[i + 1]);
+					sum += 100.0 * val * val + ( a[i] - 1.0 ) * ( a[i] - 1.0 );
 				}
 				return sum;
 			};
@@ -228,10 +228,12 @@ public:
 	void mutate( vector< vector< double > >& P )
 	{
 		double pmut = 0.1;
+		static double mult = 0.1;
+		mult = mult * 0.9999;
 		for( int k = 0; k < P.size(); k++ )
-			for( int i = 0; i < P[k].size(); i++ )
-				if( ( frand() + 100 ) / 200 < pmut )
-					P[k][i] += frand() / 100.0;
+			if( ( frand() + 100 ) / 200 < pmut )
+				for( int i = 0; i < P[k].size(); i++ )
+					P[k][i] += frand() * mult;
 	}
 
 	void printthebest( vector< vector< double > >& P )
