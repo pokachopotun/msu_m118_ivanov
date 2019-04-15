@@ -142,8 +142,8 @@ int main( int argc, char* argv[] ) {
 
 		for ( int i = 0; i < size; i++ ){
 			if ( i == rank ) {
-			//	printf("data: iter %d rank %d load %d\n", iter, rank, int(data.size()) );
-				cout << "debug: rank " << rank << " iter " << iter << " " << data << endl;
+				printf("data: iter %d rank %d load %d\n", iter, rank, int(data.size()) );
+//				cout << "debug: rank " << rank << " iter " << iter << " " << data << endl;
 			}
 			MPI_Barrier(MPI_COMM_WORLD);
 		}

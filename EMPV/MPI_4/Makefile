@@ -1,17 +1,20 @@
 all: main
 
-define submit
-	mpisubmit.bg -n ${1} --stdout=${1}.1e1.out ./main -- 10 40 null glyder
-	mpisubmit.bg -n ${1} --stdout=${1}.1e2.out ./main -- 100 400 null glyder
-	mpisubmit.bg -n ${1} --stdout=${1}.1e3.out ./main -- 1000 4000 null glyder
-	mpisubmit.bg -n ${1} --stdout=${1}.0.5e3.out ./main -- 500 2000 null glyder
+define submit_one
+	mpisubmit.bg -n ${1} --stdout=${1}.${2}.out ./main 20000 20 ${2}
+endef
+
+define submit_size
+	$(call submit_one,{1},1)
+	$(call submit_one,{1},2)
+	$(call submit_one,{1},3)
 endef
 
 submit: main
-	$(call submit,16)
-	$(call submit,64)
-	$(call submit,256)
-	$(call submit,1024)
+	$(call submit_size,2)
+	$(call submit_size,4)
+	$(call submit_size,8)
+	$(call submit_size,16)
 
 define one_glyder
 	mpirun -n 4 ./local 5 ${1} ${1}.out glyder
@@ -39,7 +42,7 @@ glyder: local
 	
 
 main: main.cpp
-	mpixlC -O3 main.cpp -o main
+	mpixlcxx_r -O2 main.cpp -o main
 
 local: main.cpp
 	mpic++ -O3 main.cpp -o local -lmpi
