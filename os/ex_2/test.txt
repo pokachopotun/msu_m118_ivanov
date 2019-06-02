@@ -1,0 +1,5 @@
+file;user;group;access
+file1;user1;group1;access1
+file2;user2;group2;access2
+testfile;teacher;labs;777
+testfile2;denis;;777
