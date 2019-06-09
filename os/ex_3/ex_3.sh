@@ -6,7 +6,6 @@ filetype=$1;
 email=$2;
 
 files=$(find . -name "*${filetype}" -type f)
-echo ${filetype}
 
 function change {
 	
@@ -60,7 +59,7 @@ function close {
 	done
 }
 
-
+function run {
 
 echo "<ul>"
 curPath="."
@@ -76,3 +75,11 @@ close curPath
 
 echo "</ul>"
 
+}
+
+
+stamp=$( date | tr " " "_" )
+outfile="foldersearchtree_$( echo $stamp | tr ":" "_" ).html"
+
+run > $outfile 
+mail -s "Sent from terminal Ivanov DE M118 MSU" -A $outfile $email <<< "How do you like it, boss?"
