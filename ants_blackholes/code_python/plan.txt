@@ -1,0 +1,24 @@
+0. Инициализация
+initNodes()
+spawnAnts()
+1. CalcNewsHeat(); 
+2. MoveAnts();
+3. UpdateHeat();
+4. UpdateColors();
+5. Draw();
+
+
+Классы:
+
+
+Node:
+	id
+	heat, newHeat
+	antsCnt	
+	GetLabel()
+	CalcNewHeat() Neighbours...
+	UpdateHeat()
+	Spawn()
+	
+Ant:
+	static heatIntensity;
