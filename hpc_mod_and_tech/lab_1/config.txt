@@ -1,0 +1,5 @@
+1 5 21 3
+RMAT rmat 
+SCSA2 matrix
+UR rgg
+
