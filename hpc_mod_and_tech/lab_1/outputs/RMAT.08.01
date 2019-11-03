@@ -1,0 +1,86 @@
+Sender: LSF System <lsfadmin@polus-c4-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450619: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.08.01;#BSUB -e errors/RMAT.08.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=8 --graph-type=rmat --validation=none> in cluster <MSUCluster> Done
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.08.01;#BSUB -e errors/RMAT.08.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=8 --graph-type=rmat --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:12:43 2019
+Job was executed on host(s) <polus-c4-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:32:59 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 02:32:59 2019
+Terminated at Sun Nov  3 02:41:55 2019
+Results reported at Sun Nov  3 02:41:55 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/RMAT.08.01
+#BSUB -e errors/RMAT.08.01
+OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=8 --graph-type=rmat --validation=none
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   3.42 sec.
+    Max Memory :                                 9 MB
+    Average Memory :                             2.91 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                5
+    Run time :                                   413 sec.
+    Turnaround time :                            1752 sec.
+
+The output (if any) follows:
+
+Generating RMAT graph, seed = 1572737741, (a, b, c, d) = (0.570000, 0.190000, 0.190000, 0.050000)
+RMAT generated in 1730.895996 ms.
+  Removed 3920 duplicate edges and self circles.
+Converting 256 vertices, 4272 directed edges ( ordered tuples) to CSR format...Done (0s).
+Degree Histogram (256 vertices, 4272 edges):
+    Degree 0: 26 (10.156250 %)
+    Degree 2^0: 20 (7.812500 %)
+    Degree 2^1: 32 (12.500000 %)
+    Degree 2^2: 51 (19.921875 %)
+    Degree 2^3: 37 (14.453125 %)
+    Degree 2^4: 53 (20.703125 %)
+    Degree 2^5: 28 (10.937500 %)
+    Degree 2^6: 8 (3.125000 %)
+    Degree 2^7: 1 (0.390625 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 172.085052
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=false advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+NOT COMPILED WITH COMPATIBLE PTX VERSION FOR DEVICE 0
+__________________________
+--------------------------
+Run 0 elapsed: 0.583887, #iterations = 3
+Number of colors needed: 0
+[color] finished.
+ avg. elapsed: 0.583887 ms
+ iterations: 3
+ min. elapsed: 0.583887 ms
+ max. elapsed: 0.583887 ms
+ load time: 0 ms
+ preprocess time: 98.473100 ms
+ postprocess time: 0.871181 ms
+ total time: 105.012178 ms
+
+
+PS:
+
+Read file <errors/RMAT.08.01> for stderr output of this job.
+

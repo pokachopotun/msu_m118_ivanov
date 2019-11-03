@@ -1,0 +1,55 @@
+Sender: LSF System <lsfadmin@polus-c2-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450729: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/SSCA2.24.00;#BSUB -e errors/SSCA2.24.00;OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --validation=none> in cluster <MSUCluster> Exited
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/SSCA2.24.00;#BSUB -e errors/SSCA2.24.00;OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:12:47 2019
+Job was executed on host(s) <polus-c2-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 07:01:29 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 07:01:29 2019
+Terminated at Sun Nov  3 07:18:11 2019
+Results reported at Sun Nov  3 07:18:11 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/SSCA2.24.00
+#BSUB -e errors/SSCA2.24.00
+OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --validation=none
+
+------------------------------------------------------------
+
+TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+Exited with exit code 140.
+
+Resource usage summary:
+
+    CPU time :                                   14.00 sec.
+    Max Memory :                                 202 MB
+    Average Memory :                             130.45 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                10
+    Run time :                                   944 sec.
+    Turnaround time :                            18324 sec.
+
+The output (if any) follows:
+
+Loading Matrix-market coordinate-formatted graph ...
+  Reading from inputs/SSCA2.24:
+--------------------------------------------------------------------------
+mpiexec noticed that process rank 0 with PID 0 on node polus-c2-ib exited on signal 12 (User defined signal 2).
+--------------------------------------------------------------------------
+
+
+PS:
+
+Read file <errors/SSCA2.24.00> for stderr output of this job.
+

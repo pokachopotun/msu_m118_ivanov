@@ -1,0 +1,84 @@
+Sender: LSF System <lsfadmin@polus-c3-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450613: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.06.01;#BSUB -e errors/RMAT.06.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=6 --graph-type=rmat --validation=none> in cluster <MSUCluster> Done
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.06.01;#BSUB -e errors/RMAT.06.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=6 --graph-type=rmat --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:12:42 2019
+Job was executed on host(s) <polus-c3-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:17:56 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 02:17:56 2019
+Terminated at Sun Nov  3 02:30:47 2019
+Results reported at Sun Nov  3 02:30:47 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/RMAT.06.01
+#BSUB -e errors/RMAT.06.01
+OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=6 --graph-type=rmat --validation=none
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   1.59 sec.
+    Max Memory :                                 19 MB
+    Average Memory :                             3.07 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                10
+    Run time :                                   772 sec.
+    Turnaround time :                            1085 sec.
+
+The output (if any) follows:
+
+Generating RMAT graph, seed = 1572737008, (a, b, c, d) = (0.570000, 0.190000, 0.190000, 0.050000)
+RMAT generated in 265.182007 ms.
+  Removed 1279 duplicate edges and self circles.
+Converting 64 vertices, 769 directed edges ( ordered tuples) to CSR format...Done (0s).
+Degree Histogram (64 vertices, 769 edges):
+    Degree 0: 3 (4.687500 %)
+    Degree 2^0: 2 (3.125000 %)
+    Degree 2^1: 10 (15.625000 %)
+    Degree 2^2: 13 (20.312500 %)
+    Degree 2^3: 15 (23.437500 %)
+    Degree 2^4: 16 (25.000000 %)
+    Degree 2^5: 5 (7.812500 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 163.666962
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=false advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+NOT COMPILED WITH COMPATIBLE PTX VERSION FOR DEVICE 0
+__________________________
+--------------------------
+Run 0 elapsed: 0.499964, #iterations = 3
+Number of colors needed: 0
+[color] finished.
+ avg. elapsed: 0.499964 ms
+ iterations: 3
+ min. elapsed: 0.499964 ms
+ max. elapsed: 0.499964 ms
+ load time: 0 ms
+ preprocess time: 59.319000 ms
+ postprocess time: 0.624895 ms
+ total time: 64.138889 ms
+
+
+PS:
+
+Read file <errors/RMAT.06.01> for stderr output of this job.
+

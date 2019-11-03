@@ -1,3 +1,6 @@
+import os
+import sys
+
 class Submission:
     def __init__(self, typeStr1, typeStr2):
         self.typeStr1 = typeStr1
@@ -7,6 +10,7 @@ class Submission:
 
 ## mpisubmit.pl -g --stdout=$(1).RMAT.out --stderr=$(1).RMAT.err ./color -- --graph-scale=$(1) --graph-edgefactor=32 --test-run=0 --graph-type=rmat
 if __name__ == "__main__":
+    submit = len(sys.argv) > 2 and "submit" == sys.argv[2]
     sub = list()
     with open("config.txt") as file:
         n, a, b, t = [int(x) for x in file.readline().strip().split()]
@@ -25,12 +29,13 @@ if __name__ == "__main__":
                 errfile = "errors/" + id_str
                 graphfile = "inputs/" + s.typeStr1 + "." + scale_str
 
-                cmd0 = "mpisubmmit.pl -g --stdout=" + outfile + " --stderr=" + errfile
-                if s.typeStr2 == "matrix":
-                    cmd1 = "./color -- --test-run=0 --graph-type=" + s.typeStr2 + " --graph-file=" + graphfile
+                cmd0 = "mpisubmit.pl -g --stdout=" + outfile + " --stderr=" + errfile
+                if s.typeStr2 == "market":
+                    cmd1 = "./color -- --test-run=0 --graph-type=" + s.typeStr2 + " --graph-file=" + graphfile + " --vertex-start-from-zero=0 --validation=none"
                 else:
-                    cmd1 = "./color -- --graph-edgefactor=32 --test-run=0" + " --graph-scale=" + scale_str + " --graph-type=" + s.typeStr2  
+                    cmd1 = "./color -- --graph-edgefactor=32 --test-run=0" + " --graph-scale=" + str(scale) + " --graph-type=" + s.typeStr2 + " --validation=none"
                 cmd = cmd0 + " " + cmd1
                 print(cmd)
-                os.system(cmd)
+                if submit:
+                    os.system(cmd)
          

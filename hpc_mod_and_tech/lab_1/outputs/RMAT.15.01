@@ -1,0 +1,91 @@
+Sender: LSF System <lsfadmin@polus-c4-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450640: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.15.01;#BSUB -e errors/RMAT.15.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=15 --graph-type=rmat --validation=none> in cluster <MSUCluster> Done
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/RMAT.15.01;#BSUB -e errors/RMAT.15.01;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=15 --graph-type=rmat --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:12:43 2019
+Job was executed on host(s) <polus-c4-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 03:25:31 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 03:25:31 2019
+Terminated at Sun Nov  3 03:34:52 2019
+Results reported at Sun Nov  3 03:34:52 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/RMAT.15.01
+#BSUB -e errors/RMAT.15.01
+OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=15 --graph-type=rmat --validation=none
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   236.72 sec.
+    Max Memory :                                 64 MB
+    Average Memory :                             17.61 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                12
+    Run time :                                   504 sec.
+    Turnaround time :                            4929 sec.
+
+The output (if any) follows:
+
+Generating RMAT graph, seed = 1572740922, (a, b, c, d) = (0.570000, 0.190000, 0.190000, 0.050000)
+RMAT generated in 233516.500000 ms.
+  Removed 166171 duplicate edges and self circles.
+Converting 32768 vertices, 882405 directed edges ( ordered tuples) to CSR format...Done (0s).
+Degree Histogram (32768 vertices, 882405 edges):
+    Degree 0: 8301 (25.332642 %)
+    Degree 2^0: 4202 (12.823486 %)
+    Degree 2^1: 4486 (13.690186 %)
+    Degree 2^2: 4635 (14.144897 %)
+    Degree 2^3: 3040 (9.277344 %)
+    Degree 2^4: 3165 (9.658813 %)
+    Degree 2^5: 2835 (8.651733 %)
+    Degree 2^6: 171 (0.521851 %)
+    Degree 2^7: 1357 (4.141235 %)
+    Degree 2^8: 454 (1.385498 %)
+    Degree 2^9: 1 (0.003052 %)
+    Degree 2^10: 105 (0.320435 %)
+    Degree 2^11: 15 (0.045776 %)
+    Degree 2^12: 1 (0.003052 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 134.059906
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=false advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+NOT COMPILED WITH COMPATIBLE PTX VERSION FOR DEVICE 0
+__________________________
+--------------------------
+Run 0 elapsed: 0.252008, #iterations = 3
+Number of colors needed: 0
+[color] finished.
+ avg. elapsed: 0.252008 ms
+ iterations: 3
+ min. elapsed: 0.252008 ms
+ max. elapsed: 0.252008 ms
+ load time: 0 ms
+ preprocess time: 25.374900 ms
+ postprocess time: 0.457048 ms
+ total time: 30.158043 ms
+
+
+PS:
+
+Read file <errors/RMAT.15.01> for stderr output of this job.
+

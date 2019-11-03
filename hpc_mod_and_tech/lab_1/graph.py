@@ -1,3 +1,5 @@
+import os
+
 class Submission:
     def __init__(self, typeStr1, typeStr2):
         self.typeStr1 = typeStr1
@@ -14,7 +16,7 @@ if __name__ == "__main__":
             sub.append(Submission(typeStr1, typeStr2))
     
     for s in sub:
-        if s.typeStr2 != "matrix":
+        if s.typeStr2 != "market":
             continue
 
         for scale in range(a, b + 1):
@@ -25,8 +27,8 @@ if __name__ == "__main__":
                 graphfile = "graphs/" + id_str + ".bin"
                 inputfile = "inputs/" + id_str
 
-                cmd1 = "./generator -s " + scale_str + "-directed -weighted -file " + graphfile + " -type " + s.typeStr1
-                cmd2 = "./graph_to_file " + graphfile + ".bin " + inputfile 
+                cmd1 = "./generator/generator -s " + scale_str + " -directed -weighted -file " + graphfile + " -type " + s.typeStr1
+                cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile 
                 print(cmd1)
                 print(cmd2)
 

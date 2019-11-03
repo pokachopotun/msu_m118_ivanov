@@ -1,0 +1,82 @@
+Sender: LSF System <lsfadmin@polus-c3-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450786: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/UR.21.00;#BSUB -e errors/UR.21.00;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=21 --graph-type=rgg --validation=none> in cluster <MSUCluster> Exited
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/UR.21.00;#BSUB -e errors/UR.21.00;OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=21 --graph-type=rgg --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:14:49 2019
+Job was executed on host(s) <polus-c3-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 08:35:32 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 08:35:32 2019
+Terminated at Sun Nov  3 08:54:27 2019
+Results reported at Sun Nov  3 08:54:27 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/UR.21.00
+#BSUB -e errors/UR.21.00
+OMP_NUM_THREADS=1 mpiexec ./color --graph-edgefactor=32 --test-run=0 --graph-scale=21 --graph-type=rgg --validation=none
+
+------------------------------------------------------------
+
+TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+Exited with signal termination: 19.
+
+Resource usage summary:
+
+    CPU time :                                   17.59 sec.
+    Max Memory :                                 293 MB
+    Average Memory :                             4.69 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                10
+    Run time :                                   1141 sec.
+    Turnaround time :                            23978 sec.
+
+The output (if any) follows:
+
+Generating RGG graph, threshold = 0.001449, seed = 0...
+RGG generated in 14520.438477 ms.
+Degree Histogram (2097152 vertices, 14481122 edges):
+    Degree 0: 2511 (0.119734 %)
+    Degree 2^0: 14767 (0.704145 %)
+    Degree 2^1: 165455 (7.889509 %)
+    Degree 2^2: 1102239 (52.558851 %)
+    Degree 2^3: 807784 (38.518143 %)
+    Degree 2^4: 4396 (0.209618 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 1711.455078
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=false advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+NOT COMPILED WITH COMPATIBLE PTX VERSION FOR DEVICE 0
+__________________________
+--------------------------
+Run 0 elapsed: 0.305891, #iterations = 3
+Number of colors needed: 0
+[color] finished.
+ avg. elapsed: 0.305891 ms
+ iterations: 3
+ min. elapsed: 0.305891 ms
+ max. elapsed: 0.305891 ms
+ load time: 0 ms
+ preprocess time: 115.390000 ms
+ postprocess time: 2.274990 ms
+ total time: 137.996912 ms
+
+
+PS:
+
+Read file <errors/UR.21.00> for stderr output of this job.
+

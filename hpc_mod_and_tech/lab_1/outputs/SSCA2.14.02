@@ -1,0 +1,87 @@
+Sender: LSF System <lsfadmin@polus-c1-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 450701: <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/SSCA2.14.02;#BSUB -e errors/SSCA2.14.02;OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.14 --vertex-start-from-zero=0 --validation=none> in cluster <MSUCluster> Done
+
+Job <# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #;source /polusfs/setenv/setup.SMPI;#BSUB -n 1;#BSUB -W 00:15;#BSUB -gpu "num=1:mode=exclusive_process";#BSUB -o outputs/SSCA2.14.02;#BSUB -e errors/SSCA2.14.02;OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.14 --vertex-start-from-zero=0 --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 02:12:46 2019
+Job was executed on host(s) <polus-c1-ib.bmc.hpc.cs.msu.ru>, in queue <short>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Sun Nov  3 05:44:40 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Sun Nov  3 05:44:40 2019
+Terminated at Sun Nov  3 05:44:43 2019
+Results reported at Sun Nov  3 05:44:43 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+# this file was automaticly created by mpisubmit.pl script for edu-cmc-skmodel19-m218-01 #
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1
+#BSUB -W 00:15
+#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -o outputs/SSCA2.14.02
+#BSUB -e errors/SSCA2.14.02
+OMP_NUM_THREADS=1 mpiexec ./color --test-run=0 --graph-type=market --graph-file=inputs/SSCA2.14 --vertex-start-from-zero=0 --validation=none
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   0.65 sec.
+    Max Memory :                                 25 MB
+    Average Memory :                             17.67 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                10
+    Run time :                                   3 sec.
+    Turnaround time :                            12717 sec.
+
+The output (if any) follows:
+
+Loading Matrix-market coordinate-formatted graph ...
+  Reading meta data from inputs/SSCA2.14.meta
+  Reading edge lists from inputs/SSCA2.14.coo_edge_pairs
+Reading from inputs/SSCA2.14.coo_edge_pairs, typeId = 262, targetId = 262, length = 173477
+  Reading edge values from inputs/SSCA2.14.coo_edge_values
+Reading from inputs/SSCA2.14.coo_edge_values, typeId = 18, targetId = 18, length = 173477
+  graph loaded as COO in 0.395834s.
+Converting 16384 vertices, 173477 directed edges ( ordered tuples) to CSR format...Done (0s).
+Degree Histogram (16384 vertices, 173477 edges):
+    Degree 0: 801 (4.888916 %)
+    Degree 2^0: 923 (5.633545 %)
+    Degree 2^1: 1872 (11.425781 %)
+    Degree 2^2: 3279 (20.013428 %)
+    Degree 2^3: 5109 (31.182861 %)
+    Degree 2^4: 4400 (26.855469 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 64.594032
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=false advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+NOT COMPILED WITH COMPATIBLE PTX VERSION FOR DEVICE 0
+__________________________
+--------------------------
+Run 0 elapsed: 0.253916, #iterations = 3
+Number of colors needed: 0
+[color] finished.
+ avg. elapsed: 0.253916 ms
+ iterations: 3
+ min. elapsed: 0.253916 ms
+ max. elapsed: 0.253916 ms
+ load time: 0 ms
+ preprocess time: 248.696000 ms
+ postprocess time: 0.286102 ms
+ total time: 252.499104 ms
+
+
+PS:
+
+Read file <errors/SSCA2.14.02> for stderr output of this job.
+
