@@ -29,11 +29,11 @@ if __name__ == "__main__":
                 errfile = "errors/" + id_str
                 graphfile = "inputs/" + s.typeStr1 + "." + scale_str
 
-                cmd0 = "mpisubmit.pl -g --stdout=" + outfile + " --stderr=" + errfile
+                cmd0 = "bsub -gpu \"num=1:mode=exclusive_process\" -o " + outfile + " -e " + errfile + " -q normal"
                 if s.typeStr2 == "market":
-                    cmd1 = "./color -- --test-run=0 --graph-type=" + s.typeStr2 + " --graph-file=" + graphfile + " --vertex-start-from-zero=0 --validation=none"
+                    cmd1 = "./color --graph-type=" + s.typeStr2 + " --graph-file=" + graphfile + " --vertex-start-from-zero=0 --validation=none"
                 else:
-                    cmd1 = "./color -- --graph-edgefactor=32 --test-run=0" + " --graph-scale=" + str(scale) + " --graph-type=" + s.typeStr2 + " --validation=none"
+                    cmd1 = "./color --graph-edgefactor=32 " + " --graph-scale=" + str(scale) + " --graph-type=" + s.typeStr2 + " --validation=none"
                 cmd = cmd0 + " " + cmd1
                 print(cmd)
                 if submit:
