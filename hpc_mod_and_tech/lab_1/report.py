@@ -26,14 +26,19 @@ if __name__ == "__main__":
         if len(line) == 3:
             _, vert, edges = line
             data[name].edges.append(int(line[2]))
+    arr = list()
     for name in data:
         teps_avg = 0
         for t, e in zip(data[name].time, data[name].edges):
-            teps = t / e * 1000
+            teps = e / t * 1000
             data[name].teps.append(teps)
             teps_avg += teps
-        teps_avg /= len(data[name].edges)
+        teps_avg /= len(data[name].time)
         name1, scale = name.split('.')
         scale = int(scale)
-        print(name1, scale, teps_avg)
-    print(lines)
+        #print(name1, scale, teps_avg)
+        arr.append((name, scale, teps_avg))
+    arr.sort()
+    for x in arr:
+        print(x)
+#   print(lines)

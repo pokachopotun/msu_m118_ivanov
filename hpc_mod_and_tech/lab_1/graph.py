@@ -27,7 +27,7 @@ if __name__ == "__main__":
                 graphfile = "graphs/" + id_str + ".bin"
                 inputfile = "inputs/" + id_str
 
-                cmd1 = "./generator/generator -s " + scale_str + " -directed -weighted -file " + graphfile + " -type " + s.typeStr1
+                cmd1 = "./generator/generator -s " + scale_str + " -weighted -file " + graphfile + " -type " + s.typeStr1
                 cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile 
                 print(cmd1)
                 print(cmd2)
