@@ -1,0 +1,5 @@
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/util/array_utils.cuh, 456 @ gpu 0] t_array cudaMalloc failed (CUDA error 2: out of memory)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/app/enactor_base.cuh, 519 @ gpu 0] error encountered (CUDA error 2: out of memory)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/app/color/color_enactor.cuh, 584 @ gpu 0] error encountered (CUDA error 2: out of memory)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/app/color/color_app.cu, 150 @ gpu 0] error encountered (CUDA error 2: out of memory)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/examples/color/test_color.cu, 86 @ gpu 0] error encountered (CUDA error 2: out of memory)

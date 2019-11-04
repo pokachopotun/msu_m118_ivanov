@@ -1,0 +1,5 @@
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/graphio/market.cuh, 314 @ gpu 0] Error parsing MARKET graph: only 91700702/174408603 edges read (CUDA error 30: unknown error)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/graphio/market.cuh, 548 @ gpu 0] error encountered (CUDA error 30: unknown error)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/graphio/market.cuh, 645 @ gpu 0] error encountered (CUDA error 30: unknown error)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/gunrock/graphio/graphio.cuh, 202 @ gpu 0] error encountered (CUDA error 30: unknown error)
+[/home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/examples/color/test_color.cu, 51 @ gpu 0] error encountered (CUDA error 30: unknown error)

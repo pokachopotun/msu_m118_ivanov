@@ -29,8 +29,11 @@ if __name__ == "__main__":
                 errfile = "errors/" + id_str
                 graphfile = "inputs/" + s.typeStr1 + "." + scale_str
 
-                cmd0 = "bsub -gpu \"num=1:mode=exclusive_process\" -o " + outfile + " -e " + errfile + " -q normal"
-                cmd1 = "./color --graph-type=" + s.typeStr2 + " --graph-file=" + graphfile + " --vertex-start-from-zero=0 --undirected"
+                cmd0 = "bsub -gpu \"num=1:mode=exclusive_process\" -oo " + outfile + " -eo " + errfile + " -q normal"
+                if s.typeStr1 == "SSCA2":
+                    cmd1 = "./color --graph-type=market" + " --graph-file=" + graphfile + " --vertex-start-from-zero=0 --undirected --validation=none"
+                else:
+                    cmd1 = "./color --graph-edgefactor=32 --graph-type=" + s.typeStr2 + " --graph-scale=" + str(scale) + " --undirected --validation=none"
                 cmd = cmd0 + " " + cmd1
                 print(cmd)
                 if submit:

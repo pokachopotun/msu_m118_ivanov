@@ -1,0 +1,83 @@
+Sender: LSF System <lsfadmin@polus-c4-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 456231: <./color --graph-type=market --graph-file=inputs/SSCA2.22 --vertex-start-from-zero=0 --undirected --validation=none> in cluster <MSUCluster> Done
+
+Job <./color --graph-type=market --graph-file=inputs/SSCA2.22 --vertex-start-from-zero=0 --undirected --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 03:07:50 2019
+Job was executed on host(s) <polus-c4-ib.bmc.hpc.cs.msu.ru>, in queue <normal>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 07:35:46 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Mon Nov  4 07:35:46 2019
+Terminated at Mon Nov  4 07:36:29 2019
+Results reported at Mon Nov  4 07:36:29 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+./color --graph-type=market --graph-file=inputs/SSCA2.22 --vertex-start-from-zero=0 --undirected --validation=none
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   683.29 sec.
+    Max Memory :                                 3005 MB
+    Average Memory :                             1410.00 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                163
+    Run time :                                   43 sec.
+    Turnaround time :                            16119 sec.
+
+The output (if any) follows:
+
+Loading Matrix-market coordinate-formatted graph ...
+  Reading meta data from inputs/SSCA2.22.meta
+  Reading edge lists from inputs/SSCA2.22.coo_edge_pairs
+Reading from inputs/SSCA2.22.coo_edge_pairs, typeId = 262, targetId = 262, length = 43580024
+  Reading edge values from inputs/SSCA2.22.coo_edge_values
+Reading from inputs/SSCA2.22.coo_edge_values, typeId = 18, targetId = 18, length = 43580024
+  Edge doubleing: 43580024 -> 87160048 edges
+  graph loaded as COO in 8.147291s.
+Converting 4194304 vertices, 87160048 directed edges ( ordered tuples) to CSR format...Done (1s).
+Degree Histogram (4194304 vertices, 87160048 edges):
+    Degree 0: 5271 (0.125670 %)
+    Degree 2^0: 12534 (0.298834 %)
+    Degree 2^1: 52280 (1.246452 %)
+    Degree 2^2: 203396 (4.849339 %)
+    Degree 2^3: 792005 (18.882871 %)
+    Degree 2^4: 3107501 (74.088597 %)
+    Degree 2^5: 21317 (0.508237 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 27671.130859
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=true advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+__________________________
+0	 0	 0	 queue3 	 oversize :	 25165824 ->	 87160050
+0	 0	 0	 queue3 	 oversize :	 25165824 ->	 87160050
+Max iteration: 20
+--------------------------
+Run 0 elapsed: 1154.098034, #iterations = 20
+Number of colors: 39
+[color] finished.
+ avg. elapsed: 1154.098034 ms
+ iterations: 20
+ min. elapsed: 1154.098034 ms
+ max. elapsed: 1154.098034 ms
+ load time: 9851.23 ms
+ preprocess time: 652.712000 ms
+ postprocess time: 1132.308006 ms
+ total time: 3004.454851 ms
+
+
+PS:
+
+Read file <errors/SSCA2.22.01> for stderr output of this job.
+

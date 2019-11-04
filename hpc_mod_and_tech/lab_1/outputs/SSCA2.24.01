@@ -1,0 +1,43 @@
+Sender: LSF System <lsfadmin@polus-c4-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 456237: <./color --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --undirected --validation=none> in cluster <MSUCluster> Exited
+
+Job <./color --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --undirected --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 03:07:50 2019
+Job was executed on host(s) <polus-c4-ib.bmc.hpc.cs.msu.ru>, in queue <normal>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 07:41:14 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Mon Nov  4 07:41:14 2019
+Terminated at Mon Nov  4 07:46:06 2019
+Results reported at Mon Nov  4 07:46:06 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+./color --graph-type=market --graph-file=inputs/SSCA2.24 --vertex-start-from-zero=0 --undirected --validation=none
+------------------------------------------------------------
+
+Exited with exit code 30.
+
+Resource usage summary:
+
+    CPU time :                                   287.96 sec.
+    Max Memory :                                 1036 MB
+    Average Memory :                             546.95 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                4
+    Run time :                                   291 sec.
+    Turnaround time :                            16696 sec.
+
+The output (if any) follows:
+
+Loading Matrix-market coordinate-formatted graph ...
+  Reading from inputs/SSCA2.24:
+  Parsing MARKET COO format (16777216 nodes, 174408603 directed edges)... 
+
+PS:
+
+Read file <errors/SSCA2.24.01> for stderr output of this job.
+

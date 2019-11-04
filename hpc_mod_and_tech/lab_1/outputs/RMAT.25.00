@@ -1,0 +1,79 @@
+Sender: LSF System <lsfadmin@polus-c1-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 456167: <./color --graph-edgefactor=32 --graph-type=rmat --graph-scale=25 --undirected --validation=none> in cluster <MSUCluster> Exited
+
+Job <./color --graph-edgefactor=32 --graph-type=rmat --graph-scale=25 --undirected --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 03:07:49 2019
+Job was executed on host(s) <polus-c1-ib.bmc.hpc.cs.msu.ru>, in queue <normal>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 04:53:48 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Mon Nov  4 04:53:48 2019
+Terminated at Mon Nov  4 06:58:38 2019
+Results reported at Mon Nov  4 06:58:38 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+./color --graph-edgefactor=32 --graph-type=rmat --graph-scale=25 --undirected --validation=none
+------------------------------------------------------------
+
+Exited with exit code 2.
+
+Resource usage summary:
+
+    CPU time :                                   760001.94 sec.
+    Max Memory :                                 53303 MB
+    Average Memory :                             7128.76 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                165
+    Run time :                                   7491 sec.
+    Turnaround time :                            13849 sec.
+
+The output (if any) follows:
+
+Generating RMAT graph, seed = 1572832428, (a, b, c, d) = (0.570000, 0.190000, 0.190000, 0.050000)
+RMAT generated in 6990508.500000 ms.
+  Removed 28796863 duplicate edges and self circles.
+Converting 33554432 vertices, 1044944961 directed edges ( ordered tuples) to CSR format...Done (4s).
+Degree Histogram (33554432 vertices, 1044944961 edges):
+    Degree 0: 15801420 (47.091901 %)
+    Degree 2^0: 4395817 (13.100556 %)
+    Degree 2^1: 3679134 (10.964674 %)
+    Degree 2^2: 2724953 (8.120993 %)
+    Degree 2^3: 2665787 (7.944664 %)
+    Degree 2^4: 932110 (2.777904 %)
+    Degree 2^5: 1547365 (4.611507 %)
+    Degree 2^6: 1009125 (3.007427 %)
+    Degree 2^7: 72515 (0.216112 %)
+    Degree 2^8: 480700 (1.432598 %)
+    Degree 2^9: 4711 (0.014040 %)
+    Degree 2^10: 172389 (0.513759 %)
+    Degree 2^11: 53130 (0.158340 %)
+    Degree 2^12: 0 (0.000000 %)
+    Degree 2^13: 12650 (0.037700 %)
+    Degree 2^14: 1602 (0.004774 %)
+    Degree 2^15: 698 (0.002080 %)
+    Degree 2^16: 300 (0.000894 %)
+    Degree 2^17: 0 (0.000000 %)
+    Degree 2^18: 25 (0.000075 %)
+    Degree 2^19: 1 (0.000003 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 247647.734375
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=true advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+__________________________
+0	 0	 0	 queue3 	 oversize :	 201326592 ->	 1044944963
+0	 0	 0	 queue3 	 oversize :	 201326592 ->	 1044944963
+
+
+PS:
+
+Read file <errors/RMAT.25.00> for stderr output of this job.
+

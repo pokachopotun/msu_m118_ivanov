@@ -1,0 +1,71 @@
+Sender: LSF System <lsfadmin@polus-c3-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 456255: <./color --graph-edgefactor=32 --graph-type=rgg --graph-scale=6 --undirected --validation=none> in cluster <MSUCluster> Done
+
+Job <./color --graph-edgefactor=32 --graph-type=rgg --graph-scale=6 --undirected --validation=none> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 03:07:50 2019
+Job was executed on host(s) <polus-c3-ib.bmc.hpc.cs.msu.ru>, in queue <normal>, as user <edu-cmc-skmodel19-m218-01> in cluster <MSUCluster> at Mon Nov  4 07:47:38 2019
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01> was used as the home directory.
+</home_edu/edu-cmc-skmodel19-m218/edu-cmc-skmodel19-m218-01/gunrock/build/bin> was used as the working directory.
+Started at Mon Nov  4 07:47:38 2019
+Terminated at Mon Nov  4 07:47:40 2019
+Results reported at Mon Nov  4 07:47:40 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+./color --graph-edgefactor=32 --graph-type=rgg --graph-scale=6 --undirected --validation=none
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   4.55 sec.
+    Max Memory :                                 54 MB
+    Average Memory :                             37.33 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                165
+    Run time :                                   3 sec.
+    Turnaround time :                            16790 sec.
+
+The output (if any) follows:
+
+Generating RGG graph, threshold = 0.140204, seed = 0...
+RGG generated in 136.775024 ms.
+Degree Histogram (64 vertices, 122 edges):
+    Degree 0: 12 (18.750000 %)
+    Degree 2^0: 14 (21.875000 %)
+    Degree 2^1: 30 (46.875000 %)
+    Degree 2^2: 8 (12.500000 %)
+
+Computing reference value ...
+__________________________
+--------------------------
+ Elapsed: 266.254913
+==============================================
+64bit-VertexT=false 64bit-SizeT=false 64bit-ValueT=false undirected=true advance-mode=LB
+Using advance mode LB
+Using filter mode CULL
+__________________________
+Max iteration: 4
+--------------------------
+Run 0 elapsed: 2.242088, #iterations = 4
+Number of colors: 6
+[color] finished.
+ avg. elapsed: 2.242088 ms
+ iterations: 4
+ min. elapsed: 2.242088 ms
+ max. elapsed: 2.242088 ms
+ load time: 194.857 ms
+ preprocess time: 463.940000 ms
+ postprocess time: 1.838923 ms
+ total time: 480.749846 ms
+
+
+PS:
+
+Read file <errors/UR.06.01> for stderr output of this job.
+
