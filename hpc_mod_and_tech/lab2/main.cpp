@@ -232,16 +232,16 @@ private:
         int N = storedXSize * storedYSize;
 
         for (int i = 0; i < CommBufSize[0]; i++) {
-           local[storedYSize + 1 + i] = buf[CommBufShift[0]];
+           local[storedYSize + 1 + i] = buf[CommBufShift[0] + i];
         }
         for (int i = 0; i < CommBufSize[1]; i++) {
-            local[storedYSize * (storedXSize - 2) + 1 + i] = buf[CommBufShift[1]];
+            local[storedYSize * (storedXSize - 2) + 1 + i] = buf[CommBufShift[1] + i];
         }
         for (int i = 0; i < CommBufSize[2]; i++) {
-            local[storedYSize * (i + 1) + 1] = buf[CommBufShift[2]];
+            local[storedYSize * (i + 1) + 1] = buf[CommBufShift[2] + i];
         }
         for (int i = 0; i < CommBufSize[3]; i++) {
-            local[storedYSize * (i + 2) - 2] = buf[CommBufShift[3]];
+            local[storedYSize * (i + 2) - 2] = buf[CommBufShift[3] + i];
         }
         local[storedYSize + 1] = buf[CommBufShift[4]];
         local[2 * storedYSize - 2] = buf[CommBufShift[5]];
@@ -267,7 +267,7 @@ private:
         return GetMpiRank(x, y);
     }
 
-    int MpiRank(int x, int y) {
+    int GetMpiRank(int x, int y) {
         return mpiM * x + y;
     }
 
