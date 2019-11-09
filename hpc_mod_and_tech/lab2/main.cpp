@@ -377,7 +377,7 @@ public:
                 }
             }
 
-            InitV1x(v1[it]);
+            InitV1x(v1[it + 1]);
             InitV1y(v1[it + 1], v1[it]);
             InitV2x(v2[it + 1]);
             InitV2y(v2[it + 1]);
