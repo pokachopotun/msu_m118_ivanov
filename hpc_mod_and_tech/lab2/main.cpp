@@ -1,9 +1,10 @@
-#include "mpi.h"
+#include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <string>
+#include <mpi.h>
 
 using namespace std;
-
 
 class Calc {
 private:
@@ -42,7 +43,7 @@ public:
         br = storedYSize * (i + 2) + 1 + j + 1;
     }
 
-    void CalcNextV1(double* next1, double* v1, double* v1) {
+    void CalcNextV1(double* next1, double* v1, double* v2) {
         double laplas1 = Laplas(v1);      
         double g1 = Grad1(v1, v2);
         next1[m] = ht * (v1[m] + laplas1) + g1;
@@ -99,20 +100,20 @@ private:
     int CommBufShift[8];
     int CommBufSize[8];
 
-    void Init(int argv, char** argv) {
+    void Init(int argc, char** argv) {
         // mpi grid size
-        mpiN = stoi(argv[1]);
-        mpiM = stoi(argv[2]);
+        mpiN = atoi(argv[1]);
+        mpiM = atoi(argv[2]);
 
         // solution grid size 
-        gridN = stoi(argv[3]);
-        gridM = stor(argv[4]);
-        gridT = stoi(argv[5]);
+        gridN = atoi(argv[3]);
+        gridM = atoi(argv[4]);
+        gridT = atoi(argv[5]);
 
         // constraints
         xmax = atof(argv[6]);
         ymax = atof(argv[7]);
-        tmax = arof(argv[8]);
+        tmax = atof(argv[8]);
 
         // grid step
         hx = xmax / gridN;
@@ -130,8 +131,8 @@ private:
         mpiX = mpiRank / mpiN;
         mpiY = mpiRank % mpiN;
 
-        bool isXMax = curMpiX == mpiN - 1;  
-        bool isYMax = curMpiY == mpiM - 1;
+        bool isXMax = mpiX == mpiN - 1;  
+        bool isYMax = mpiY == mpiM - 1;
 
         localXSize = isXMax ? gridN % mpiN : gridN / mpiN;
         if (localXSize == 0) {
@@ -148,7 +149,7 @@ private:
         commBufSize = 2 * (localXSize + localYSize) + 4;
 
         xStart = mpiX * localXSize;
-        yStart = mpiY * localYsize;
+        yStart = mpiY * localYSize;
 
         v1.reserve(gridT);
         v2.reserve(gridT);
@@ -161,44 +162,43 @@ private:
         sendBuf = new double[commBufSize];
         recvBuf = new double[commBufSize];
 
-        Neighbor = {
-            GetDest(-1, 0),
-            GetDest(1, 0),
-            GetDest(0, -1),
-            GetDest(0, 1),
-            GetDest(-1, -1),
-            GetDest(-1, 1),
-            GetDest(1, -1),
-            GetDest(1, 1)
-        };
+        Neighbor[0] = GetDest(-1, 0);
+        Neighbor[1] = GetDest(1, 0);
+        Neighbor[2] = GetDest(0, -1);
+        Neighbor[3] = GetDest(0, 1);
+        Neighbor[4] = GetDest(-1, -1);
+        Neighbor[5] = GetDest(-1, 1);
+        Neighbor[6] = GetDest(1, -1);
+        Neighbor[7] = GetDest(1, 1);
 
-        CommBufShift = {
-            0,
-            localYSize,
-            2 * localYSize,
-            2 * localYSize + localXSize,
-            2 * (localXSize + localYSize),
-            2 * (localXSize + localYSize) + 1,
-            2 * (localXSize + localYSize) + 2,
-            2 * (localXSize + localYSize) + 3
-        };
+        CommBufShift[0] = 0;
+        CommBufShift[1] = localYSize;
+        CommBufShift[2] = 2 * localYSize;
+        CommBufShift[3] = 2 * localYSize + localXSize;
+        CommBufShift[4] = 2 * (localXSize + localYSize);
+        CommBufShift[5] = 2 * (localXSize + localYSize) + 1;
+        CommBufShift[6] = 2 * (localXSize + localYSize) + 2;
+        CommBufShift[7] = 2 * (localXSize + localYSize) + 3;
 
-        CommBufSize = {
-            localYSize, localYSize,
-            localXSize, localXSize,
-            1, 1, 1, 1
-        };
+        CommBufSize[0] = localYSize;
+        CommBufSize[1] = localYSize;
+        CommBufSize[2] = localXSize; 
+        CommBufSize[3] = localXSize;
+        CommBufSize[4] = 1; 
+        CommBufSize[5] = 1; 
+        CommBufSize[6] = 1; 
+        CommBufSize[7] = 1;
     }
 
     void ExchangeHalo(double* local) {
         PackBuf(local, sendBuf);
         vector<MPI_Request> req(32);
-        reqCnt = 0;
+        int reqCnt = 0;
 
         for (int i = 0; i < 8; i++) {
-            MPI_Isend(sendBuf[CommBufShift[i]], CommBufSize[i], MPI_DOUBLE, Neighbor[i], 0, MPI_COMM_WORLD, &req[reqCnt]);
+            MPI_Isend(&sendBuf[CommBufShift[i]], CommBufSize[i], MPI_DOUBLE, Neighbor[i], 0, MPI_COMM_WORLD, &req[reqCnt]);
             reqCnt++;
-            MPI_Irecv(recvBuf[CommBufShift[i]], CommBufSize[i], MPI_DOUBLE, Neighbor[i], 0, MPI_COMM_WORLD, &req[reqCnt]);
+            MPI_Irecv(&recvBuf[CommBufShift[i]], CommBufSize[i], MPI_DOUBLE, Neighbor[i], 0, MPI_COMM_WORLD, &req[reqCnt]);
             reqCnt++;
         }
 
@@ -264,8 +264,8 @@ private:
     }
 
     int GetDest(int dx, int dy) {
-        int x = PlusMod(mpiX, dx);
-        int y = PlusMod(mpiY, dy);
+        int x = PlusMod(mpiX, dx, mpiN);
+        int y = PlusMod(mpiY, dy, mpiM);
         return GetMpiRank(x, y);
     }
 
@@ -315,8 +315,20 @@ private:
     }
 
     void InitV1y(double* next, double* v) {
-        // it's done implicitly in case edgeY = true
+        if (mpiY == 0) {
+            for (int i = 0; i < localXSize; i++) {
+                next[GetPos(i, 0)] = v[GetSPos(i, 0)];
+            }
+        }
+        if (mpiY == mpiM - 1) {
+            for (int i = 0; i < localXSize; i++) {
+                next[GetPos(i, localYSize - 1)] = v[GetSPos(i, localYSize - 1)];
+            }
+        }
     }
+/*    void InitV1y(double* next) {
+        // it's done implicitly in case edgeY = true
+    } */
 
     void InitV2x(double* v) {
         if (mpiX == 0) {
@@ -364,31 +376,25 @@ public:
                     bool edgeY = (y == 0 || y == gridM - 1);
                     bool edgeX = (x == 0 || x == gridN - 1);
 
-                    if (edgeY) {
-                        auto iterCalc = Calc(localYSize, hx, hy, ht, i, j);
-                        iterCalc.CalcNextV1(v1[it + 1], v1[it], v2[it]);
+                    if (edgeX || edgeY) {
                         continue;
                     }
-
-                    if (edgeX) {
-                        continue;
-                    }
-                        
-                    auto iterCalc = Calc(localYSize, hx, hy, ht, i, j);
+ 
+                    Calc iterCalc(localYSize, hx, hy, ht, i, j);
                     iterCalc.CalcNextV1(v1[it + 1], v1[it], v2[it]);
                     iterCalc.CalcNextV2(v2[it + 1], v1[it], v2[it]);
                 }
             }
 
             InitV1x(v1[it + 1]);
-            InitV1y(v1[it + 1]);
+            InitV1y(v1[it + 1], v1[it]);
             InitV2x(v2[it + 1]);
             InitV2y(v2[it + 1]);
         }
     }
 };    
 
-int main(int argc, char** argv[]) {
+int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     
     //TODO: 3) calc answer diff

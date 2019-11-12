@@ -1,4 +1,2 @@
-all: main
-
-local: main.cpp
-	mpicc main.cpp -o local
+polus: main.cpp
+	mpixlC -O2 main.cpp -o local
