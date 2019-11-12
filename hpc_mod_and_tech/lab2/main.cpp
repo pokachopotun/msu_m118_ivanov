@@ -42,13 +42,15 @@ public:
         br = storedYSize * (i + 2) + 1 + j + 1;
     }
 
-    void CalcNextT(double* next1, double* next2, double* v1, double* v2) {
+    void CalcNextV1(double* next1, double* v1, double* v1) {
         double laplas1 = Laplas(v1);      
-        double laplas2 = Laplas(v2);
         double g1 = Grad1(v1, v2);
-        double g2 = Grad2(v1, v2);
-       
         next1[m] = ht * (v1[m] + laplas1) + g1;
+    }
+
+    void CalcNextV2(double* next2, double* v1, double* v2) {
+        double laplas2 = Laplas(v2);
+        double g2 = Grad2(v1, v2);
         next2[m] = ht * (v2[m] + laplas2) + g2;
     }
 };
@@ -313,16 +315,7 @@ private:
     }
 
     void InitV1y(double* next, double* v) {
-        if (mpiY == 0) {
-            for (int i = 0; i < localXSize; i++) {
-                next[GetPos(i, 0)] = v[GetSPos(i, 0)];
-            }
-        }
-        if (mpiY == mpiM - 1) {
-            for (int i = 0; i < localXSize; i++) {
-                next[GetPos(i, localYSize - 1)] = v[GetSPos(i, localYSize - 1)];
-            }
-        }
+        // it's done implicitly in case edgeY = true
     }
 
     void InitV2x(double* v) {
@@ -366,19 +359,29 @@ public:
 
             for (int i = 0; i < localXSize; i++) {
                 for (int j = 0; j < localYSize; j++) {
-                    if (GetX(i) == 0 || GetX(i) == gridN - 1 ) {
+                    int y = GetY(j);
+                    int x = GetX(i);
+                    bool edgeY = (y == 0 || y == gridM - 1);
+                    bool edgeX = (x == 0 || x == gridN - 1);
+
+                    if (edgeY) {
+                        auto iterCalc = Calc(localYSize, hx, hy, ht, i, j);
+                        iterCalc.CalcNextV1(v1[it + 1], v1[it], v2[it]);
                         continue;
                     }
-                    if (GetY(j) == 0 || GetY(j) == gridM - 1) {
+
+                    if (edgeX) {
                         continue;
                     }
+                        
                     auto iterCalc = Calc(localYSize, hx, hy, ht, i, j);
-                    iterCalc.CalcNextT(v1[it + 1], v2[it + 1], v1[it], v2[it]);
+                    iterCalc.CalcNextV1(v1[it + 1], v1[it], v2[it]);
+                    iterCalc.CalcNextV2(v2[it + 1], v1[it], v2[it]);
                 }
             }
 
             InitV1x(v1[it + 1]);
-            InitV1y(v1[it + 1], v1[it]);
+            InitV1y(v1[it + 1]);
             InitV2x(v2[it + 1]);
             InitV2y(v2[it + 1]);
         }
