@@ -1,0 +1,6 @@
+blackHoles cnt: 
+ Size: 1 cnt 181
+ Size: 2 cnt 2
+ Size: 965 cnt 2
+ Size: 966 cnt 18
+It took me: 0.0110724 seconds
