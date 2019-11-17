@@ -100,7 +100,15 @@ private:
     int CommBufShift[8];
     int CommBufSize[8];
 
+    int cyclicBufSize;
+    double* cyclicSendBuf;
+    double* cyclicRecvBuf;
+
     void Init(int argc, char** argv) {
+        if (argc < 9) {
+            cerr << "use ./solution mpiN mpiM gridN gridM gridT xmax ymax tmax << endl;
+            return;
+        }
         // mpi grid size
         mpiN = atoi(argv[1]);
         mpiM = atoi(argv[2]);
@@ -161,6 +169,10 @@ private:
 
         sendBuf = new double[commBufSize];
         recvBuf = new double[commBufSize];
+
+        cyclicBufSize = localXSize;
+        cyclicSendBuf = new double[cyclicBufSize];
+        cyclicRecvBuf = new double[cyclicBufSize];
 
         Neighbor[0] = GetDest(-1, 0);
         Neighbor[1] = GetDest(1, 0);
@@ -314,21 +326,48 @@ private:
         }
     }
 
-    void InitV1y(double* next, double* v) {
-        if (mpiY == 0) {
-            for (int i = 0; i < localXSize; i++) {
-                next[GetPos(i, 0)] = v[GetSPos(i, 0)];
+    void ExchangeCyclic(double* local) {
+        vector<MPI_Request> req(2);
+        int reqCnt = 0;
+
+        if (mpiY == mpiM - 1) {
+            for (int i = 0; i < cyclicBufSize; i++) {
+                cyclicSendBuf[i] = local[GetPos(i, localYSize - 1)];
+            }
+            int rightNeighbor = GetDest(0, 1);
+            MPI_Isend(cyclicSendBuf, cyclicBufSize, MPI_DOUBLE, rightNeighbor, 0, MPI_COMM_WORLD, &req[reqCnt]);
+            reqCnt++;
+            MPI_Irecv(cyclicRecvBuf, cyclicBufSize, MPI_DOUBLE, rightNeighbor, 0, MPI_COMM_WORLD, &req[reqCnt]);
+            reqCnt++;
+
+            MPI_Waitall(reqCnt, req.data(), MPI_STATUSES_IGNORE); 
+
+            for (int i = 0; i < cyclicBufSize; i++) {
+                local[GetPos(i, localYSize)] = cyclicRecvBuf[i];
             }
         }
-        if (mpiY == mpiM - 1) {
-            for (int i = 0; i < localXSize; i++) {
-                next[GetPos(i, localYSize - 1)] = v[GetSPos(i, localYSize - 1)];
+
+        if (mpiY == 0) {
+            for (int i = 0; i < cyclicBufSize; i++) {
+                cyclicSendBuf[i] = local[GetPos(i, 1)];
+            }
+            int leftNeighbor = GetDest(0, -1);
+            MPI_Isend(cyclicSendBuf, cyclicBufSize, MPI_DOUBLE, leftNeighbor, 0, MPI_COMM_WORLD, &req[reqCnt]);
+            reqCnt++;
+            MPI_Irecv(cyclicRecvBuf, cyclicBufSize, MPI_DOUBLE, leftNeighbor, 0, MPI_COMM_WORLD, &req[reqCnt]);
+            reqCnt++;
+
+            MPI_Waitall(reqCnt, req.data(), MPI_STATUSES_IGNORE); 
+
+            for (int i = 0; i < cyclicBufSize; i++) {
+                local[GetPos(i, 0)] = cyclicRecvBuf[i];
             }
         }
     }
-/*    void InitV1y(double* next) {
-        // it's done implicitly in case edgeY = true
-    } */
+
+    void InitV1y(double* next) {
+        ExchangeCyclic(next);
+    }
 
     void InitV2x(double* v) {
         if (mpiX == 0) {
@@ -373,8 +412,10 @@ public:
                 for (int j = 0; j < localYSize; j++) {
                     int y = GetY(j);
                     int x = GetX(i);
-                    bool edgeY = (y == 0 || y == gridM - 1);
+                    bool edgeY = (y == 0);
                     bool edgeX = (x == 0 || x == gridN - 1);
+
+                    // y == gridM - 1 is not an edge we have cyclic condition here
 
                     if (edgeX || edgeY) {
                         continue;
@@ -387,19 +428,23 @@ public:
             }
 
             InitV1x(v1[it + 1]);
-            InitV1y(v1[it + 1], v1[it]);
+            InitV1y(v1[it + 1]);
             InitV2x(v2[it + 1]);
             InitV2y(v2[it + 1]);
         }
     }
-};    
+
+    double u1(double x, double y, double t) {
+
+    }
+            
+    double u2(double x, double y, double t) {
+        
+    }
+};
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
-    
-    //TODO: 3) calc answer diff
-
     Solution(argc, argv);
-
     MPI_Finalize();
 }
