@@ -9,19 +9,18 @@
 
 using namespace std;
 
-using Graph = vector<vector<int>>;
-
-using Candidates = set<int>;
-using Potential = set<int>;
-using Final = set<int>;
-
+using TGraph = vector<vector<int>>;
+using TClosure = vector<int>;
+using TCandidates = set<int>;
+using TUsed = vector<char>;
+ 
 class Solution {
 public:
 
-    static Graph ReadGraphFromFile(const string& filename) {
+    static TGraph ReadGraphFromFile(const string& filename) {
         ifstream fin(filename, std::ifstream::in);
         int n, m;
-        Graph graph(n);
+        TGraph graph(n);
         fin >> n >> m;
         for(int i = 0; i < m; i++) {
             int x, y;
@@ -31,8 +30,8 @@ public:
         return graph;
     }
 
-    static Graph GetReverseGraph(const Graph& graph) {
-        Graph graphRev(graph.size());
+    static TGraph GetReverseGraph(const TGraph& graph) {
+        TGraph graphRev(graph.size());
         for (int v = 0; v < graph.size(); v++) {
             for (int to : graph[v]) {
                 graphRev[to].push_back(v);
@@ -41,8 +40,8 @@ public:
         return graphRev;
     }
 
-    static Graph GetUndirectedGraph(const Graph& graph) {
-        Graph graphUndir(graph.size());
+    static TGraph GetUndirectedGraph(const TGraph& graph) {
+        TGraph graphUndir(graph.size());
         for (int v = 0; v < graph.size(); v++) {
             for (int to : graph[v]) {
                 graphUndir[to].push_back(v);
@@ -52,112 +51,55 @@ public:
         return graphUndir;
     }
 
-
-    static bool checkSuccessors(const Graph& g, const Candidates& cand, int v) {
-        vector<char> used(g.size());
-        queue<int> q;
-        q.push(v);
-        used[v] = 1;
-        while(!q.empty()) {
-            v = q.front();
-            q.pop();
-            if (cand.find(v) == cand.end()) {
-               return false;
-            } 
-            for (int to : g[v]) {
-                if (!used[to]) {
-                    used[to] = 1;
-                    q.push(to);
-                }
-            }
-        }
-        return true;
+    static void Closure(const TGraph& g, int v, TUsed& used) {
+        ClosureSize(g, v, used);
+        return;
     }
 
-    static int closureSize(const Graph& g, int v) {
-        vector<char> used(g.size());
-        queue<int> q;
-        q.push(v);
-        used[v] = 1;
-        int cnt = 0;
-        while(!q.empty()) {
-            v = q.front();
-            q.pop();
-            cnt++;
-            for (int to : g[v]) {
-                if (!used[to]) {
-                    used[to] = 1;
-                    q.push(to);
-                }
-            }
-        }
-        return cnt;
+    static void Closure(const TGraph& g, int v) {
+        ClosureSize(g,v);
+        return;
     }
 
-    static void removePredecessors(const Graph& g, Candidates& toRemove, int v) {
-        vector<char> used(g.size());
-        queue<int> q;
-        q.push(v);
-        used[v] = 1;
-        while(!q.empty()) {
-            v = q.front();
-            q.pop();
-            toRemove.insert(v);
-            for (int to : g[v]) {
-                if (!used[to]) {
-                    used[to] = 1;
-                    q.push(to);
-                }
-            }
-        }
+    static int ClosureSize(const TGraph& g, int v, TUsed& used) {
+        return BFS(g, used, v);
     }
 
-    static int restrictedClosureSize(const Graph& g, const Candidates& cand, int v, vector<char>& used) {
-        queue<int> q;
-        q.push(v);
-        used[v] = 1;
-        int cnt = 0;
-        while(!q.empty()) {
-            v = q.front();
-            q.pop();
-            cnt++;
-            for (int to : g[v]) {
-                if (cand.find(to) != cand.end()) {
-                    used[to] = 1;
-                }
-                if (!used[to]) {
-                    used[to] = 1;
-                    q.push(to);
-                }
-            }
-        }
-        return cnt;
+    static int ClosureSize(const TGraph& g, int v) {
+        TUsed used;
+        used.resize(g.size());
+        return BFS(g, used, v);
     }
-        
-    static int degreeOut(const Graph& g, const Candidates& cand, int v, vector<char>& used, const Graph& gd, const Graph& gr) {
-        queue<int> q;
-        q.push(v);
-        used[v] = 1;
-        int dout = 0;
-        while(!q.empty()) {
-            v = q.front();
-            q.pop();
-            dout += gd[v].size() - gr[v].size();
-            for (int to : g[v]) {
-                if (cand.find(to) != cand.end()) {
-                    used[to] = 1;
-                }
-                if (!used[to]) {
-                    used[to] = 1;
-                    q.push(to);
-                }
-            }
+
+    static TClosure GetClosure(const TGraph& g, int v, TUsed& used) {
+        return ClosureBFS(g, used, v);
+    }
+
+    static TClosure GetClosure(const TGraph& g, int v) {
+        TUsed used;
+        used.resize(g.size());
+        return ClosureBFS(g, used, v);
+    }
+
+    static int DegreeOut(const TClosure& closure, const TGraph& gd, const TGraph& gr) {
+        long long dout = 0;
+        for (int v : closure) {
+           dout += static_cast<long long>(gd[v].size()) - static_cast<long long>(gr[v].size());
         }
         return dout;
     } 
 
+    static bool HasCandidates(const TClosure& closure, const TCandidates& candidates) {
+        for (int v : closure) {
+            if (candidates.find(v) != candidates.end()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 private:
-    static void dfs_non_recursive(const Graph& g, vector<char>& used, vector<int>& order, int v) { // shitty code. write recursive or refactor
+    static void dfs_non_recursive(const TGraph& g, vector<char>& used, vector<int>& order, int v) { // shitty code. write recursive or refactor
         vector<int> pos(g.size());
         stack<int> st;
         st.push(v);
@@ -177,6 +119,52 @@ private:
             order.push_back(v);
         }
     }
+
+    static int BFS(const TGraph& g, TUsed& used, int v) {
+        queue<int> q;
+        int closureSize = 0;
+        if (!used[v]) {
+            q.push(v);
+            used[v] = 1;
+            closureSize++;
+        }
+        while(!q.empty()) {
+            v = q.front();
+            q.pop();
+            for (int to : g[v]) {
+                if (!used[to]) {
+                    used[to] = 1;
+                    closureSize++;
+                    q.push(to);
+                }
+            }
+        }
+        return closureSize;
+    }
+
+    static TClosure ClosureBFS(const TGraph& g, TUsed& used, int v) {
+        queue<int> q;
+        TClosure closure;
+        int closureSize = 0;
+        if (!used[v]) {
+            q.push(v);
+            used[v] = 1;
+            closure.push_back(v);
+        }
+        while(!q.empty()) {
+            v = q.front();
+            q.pop();
+            for (int to : g[v]) {
+                if (!used[to]) {
+                    used[to] = 1;
+                    q.push(to);
+                    closure.push_back(v);
+                }
+            }
+        }
+        return closure;
+    }
+
 };
 
 int main(int argc, char** argv) { 
@@ -187,11 +175,11 @@ int main(int argc, char** argv) {
 
         int maxBHSize;
 
-        Graph graph = Solution::ReadGraphFromFile(inputFileName);
-        Graph graphRev = Solution::GetReverseGraph(graph);
-        Graph graphUndir = Solution::GetUndirectedGraph(graph);
+        TGraph graph = Solution::ReadGraphFromFile(inputFileName);
+        TGraph graphRev = Solution::GetReverseGraph(graph);
+        TGraph graphUndir = Solution::GetUndirectedGraph(graph);
         
-        vector<Candidates> candidates(maxBHSize + 1);
+        vector<TCandidates> candidates(maxBHSize + 1);
         for (int i = 1; i <= maxBHSize; i++) {
             for (int v = 0; v < graph.size(); v++) {
                 if (graph[v].size() < i) {
@@ -199,51 +187,56 @@ int main(int argc, char** argv) {
                 }
             }
 
-            Candidates toRemove;
+            TCandidates toRemove;
             for (int v : candidates[i]) {
                 if (candidates[i - 1].find(v) != candidates[i - 1].end()) {
                     continue;
                 }
-                if (!Solution::checkSuccessors(graph, candidates[i], v)) {
-                    toRemove.insert(v);
-                    Solution::removePredecessors(graph, toRemove, v);
+                TClosure closure = Solution::GetClosure(graph, v);
+                if (Solution::HasCandidates(closure, candidates[i])) {
+                    TClosure revClosure = Solution::GetClosure(graphRev, v);
+                    for (int x : revClosure) {
+                        toRemove.insert(x);
+                    }
                 } 
             }
 
             for (int v : toRemove) {
                 auto it = candidates[i].find(v);
                 if (it != candidates[i].end()) {
-                    candidates[i].erase(it);
+                    candidates[i].erase(v);
                 }
             }
             toRemove.clear();
     // ---------------------------------------------
             for (int v : candidates[i]) {
-                int cs = Solution::closureSize(graph, v);
+                int cs = Solution::ClosureSize(graph, v);
                 if (cs >= i) {
                     if (cs == i) {
                         // closure v is a blackhole
                     }
-                    toRemove.insert(v);
-                    Solution::removePredecessors(graphRev, toRemove, v);
+                    TClosure closure = Solution::GetClosure(graphRev, v);
+                    toRemove.insert(closure.begin(), closure.end());
                 }
             }
 
             for (int v : toRemove) {
                 auto it = candidates[i].find(v);
                 if (it != candidates[i].end()) {
-                    candidates[i].erase(it);
+                    candidates[i].erase(v);
                 }
             }
             toRemove.clear();
-
-            vector<char> used;
-            for (int v : candidates[i]) {
+    // ---------------------------------------------
+            TUsed used;
+            used.resize(graph.size());
+            for (int v = 0; v < candidates[i].size(); v++) {
                 if (used[v]) {
                     continue;
                 }
-                int cs = Solution::restrictedClosureSize(graphUndir, candidates[i], v, used);
-                int dout = Solution::degreeOut(graphUndir, candidates[i], v, used, graph, graphRev);
+                TClosure closure = Solution::GetClosure(graphUndir, v, used);
+                size_t cs = closure.size();
+                int dout = Solution::DegreeOut(closure, graph, graphRev);
                 if (cs == i && dout == 0) {
                     // restricted closure of v is blackhole
                 }
