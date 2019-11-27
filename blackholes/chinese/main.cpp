@@ -6,6 +6,7 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
+#include <chrono>
 
 
 using namespace std;
@@ -184,6 +185,8 @@ int main(int argc, char** argv) {
     const string inputFileName(argv[1]);
     int maxBHSize = atoi(argv[2]);
 
+    using namespace std::chrono;
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
     {
 
         TGraph graph = Solution::ReadGraphFromFile(inputFileName);
@@ -297,6 +300,10 @@ int main(int argc, char** argv) {
             } */
         }
     }
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+    cout << "It took me: " << time_span.count() << " seconds" << endl;
 
     return 0;
 }
