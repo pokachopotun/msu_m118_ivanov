@@ -1,4 +1,4 @@
-all: main
+all: local
 
-main: Source.cpp
-	g++ -O3 -std=c++11 Source.cpp -o main
+local: Source.cpp
+	g++ -O3 -std=c++11 Source.cpp -o local
