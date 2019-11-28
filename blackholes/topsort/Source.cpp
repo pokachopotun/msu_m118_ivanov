@@ -66,6 +66,16 @@ public:
         return order;
     }
 
+    static vector<int> TopSort(const TGraph& g, const vector<int>& roots, vector<char>& special) {
+        vector<char> used(g.size());
+        vector<int> order;
+        vector<int> count(g.size());
+        for (int v : roots) {
+            dfs_recursive(g, used, order, v, count, special);
+        }
+        return order;
+    }
+
     static TGraph ReadGraphFromFile(const string& filename) {
         ifstream fin(filename);
         int n, m;
@@ -104,6 +114,19 @@ public:
         }
         return memb;
     } 
+
+    static int dfs_recursive(const TGraph& g, vector<char>& used, vector<int>& order, int v, vector<int>& count, vector<char>& special) {
+        used[v] = 1;
+        for (int to : g[v]) {
+            if (!used[to]) { 
+                count[v] += dfs_recursive(g, used, order, to, count, special);
+            }
+        }
+        count[v] += 1;
+        order.push_back(v);
+        special[v] = char(order.size() == count[v]);
+        return count[v];
+    }
         
     static void dfs(const TGraph& g, vector<char>& used, vector<int>& order, int v) {
         vector<int> pos(g.size());
@@ -264,14 +287,60 @@ public:
             }
         }
     }
+
+    static void BruteForce(const TGraph& graph, const vector<int>& tsOrder, const vector<char>& special) {
+        const int totalVertex = static_cast<int>(tsOrder.size());
+        vector<int> pos;
+        pos.reserve(totalVertex);
+        for (int sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
+            pos.resize(sampleSize);
+            for (int i = 0; i < pos.size(); ++i) {
+                pos[i] = i;
+            }
+            bool stop = false;
+            while (!stop) {
+                set<int> bh = GetBlackHole(graph, tsOrder, pos);
+                Print("BH", bh);
+                while (true) {
+                    stop = !BruteNext(pos, totalVertex);
+                    if (stop) {
+                        break;
+                    }
+                    bool skip = false;
+                    for (int i = 1; i < pos.size(); i++) {
+                        int p = pos[i];
+                        int v = tsOrder[p];
+                        if (special[v]) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (!skip) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    static vector<int> GetRoots(const TGraph& graphRev) {
+        vector<int> roots;
+        for (int v = 0; v < graphRev.size(); v++) {
+            if (graphRev[v].size() == 0) {
+                roots.push_back(v);
+            }
+        }
+        return roots;
+    }
 };
 
 int main(int argc, char * argv[]) {
-    if (argc < 2){
-            cout << "use ./main input.txt";
+    if (argc < 3){
+            cout << "use ./main input.txt optimize";
     }
     
     const string inputFilePath(argv[1]);
+    const int optimize(atoi(argv[2]));
 
     // #ifdef _DEBUG
         //ofstream fout(outputFilePath, std::ifstream::out);
@@ -288,9 +357,19 @@ int main(int argc, char * argv[]) {
         TSccMembers compMembers = Solution::GetSccMembers(comp2Vertex);
         Solution::Print("components", compMembers);
         int compCnt = Solution::GetCompCnt(comp2Vertex); TGraph graphCond = Solution::BuildCondensedGraph(compCnt, comp2Vertex, graph); 
-        vector<int> tsOrder = Solution::TopSort(graphCond);
-        Solution::Print("topsort", tsOrder);
-        Solution::BruteForce(graphCond, tsOrder);
+        if (optimize) {
+            TGraph graphCondRev = Solution::GetReverseGraph(graphCond);
+            vector<int> roots = Solution::GetRoots(graphCondRev);
+            vector<char> special(graphCond.size());
+            vector<int> tsOrder = Solution::TopSort(graphCond, roots, special);
+            Solution::Print("topsort", tsOrder);
+            Solution::BruteForce(graphCond, tsOrder, special);
+        } else {
+            vector<int> tsOrder = Solution::TopSort(graphCond);
+            Solution::Print("topsort", tsOrder);
+            Solution::BruteForce(graphCond, tsOrder);
+        }
+            
         
 /*
         int total = 0;
