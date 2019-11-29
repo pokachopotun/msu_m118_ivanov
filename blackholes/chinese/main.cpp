@@ -15,6 +15,8 @@ using TGraph = vector<vector<int>>;
 using TClosure = set<int>;
 using TCandidates = set<int>;
 using TUsed = vector<char>;
+
+int bhCount = 0;
  
 class Solution {
 public:
@@ -209,7 +211,7 @@ int main(int argc, char** argv) {
                     candidates[i].insert(v);
                 }
             }
-            Print("P", candidates[i]);
+            //Print("P", candidates[i]);
             
             TCandidates toRemove;
             for (int v : candidates[i]) {
@@ -230,7 +232,7 @@ int main(int argc, char** argv) {
                 }
             }
             toRemove.clear();
-            Print("C", candidates[i]);
+            //Print("C", candidates[i]);
     // ---------------------------------------------
             for (int v : candidates[i]) {
                 TClosure closure = Solution::GetClosure(graph, v);
@@ -239,8 +241,10 @@ int main(int argc, char** argv) {
                     TClosure revClosure = Solution::GetClosure(graphRev, v);
                     toRemove.insert(revClosure.begin(), revClosure.end());
                     if (cs == i) {
+                        bhCount++;
+                        cout << "bhCount = " << bhCount << endl;
                         // closure v is a blackhole
-                        Print("BH_C", closure);
+                        // Print("BH_C", closure);
                     }
                 }
             }
@@ -253,7 +257,7 @@ int main(int argc, char** argv) {
             }
 
             toRemove.clear();
-            Print("F", candidates[i]);
+            //Print("F", candidates[i]);
     // ---------------------------------------------
             {
     
@@ -270,8 +274,10 @@ int main(int argc, char** argv) {
                     size_t cs = closure.size();
                     int dout = Solution::DegreeOut(closure, graph);
                     if (cs == i && dout == 0) {
+                        bhCount++;
+                        cout << "bhCount = " << bhCount << endl;
                         // restricted closure of v is blackhole
-                        Print("BH_F", closure);                    
+                        // Print("BH_F", closure);                    
                     }
                 }
             }
