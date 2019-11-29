@@ -16,24 +16,21 @@ if __name__ == "__main__":
             sub.append(Submission(typeStr1, typeStr2))
     
     for s in sub:
-        if s.typeStr2 != "market":
-            continue
-
         for scale in range(a, b + 1):
-                scale_str = "{:02d}".format(scale) 
-                id_str = s.typeStr1 + "." + scale_str
-                outfile = "outputs/" + id_str
-                errfile = "errors/" + id_str
-                graphfile = "graphs/" + id_str + ".bin"
-                inputfile = "inputs/" + id_str
+            scale_str = "{:02d}".format(scale) 
+            id_str = s.typeStr1 + "." + scale_str
+            outfile = "outputs/" + id_str
+            errfile = "errors/" + id_str
+            graphfile = "graphs/" + id_str + ".bin"
+            inputfile = "inputs/" + id_str
 
-                cmd1 = "./generator/generator -s " + scale_str + " -weighted -file " + graphfile + " -type " + s.typeStr1
-                cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile 
-                print(cmd1)
-                print(cmd2)
+            cmd1 = "./generator/generator -s " + scale_str + " -weighted -file " + graphfile + " -type " + s.typeStr1
+            cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile 
+            print(cmd1)
+            print(cmd2)
 
-                os.system(cmd1)
-                os.system(cmd2)
+            os.system(cmd1)
+            os.system(cmd2)
 
 
 #define graph

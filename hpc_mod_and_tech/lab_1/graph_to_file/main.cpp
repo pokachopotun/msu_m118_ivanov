@@ -6,6 +6,11 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+    if (argc < 3) {
+        cout << "Use ./graph_to_file file.bin file.graph" << endl;
+        return 0;
+    }
+
     const string file_name(argv[1]);
     const string output_file_name(argv[2]);
 
