@@ -9,6 +9,7 @@
 #include <fstream>
 #include <stack>
 #include <queue>
+#include <map>
 
 using namespace std;
 
@@ -17,6 +18,8 @@ using TGraph = vector<vector<int>>;
 using TComponents = vector<int>;
 using TSccMembers = vector<vector<int>>;
 using TClosure = set<int>;
+
+int bhCount = 0;
 
 class Solution {
 public:
@@ -68,12 +71,28 @@ public:
 
     static vector<int> TopSort(const TGraph& g, const vector<int>& roots, vector<char>& special) {
         vector<char> used(g.size());
-        vector<int> order;
+        vector<vector<int>> order(roots.size());
         vector<int> count(g.size());
-        for (int v : roots) {
-            dfs_recursive(g, used, order, v, count, special);
+        int curSize = order.size();
+        for (int i = 0; i < roots.size(); i++) {
+            int v = roots[i];
+            dfs_recursive(g, used, order[i], v, count, special);
+            cout << "Root " << v << " closuresize " << order[i].size() << endl;
         }
-        return order;
+        int maxid = 0;
+        for (int i = 0; i < order.size(); i++) {
+            if (order[maxid].size() < order[i].size()) {
+                maxid = i;
+            }
+        }
+        if (maxid != 0) {
+            swap(order[0], order[maxid]);
+        }
+        vector<int> totalOrder;
+        for (const auto& ord : order) {
+            totalOrder.insert(totalOrder.end(), ord.begin(), ord.end());
+        }
+        return totalOrder;
     }
 
     static TGraph ReadGraphFromFile(const string& filename) {
@@ -98,6 +117,18 @@ public:
         }
         return graphRev;
     }
+
+    static TGraph GetUndirGraph(const TGraph& graph) {
+        TGraph graphUndir(graph.size());
+        for (int v = 0; v < graph.size(); v++) {
+            for (int to : graph[v]) {
+                graphUndir[to].push_back(v);
+                graphUndir[v].push_back(to);
+            }
+        }
+        return graphUndir;
+    }
+
 
     static int GetCompCnt(const TComponents& comp) {
         int compCnt = 0;
@@ -199,6 +230,31 @@ public:
         cout << tag + " END" << endl;
     }
 
+    static void PrintStat(const string& tag, const vector<vector<int>>& vv) {
+        map<int, int> sizes;
+        for (int i = 0; i < vv.size(); i++) {
+            const auto& v = vv[i]; 
+            sizes[v.size()]++;    
+        }
+        cout << tag << " BEGIN" << endl;
+        for (const auto& p : sizes) {
+            cout << "Size: " << p.first << " cnt " << p.second << endl;
+        }
+        cout << tag + " END" << endl;
+    }
+
+    static void PrintStat(const string& tag, const vector<TGraph>& v) {
+        map<int, int> sizes;
+        for (const auto& x : v) {
+            sizes[x.size()]++;    
+        }
+        cout << tag << " BEGIN" << endl;
+        for (const auto& p : sizes) {
+            cout << "Size: " << p.first << " cnt " << p.second << endl;
+        }
+        cout << tag + " END" << endl;
+    }
+        
     static TClosure GetClosure(const TGraph& g, int v, TUsed& used) {
         return ClosureBFS(g, used, v);
     }
@@ -269,18 +325,21 @@ public:
     }
                 
 
-    static void BruteForce(const TGraph& graph, const vector<int>& tsOrder) {
+    static void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<int>& tsOrder) {
         const int totalVertex = static_cast<int>(tsOrder.size());
         vector<int> pos;
         pos.reserve(totalVertex);
         for (int sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
+            cerr << "BF Sample size: " << sampleSize << endl;
             pos.resize(sampleSize);
             for (int i = 0; i < pos.size(); ++i) {
                 pos[i] = i;
             }
             while (true) {
                 set<int> bh = GetBlackHole(graph, tsOrder, pos);
-                Print("BH", bh);
+                bhCount++;
+                cout << "BH count " << bhCount << endl;
+                // Print("BH", bh);
                 if (!BruteNext(pos, totalVertex)) {
                     break;
                 }
@@ -288,11 +347,25 @@ public:
         }
     }
 
-    static void BruteForce(const TGraph& graph, const vector<int>& tsOrder, const vector<char>& special) {
+    static bool CheckConnectivity(const TGraph& graphUndir, const set<int>& bh) {
+        TUsed used;
+        used.assign(graphUndir.size(), 1);
+        for (int v : bh) {
+            used[v] = 0;
+        }
+        int v = *bh.begin();
+        TClosure closure = GetClosure(graphUndir, v, used);
+        return closure.size() == bh.size();
+    }
+
+    static void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<int>& tsOrder, const vector<char>& special) {
+        const int maxSampleSize = 10;
         const int totalVertex = static_cast<int>(tsOrder.size());
         vector<int> pos;
         pos.reserve(totalVertex);
-        for (int sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
+        for (int sampleSize = 1; sampleSize <= min(maxSampleSize, totalVertex); sampleSize++) {
+            int sampleSizeCount = 0;
+            cerr << "BF Sample size: " << sampleSize << endl;
             pos.resize(sampleSize);
             for (int i = 0; i < pos.size(); ++i) {
                 pos[i] = i;
@@ -300,7 +373,12 @@ public:
             bool stop = false;
             while (!stop) {
                 set<int> bh = GetBlackHole(graph, tsOrder, pos);
-                Print("BH", bh);
+                if (CheckConnectivity(graphUndir, bh)) {
+                    bhCount++;
+                    sampleSizeCount++;
+                    cout << "BH count " << bhCount << endl;
+                    // Print("BH", bh);
+                }
                 while (true) {
                     stop = !BruteNext(pos, totalVertex);
                     if (stop) {
@@ -320,6 +398,10 @@ public:
                     }
                 }
             }
+
+            if (sampleSizeCount == 0) {
+                break;
+            }
         }
     }
     
@@ -332,11 +414,61 @@ public:
         }
         return roots;
     }
+
+    static TGraph CarveComponent(const TGraph& graph, const TClosure& component) {
+        TGraph weak;
+        weak.resize(component.size());    
+        map<int, int> mapping;
+        int cnt = 0;
+        for (int v : component) {
+            mapping[v] = cnt;
+            cnt++;
+        }
+
+        for (const auto& p : mapping) {
+            int old = p.first;
+            int neww = p.second;
+            for (int v : graph[old]) {
+                if (component.find(v) != component.end()) {
+                    weak[neww].push_back(mapping[v]);
+                }
+            }
+        }
+        return weak;
+    }
+
+        
+
+    static vector<TGraph> GetWeakComponents(const TGraph& graph, const TGraph& graphUndir) {
+        TUsed used;
+        used.resize(graph.size());
+        vector<TGraph> res;
+        for (int v = 0; v < graph.size(); ++v) {
+            if (used[v]) {
+                continue;
+            }
+            TClosure component = GetClosure(graphUndir, v, used);
+            res.push_back(CarveComponent(graph, component));
+        }
+        return res;
+    }
+
+
+    static void Solve(const TGraph& graphCond) {
+        TGraph graphCondRev = Solution::GetReverseGraph(graphCond);
+        TGraph graphCondUndir = Solution::GetUndirGraph(graphCond);
+        vector<int> roots = Solution::GetRoots(graphCondRev);
+        Solution::Print("roots", roots);
+        vector<char> special(graphCond.size());
+        vector<int> tsOrder = Solution::TopSort(graphCond, roots, special);
+//           Solution::Print("topsort", tsOrder);
+        Solution::BruteForce(graphCond, graphCondUndir, tsOrder, special);
+    }
 };
 
 int main(int argc, char * argv[]) {
     if (argc < 3){
-            cout << "use ./main input.txt optimize";
+        cout << "use ./main input.txt optimize";
     }
     
     const string inputFilePath(argv[1]);
@@ -349,25 +481,28 @@ int main(int argc, char * argv[]) {
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     {
-
         TGraph graph = Solution::ReadGraphFromFile(inputFilePath);
         TGraph graphRev = Solution::GetReverseGraph(graph);
 
         TComponents comp2Vertex = Solution::GetStrongConnectivityComponents(graph, graphRev);
         TSccMembers compMembers = Solution::GetSccMembers(comp2Vertex);
-        Solution::Print("components", compMembers);
-        int compCnt = Solution::GetCompCnt(comp2Vertex); TGraph graphCond = Solution::BuildCondensedGraph(compCnt, comp2Vertex, graph); 
+//        Solution::Print("components", compMembers);
+        Solution::PrintStat("SCC component sizes", compMembers);
+        int compCnt = Solution::GetCompCnt(comp2Vertex); 
+        TGraph graphCond = Solution::BuildCondensedGraph(compCnt, comp2Vertex, graph);
         if (optimize) {
-            TGraph graphCondRev = Solution::GetReverseGraph(graphCond);
-            vector<int> roots = Solution::GetRoots(graphCondRev);
-            vector<char> special(graphCond.size());
-            vector<int> tsOrder = Solution::TopSort(graphCond, roots, special);
-            Solution::Print("topsort", tsOrder);
-            Solution::BruteForce(graphCond, tsOrder, special);
+            TGraph graphCondUndir = Solution::GetUndirGraph(graphCond);
+            vector<TGraph> weaks = Solution::GetWeakComponents(graphCond, graphCondUndir);
+            Solution::PrintStat("Weakly connected component sizes", weaks);
+            if (false) 
+            for (const TGraph& weak : weaks) {
+                Solution::Solve(weak);
+            }
         } else {
+            TGraph graphCondUndir = Solution::GetUndirGraph(graphCond);
             vector<int> tsOrder = Solution::TopSort(graphCond);
-            Solution::Print("topsort", tsOrder);
-            Solution::BruteForce(graphCond, tsOrder);
+  //          Solution::Print("topsort", tsOrder);
+            Solution::BruteForce(graphCond, graphCondUndir, tsOrder);
         }
             
         
