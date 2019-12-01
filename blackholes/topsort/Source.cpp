@@ -20,6 +20,8 @@ using TSccMembers = vector<vector<int>>;
 using TClosure = set<int>;
 
 int bhCount = 0;
+int filtered = 0;
+int skipped = 0;
 
 class Solution {
 public:
@@ -71,42 +73,64 @@ public:
 
     static vector<int> TopSort(const TGraph& g, const vector<int>& roots, vector<char>& special) {
         vector<char> used(g.size());
-        vector<vector<int>> order(roots.size());
+        vector<int> order;
         vector<int> count(g.size());
-        int curSize = order.size();
         for (int i = 0; i < roots.size(); i++) {
             int v = roots[i];
-            dfs_recursive(g, used, order[i], v, count, special);
-            cout << "Root " << v << " closuresize " << order[i].size() << endl;
+            dfs_recursive(g, used, order, v, count, special);
         }
-        int maxid = 0;
-        for (int i = 0; i < order.size(); i++) {
-            if (order[maxid].size() < order[i].size()) {
-                maxid = i;
-            }
-        }
-        if (maxid != 0) {
-            swap(order[0], order[maxid]);
-        }
-        vector<int> totalOrder;
-        for (const auto& ord : order) {
-            totalOrder.insert(totalOrder.end(), ord.begin(), ord.end());
-        }
-        return totalOrder;
+        return order;
     }
 
     static TGraph ReadGraphFromFile(const string& filename) {
+        fstream file(filename, ios::in | ios::binary);
+        int n;
+        long long m;
+        // read header
+        file.read((char*)(&n), sizeof(int));
+        file.read((char*)(&m), sizeof(long long));
+
+        TGraph graph(n);
+
+        vector<set<int>> tmp(n);
+        for(long long i = 0; i < m; i++) {
+            int x, y;
+            file.read((char*)(&x), sizeof(int));
+            file.read((char*)(&y), sizeof(int));
+            if (x == y) {
+                continue;
+            }
+            tmp[x].insert(y);
+        }
+        for(int i = 0; i < tmp.size(); i++) {
+            const auto& t = tmp[i];
+            for (int x : t) {
+                graph[i].push_back(x);
+            }
+        }
+        return graph;
+    }
+
+ /*   static TGraph ReadGraphFromFile(const string& filename) {
         ifstream fin(filename);
         int n, m;
         fin >> n >> m;
         TGraph graph(n);
+
+        vector<set<int>> tmp(n);
         for(int i = 0; i < m; i++) {
             int x, y;
             fin >> x >> y;
-            graph[x].push_back(y);
+            tmp[x].insert(y);
+        }
+        for(int i = 0; i < tmp.size(); i++) {
+            const auto& t = tmp[i];
+            for (int x : t) {
+                graph[i].push_back(x);
+            }
         }
         return graph;
-    }
+    } */
 
     static TGraph GetReverseGraph(const TGraph& graph) {
         TGraph graphRev(graph.size());
@@ -271,32 +295,45 @@ public:
         int closureSize = 0;
         if (!used[v]) {
             q.push(v);
-            used[v] = 1;
             closure.insert(v);
         }
+        used[v] += 1;
         while(!q.empty()) {
             v = q.front();
             q.pop();
             for (int to : g[v]) {
                 if (!used[to]) {
-                    used[to] = 1;
+                    used[to] += 1;
                     q.push(to);
                     closure.insert(to);
+                } else {
+                    used[to] += 1;
                 }
             }
         }
         return closure;
     }
 
+    static void FoundBlackHole(size_t size) {
+        bhCount++;
+        cout << "bhcount " << bhCount << endl;
+    }
+
     static set<int> GetBlackHole(const TGraph& graph, const vector<int>& tsOrder, const vector<int>& pos) {
         set<int> blackhole;
         TUsed used;
-        used.resize(graph.size());
+        used.assign(graph.size(), 0);
         for (int p : pos) {
             int v = tsOrder[p];
             TClosure closure = GetClosure(graph, v, used);
             for (int x : closure) {
                 blackhole.insert(x);
+            }
+        }
+        for (int p : pos) {
+            int x = tsOrder[p];
+            if (used[x] >= 2) {
+                return {}; // means this blackhole has already been deteected;
             }
         }
         return blackhole;
@@ -330,15 +367,15 @@ public:
         vector<int> pos;
         pos.reserve(totalVertex);
         for (int sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
-            cerr << "BF Sample size: " << sampleSize << endl;
+            //cerr << "BF Sample size: " << sampleSize << endl;
             pos.resize(sampleSize);
             for (int i = 0; i < pos.size(); ++i) {
                 pos[i] = i;
             }
             while (true) {
                 set<int> bh = GetBlackHole(graph, tsOrder, pos);
-                bhCount++;
-                cout << "BH count " << bhCount << endl;
+                FoundBlackHole(bh.size());
+                // cout << "BH count " << bhCount << endl;
                 // Print("BH", bh);
                 if (!BruteNext(pos, totalVertex)) {
                     break;
@@ -359,13 +396,13 @@ public:
     }
 
     static void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<int>& tsOrder, const vector<char>& special) {
-        const int maxSampleSize = 10;
         const int totalVertex = static_cast<int>(tsOrder.size());
+        const int maxSampleSize = totalVertex;
         vector<int> pos;
         pos.reserve(totalVertex);
         for (int sampleSize = 1; sampleSize <= min(maxSampleSize, totalVertex); sampleSize++) {
             int sampleSizeCount = 0;
-            cerr << "BF Sample size: " << sampleSize << endl;
+            // cerr << "BF Sample size: " << sampleSize << endl;
             pos.resize(sampleSize);
             for (int i = 0; i < pos.size(); ++i) {
                 pos[i] = i;
@@ -373,10 +410,13 @@ public:
             bool stop = false;
             while (!stop) {
                 set<int> bh = GetBlackHole(graph, tsOrder, pos);
-                if (CheckConnectivity(graphUndir, bh)) {
-                    bhCount++;
+                if (bh.size() == 0) {
+                    filtered++;
+                }
+                if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
                     sampleSizeCount++;
-                    cout << "BH count " << bhCount << endl;
+                    FoundBlackHole(bh.size());
+                    // cout << "BH count " << bhCount << endl;
                     // Print("BH", bh);
                 }
                 while (true) {
@@ -390,6 +430,7 @@ public:
                         int v = tsOrder[p];
                         if (special[v]) {
                             skip = true;
+                            skipped += 1;
                             break;
                         }
                     }
@@ -402,6 +443,10 @@ public:
             if (sampleSizeCount == 0) {
                 break;
             }
+
+            cout << "bh_count " << bhCount << endl;
+            cout << "bh_filtered " << filtered << endl;
+            cout << "bh_skipped " << skipped << endl;
         }
     }
     
@@ -458,7 +503,17 @@ public:
         TGraph graphCondRev = Solution::GetReverseGraph(graphCond);
         TGraph graphCondUndir = Solution::GetUndirGraph(graphCond);
         vector<int> roots = Solution::GetRoots(graphCondRev);
-        Solution::Print("roots", roots);
+        int maxid = 0;
+        int maxsize = 0;
+        for (int i = 0; i < roots.size(); i++) {
+            TClosure closure = GetClosure(graphCond, roots[i]);
+            if (closure.size() > maxsize) {
+                maxid = i;
+                maxsize = closure.size();
+            }
+        }
+        swap(roots[0], roots[maxid]);
+        // Solution::Print("roots", roots);
         vector<char> special(graphCond.size());
         vector<int> tsOrder = Solution::TopSort(graphCond, roots, special);
 //           Solution::Print("topsort", tsOrder);
@@ -486,15 +541,15 @@ int main(int argc, char * argv[]) {
 
         TComponents comp2Vertex = Solution::GetStrongConnectivityComponents(graph, graphRev);
         TSccMembers compMembers = Solution::GetSccMembers(comp2Vertex);
-//        Solution::Print("components", compMembers);
+        // Solution::Print("components", compMembers);
         Solution::PrintStat("SCC component sizes", compMembers);
         int compCnt = Solution::GetCompCnt(comp2Vertex); 
         TGraph graphCond = Solution::BuildCondensedGraph(compCnt, comp2Vertex, graph);
         if (optimize) {
             TGraph graphCondUndir = Solution::GetUndirGraph(graphCond);
             vector<TGraph> weaks = Solution::GetWeakComponents(graphCond, graphCondUndir);
-            Solution::PrintStat("Weakly connected component sizes", weaks);
-            if (false) 
+            //Solution::PrintStat("Weakly connected component sizes", weaks);
+            //if (false) 
             for (const TGraph& weak : weaks) {
                 Solution::Solve(weak);
             }

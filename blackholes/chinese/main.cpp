@@ -17,19 +17,124 @@ using TCandidates = set<int>;
 using TUsed = vector<char>;
 
 int bhCount = 0;
+int filtered = 0;
+
+int printDebugInfo = 0;
  
 class Solution {
 public:
 
+    static bool CheckConnectivity(const TGraph& graphUndir, const set<int>& bh) {
+        TUsed used;
+        used.assign(graphUndir.size(), 1);
+        for (int v : bh) {
+            used[v] = 0;
+        }
+        int v = *bh.begin();
+        TClosure closure = GetClosure(graphUndir, v, used);
+        return closure.size() == bh.size();
+    }
+
+    static set<int> GetBlackHole(const TGraph& graph, const vector<int>& tsOrder, const vector<int>& pos) {
+        set<int> blackhole;
+        TUsed used;
+        used.assign(graph.size(), 0);
+        for (int p : pos) {
+            int v = tsOrder[p];
+            TClosure closure = GetClosure(graph, v, used);
+            for (int x : closure) {
+                blackhole.insert(x);
+            }
+        }
+        for (int p : pos) {
+            int x = tsOrder[p];
+            if (used[x] >= 2) {
+                return {}; // means this blackhole has already been detected;
+            }
+        }
+        return blackhole;
+    }
+
+    static bool BruteNext(vector<int>& pos, int vertexCount) {
+        int sampleSize = pos.size();
+        bool res = true;
+        for (int i = sampleSize - 1; i >= 0; --i) {
+            int& cur = pos[i];
+            int distFromEnd = sampleSize - 1 - i;
+            if (cur == vertexCount - 1 - distFromEnd) {
+                if (i == 0) {
+                    res = false;
+                }
+                continue;
+            } else {
+                cur++;
+                for (int j = i + 1; j < sampleSize; j++) {
+                    pos[j] = pos[j - 1] + 1;
+                }
+                break;
+            }
+        }
+        return res;
+    }
+                
+
+    static void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<int>& tsOrder, int bhSize) {
+        const int totalVertex = static_cast<int>(tsOrder.size());
+        vector<int> pos;
+        pos.reserve(totalVertex);
+        for (int sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
+            //cerr << "BF Sample size: " << sampleSize << endl;
+            pos.resize(sampleSize);
+            for (int i = 0; i < pos.size(); ++i) {
+                pos[i] = i;
+            }
+            while (true) {
+                set<int> bh = GetBlackHole(graph, tsOrder, pos);
+                if (bh.size() == 0) {
+                    filtered++;
+                }
+                if (bh.size() == bhSize && CheckConnectivity(graphUndir, bh)) {
+                    FoundBlackHole(bh.size());
+                }
+                if (!BruteNext(pos, totalVertex)) {
+                    break;
+                }
+            }
+            cout << "bhcount " << bhCount << endl;
+            cout << "filtered " << filtered << endl;
+        }
+    }
+
+    static void FoundBlackHole(size_t size) {
+        bhCount++;
+        cout << "bhcount " << bhCount << endl;
+    }
+
     static TGraph ReadGraphFromFile(const string& filename) {
-        ifstream fin(filename);
-        int n, m;
-        fin >> n >> m;
+        fstream file(filename, ios::in | ios::binary);
+        int n;
+        long long m;
+        // read header
+        file.read((char*)(&n), sizeof(int));
+        file.read((char*)(&m), sizeof(long long));
+
         TGraph graph(n);
-        for(int i = 0; i < m; i++) {
+
+        vector<set<int>> tmp(n);
+        for(long long i = 0; i < m; i++) {
             int x, y;
-            fin >> x >> y;
-            graph[x].push_back(y);
+            file.read((char*)(&x), sizeof(int));
+            file.read((char*)(&y), sizeof(int));
+            if (x == y) {
+                continue;
+            }
+            tmp[x].insert(y);
+        }
+        for(int i = 0; i < tmp.size(); i++) {
+            const auto& t = tmp[i];
+            for (int x : t) {
+                graph[i].push_back(x);
+            }
         }
         return graph;
     }
@@ -156,17 +261,19 @@ private:
         int closureSize = 0;
         if (!used[v]) {
             q.push(v);
-            used[v] = 1;
             closure.insert(v);
         }
+        used[v] += 1;
         while(!q.empty()) {
             v = q.front();
             q.pop();
             for (int to : g[v]) {
                 if (!used[to]) {
-                    used[to] = 1;
+                    used[to] += 1;
                     q.push(to);
                     closure.insert(to);
+                } else {
+                    used[to] += 1;
                 }
             }
         }
@@ -176,6 +283,9 @@ private:
 };
 
 void Print(const string& heading, const set<int>& closure) {
+    if (!printDebugInfo) {
+        return;
+    }
     cout << heading << ": ";
     for (int v : closure) {
         cout << v << " ";
@@ -186,6 +296,9 @@ void Print(const string& heading, const set<int>& closure) {
 int main(int argc, char** argv) { 
     const string inputFileName(argv[1]);
     int maxBHSize = atoi(argv[2]);
+    if (argc >= 4) {
+        printDebugInfo = atoi(argv[3]);
+    }
 
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -195,7 +308,7 @@ int main(int argc, char** argv) {
         TGraph graphRev = Solution::GetReverseGraph(graph);
         TGraph graphUndir = Solution::GetUndirectedGraph(graph);
 
-        cerr << "Graph built" << endl;
+        // cerr << "Graph built" << endl;
 
         if (maxBHSize == -1) {
             maxBHSize = graph.size();
@@ -207,18 +320,25 @@ int main(int argc, char** argv) {
         for (int i = 1; i <= maxBHSize; i++) {
             cerr << "Iter: " << i << endl;
             for (int v = 0; v < graph.size(); v++) {
+                if (printDebugInfo) {
+                    cout << graph[v].size() << endl;
+                }
                 if (graph[v].size() < i) {
                     candidates[i].insert(v);
                 }
             }
-            //Print("P", candidates[i]);
+            Print("P", candidates[i]);
             
             TCandidates toRemove;
             for (int v : candidates[i]) {
+                if (toRemove.find(v) != toRemove.end()) {
+                    continue;
+                }
                 if (candidates[i - 1].find(v) != candidates[i - 1].end()) {
                     continue;
                 }
                 TClosure closure = Solution::GetClosure(graph, v);
+                Print("closure", closure);
                 if (!Solution::HasCandidates(closure, candidates[i])) {
                     TClosure revClosure = Solution::GetClosure(graphRev, v);
                     toRemove.insert(revClosure.begin(), revClosure.end());
@@ -232,17 +352,22 @@ int main(int argc, char** argv) {
                 }
             }
             toRemove.clear();
-            //Print("C", candidates[i]);
+            Print("C", candidates[i]);
     // ---------------------------------------------
             for (int v : candidates[i]) {
+                if (toRemove.find(v) != toRemove.end()) {
+                    continue;
+                }
                 TClosure closure = Solution::GetClosure(graph, v);
                 size_t cs = closure.size();
+                if (printDebugInfo) {
+                    cout << "cs " << cs << endl;
+                }
                 if (cs >= i) {
                     TClosure revClosure = Solution::GetClosure(graphRev, v);
                     toRemove.insert(revClosure.begin(), revClosure.end());
                     if (cs == i) {
-                        bhCount++;
-                        cout << "bhCount = " << bhCount << endl;
+                        Solution::FoundBlackHole(cs);
                         // closure v is a blackhole
                         // Print("BH_C", closure);
                     }
@@ -257,9 +382,13 @@ int main(int argc, char** argv) {
             }
 
             toRemove.clear();
-            //Print("F", candidates[i]);
+            Print("F", candidates[i]);
+
+            vector<int> order;
+            order.insert(order.end(), candidates[i].begin(), candidates[i].end());
+            Solution::BruteForce(graph, graphUndir, order, i);
     // ---------------------------------------------
-            {
+/*            {
     
                 TUsed used;
                 used.assign(graph.size(), 1);
@@ -275,13 +404,13 @@ int main(int argc, char** argv) {
                     int dout = Solution::DegreeOut(closure, graph);
                     if (cs == i && dout == 0) {
                         bhCount++;
-                        cout << "bhCount = " << bhCount << endl;
+                        Solution::FoundBlackHole(cs);
                         // restricted closure of v is blackhole
                         // Print("BH_F", closure);                    
                     }
                 }
             }
-/*
+
     // ---------------------------------------------
             cerr << "Going undir" << endl;
             {
