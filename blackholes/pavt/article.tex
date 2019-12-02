@@ -109,8 +109,6 @@ The second is the blackhole search itself. This step is done after preprocessing
 
 \FIXME{не забыть вставить ссылки на RMAT \cite{chakrabarti2004r}, SSCA2 \cite{bader2005design}, \cite{random-uniform}, SmallWorld \cite{watts1999networks}}
 
-\FIXME{не понял логику абзаца: большая SCC может жрать много времени, граф может из нее состоять, и лучше сжать ее до 1 вершины}
-
 As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
 For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's vertices. 
 In such a case, it would be nice to consider large SCC as a single vertex, aggregating all incoming and outcoming peripheral edges
@@ -204,13 +202,111 @@ be filtered later.\par
 
 Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which, basically means, that
 we can lay those nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
-in the given roots closure. Finally, if some node lays on the i'th position on the topological sort and its closure size is i, than we can
-be conclude, that every node with index less than i in the topological sort will be reachable from v(i).
+in the given roots closure. Finally, if some node lays on the i'th position on the topological sort and its closure size is i, then we can 
+conclude, that every node with index less than i in the topological sort will be reachable from v(i).
 
 %
 
 %
 \section{Experimental part}
+To demonstrate efficiency of our approach, we conducted a series of experiments. We ran both algorithms (New Jersey team and ours) on a 
+set of graphs. \par
+For these experiments we chose RMAT, Uniform Random (UR) and SSCA2 graph types. Those were generated for scales from 4 to 22
+with step 2. Size i means that graph has 2 pow i nodes and 32 * V edges. Actual count of edges to process can differ from these ideal values, as duplicate edges 
+and self-loops are omitted when reading graph from file. \par
+
+\begin{table}[]
+\caption{Configurations of experimental graphs}
+\label{tabular:tableconfigurations}
+\begin{center}
+\begin{tabular}{ccc}
+Graph Type & Nodes Count & Edges Count \\
+RMAT.04 & 16 & 177 \\
+RMAT.06 & 64 & 1270 \\
+RMAT.08 & 256 & 6663 \\
+RMAT.10 & 1024 & 30186 \\
+RMAT.12 & 4096 & 126988 \\
+RMAT.14 & 16384 & 517554 \\
+RMAT.16 & 65536 & 2087072 \\
+RMAT.18 & 262144 & 7892410 \\
+RMAT.20 & 1048576 & 32993233 \\
+RMAT.22 & 4194304 & 67099679 \\
+SSCA2.04 & 16 & 120 \\
+SSCA2.06 & 64 & 722 \\
+SSCA2.08 & 256 & 2668 \\
+SSCA2.10 & 1024 & 10529 \\
+SSCA2.12 & 4096 & 43603 \\
+SSCA2.14 & 16384 & 173477 \\
+SSCA2.16 & 65536 & 677649 \\
+SSCA2.18 & 262144 & 2724762 \\
+SSCA2.20 & 1048576 & 10902287 \\
+SSCA2.22 & 4194304 & 43580024 \\
+UR.04 & 16 & 207 \\
+UR.06 & 64 & 1614 \\
+UR.08 & 256 & 7652 \\
+UR.10 & 1024 & 32201 \\
+UR.12 & 4096 & 130486 \\
+UR.14 & 16384 & 523740 \\
+UR.16 & 65536 & 2096570 \\
+UR.18 & 262144 & 8388074 \\
+UR.20 & 1048576 & 33553908 \\
+UR.22 & 4194304 & 134217174
+\end{tabular}
+\end{center}
+\end{table}
+
+We've been conducting our experiments on a Linux machine with the following specifications:
+\begin{itemize}
+    \item OS: Ubuntu 16.04 xenial
+    \item Kernel: x86\_64 Linux 4.15.0-46-generic
+    \item Shell: bash 4.3.48
+    \item CPU: Intel Core i7-8550U CPU @ 4GHz
+    \item RAM: 15802MiB
+\end{itemize}
+
+All runs were performed in a single-thread mode. We allowed up to 20 minutes of working time for every run. In order to save time,
+algorithms did not print out found blackholes, but printed counter on every found and not filtered (by any reason) blackhole.
+
+\begin{table}[H]
+\caption{Experimental results}
+\label{tabular:tableresults}
+\begin{center}
+\begin{tabular}{ccccccccc}
+Graph & Type & Algorithm & Blackholes & Time & Algorithm & Blackholes & Time \\
+RMAT & 04 & NewJersey & 1 & 0.000265422 & TopSort & 1 & 0.000115912 \\
+RMAT & 06 & NewJersey & 1 & 0.0121347 & TopSort & 1 & 0.00034812 \\
+RMAT & 08 & NewJersey & 1 & 1.66685 & TopSort & 1 & 0.00146486 \\
+RMAT & 10 & NewJersey & 6 & 1200 & TopSort & 10 & 0.00684045 \\
+RMAT & 12 & NewJersey & 29 & 1200 & TopSort & 971738 & 1200 \\
+RMAT & 14 & NewJersey & 187 & 1200 & TopSort & 735128 & 1200 \\
+RMAT & 16 & NewJersey & 1192 & 1200 & TopSort & 373705 & 1200 \\
+RMAT & 18 & NewJersey & 5176 & 1200 & TopSort & 10286 & 1200 \\
+RMAT & 20 & NewJersey & 617 & 1200 & TopSort & 48867 & 1200 \\
+RMAT & 22 & NewJersey & 98 & 1200 & TopSort & 0 & 1200 \\
+SSCA2 & 04 & NewJersey & 16 & 0.154763 & TopSort & 16 & 0.000189925 \\
+SSCA2 & 06 & NewJersey & 11 & 1200 & TopSort & 70 & 0.00121528 \\
+SSCA2 & 08 & NewJersey & 42 & 1200 & TopSort & 263314 & 1200 \\
+SSCA2 & 10 & NewJersey & 85 & 1200 & TopSort & 114411 & 1200 \\
+SSCA2 & 12 & NewJersey & 343 & 1200 & TopSort & 5870 & 1200 \\
+SSCA2 & 14 & NewJersey & 1433 & 1200 & TopSort & 323671 & 1200 \\
+SSCA2 & 16 & NewJersey & 5829 & 1200 & TopSort & 893376 & 1200 \\
+SSCA2 & 18 & NewJersey & 23179 & 1200 & TopSort & 224567 & 1200 \\
+SSCA2 & 20 & NewJersey & 92347 & 1200 & TopSort & 24199 & 1200 \\
+SSCA2 & 22 & NewJersey & 370770 & 1200 & TopSort & 0 & 1200 \\
+UR & 04 & NewJersey & 1 & 0.000223768 & TopSort & 1 & 0.000115029 \\
+UR & 06 & NewJersey & 1 & 0.0170713 & TopSort & 1 & 0.000331235 \\
+UR & 08 & NewJersey & 1 & 2.30256 & TopSort & 1 & 0.00147483 \\
+UR & 10 & NewJersey & 1 & 240.822 & TopSort & 1 & 0.00670724 \\
+UR & 12 & NewJersey & 0 & 1200 & TopSort & 1 & 0.034011 \\
+UR & 14 & NewJersey & 0 & 1200 & TopSort & 1 & 0.47257 \\
+UR & 16 & NewJersey & 0 & 1200 & TopSort & 1 & 3.05003 \\
+UR & 18 & NewJersey & 0 & 1200 & TopSort & 1 & 14.5788 \\
+UR & 20 & NewJersey & 0 & 1200 & TopSort & 1 & 67.7176 \\
+UR & 22 & NewJersey & 0 & 1200 & TopSort & 1 & 373.244
+\end{tabular}
+\end{center}
+\end{table}
+
 %
 
 %
