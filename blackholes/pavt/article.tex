@@ -111,8 +111,6 @@ The second is the blackhole search itself. This step is done after preprocessing
 
 \FIXME{не понял логику абзаца: большая SCC может жрать много времени, граф может из нее состоять, и лучше сжать ее до 1 вершины}
 
-\FIXME{Хорошо бы ссылку на graph condensation}
-
 As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
 For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's vertices. 
 In such a case, it would be nice to consider large SCC as a single vertex, aggregating all incoming and outcoming peripheral edges
@@ -125,7 +123,8 @@ TODO: Graph condensation definition
 \end{definition}
 
 In this article we use the following algorithm for finding graph condensation.
-It was independently proposed by Kosaraju and Sharir back in 1979.\par 
+It was independently proposed by Kosaraju and Sharir back in 1979. \FIXME{Ссылку на эту статью} \par
+
 First, we find topological sort of the initial graph. It takes O(E + V).
 \begin{definition}
 TODO: Topological sort
