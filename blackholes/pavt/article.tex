@@ -23,6 +23,24 @@
 \def\orcidID#1{\unskip$^{[#1]}$}
 \def\letter{$^{\textrm{(\Letter)}}$}
 
+%%%%%% DEBUG section %%%%%%
+\newcommand*{\DEBUG}{}
+
+\ifdefined\DEBUG
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[russian]{babel}
+\usepackage[usenames]{color}
+%\usepackage{colortbl}
+\newcommand{\FIXME}[1]{ % описание
+	\colorbox{yellow}{#1}
+}
+\else
+\newcommand{\FIXME}[1]{ % описание
+}
+\fi
+
+
 \begin{document}
 \mainmatter              % start of a contribution
 %
@@ -70,29 +88,37 @@ and provide results of experimental comparison between our approach and previous
 %
 
 %
-\subsection{Related work}
+\subsection{Related Work}
 \cite{li2010detecting,li2012mining,li2014mining,hong2015detecting}
 
 %
-\subsection{Known issues}
+\subsection{Known Issues}
 %
 
 %
-\section{Algorithm design}
-We propose to look at the black hole search task from the following perspective: it would be divided into two independent 
-tasks. 
-The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to
-restricted time span. Decreased graph scale would definitely speed up the rest of the calculation, as it is result in brute force search in most cases.
-The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in restricted time.
+\section{Algorithm Design}
+We propose to look at the blackhole search problem from the following: it would be divided into two independent tasks. 
+The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to a restricted time span. 
+Decreased graph scale would definitely speed up the the calculation, as it can fall into a brute-force search in most cases.
+The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in a restricted time.
 %
 
 %
-\subsection{Graph preprocessing}
-As it was described in the Known issues section, large SCCs waste lots of computational time without adding any new blackholes.
+\subsection{Graph Preprocessing}
+\FIXME{не забыть описать в KnownIssues}
+
+\FIXME{не забыть вставить ссылки на RMAT \cite{chakrabarti2004r}, SSCA2 \cite{bader2005design}, \cite{random-uniform}, SmallWorld \cite{watts1999networks}}
+
+\FIXME{не понял логику абзаца: большая SCC может жрать много времени, граф может из нее состоять, и лучше сжать ее до 1 вершины}
+
+\FIXME{Хорошо бы ссылку на graph condensation}
+
+As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
 For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's vertices. 
 In such a case, it would be nice to consider large SCC as a single vertex, aggregating all incoming and outcoming peripheral edges
 of original SCC.
-On the preprocessing stage of algrithm, we reduce every SCC to a single vertex. The trick is not new and known as graph condensation.
+On the preprocessing stage of the algorithm we reduce every SCC to a single vertex. The algorithm is not new and known as a graph condensation.
+
 More formally:\par
 \begin{definition}
 TODO: Graph condensation definition
