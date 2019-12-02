@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your "contribution" to a proceedings volume
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%% Springer %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass{svproc}
+\usepackage{marvosym}
+%
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\usepackage{graphicx}
+
+% to typeset URLs, URIs, and DOIs
+\usepackage{url}
+\usepackage{hyperref}
+\def\UrlFont{\rmfamily}
+\providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}
+
+\def\orcidID#1{\unskip$^{[#1]}$}
+\def\letter{$^{\textrm{(\Letter)}}$}
+
+\begin{document}
+\mainmatter              % start of a contribution
+%
+\title{Topological approach to finding blackholes in directed networks}
+%
+\titlerunning{Topological black holes mining}  % abbreviated title (for running head)
+%                                     also used for the TOC unless
+%                                     \toctitle is used
+%
+\author{Denis Ivanov\inst{1} \and Alexander Semenov\inst{2}}
+%
+\authorrunning{Ivanov, Semenov} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{Denis Ivanov and Alexander Semenov}
+%
+\institute{Lomonosov Moscow State University, Moscow, Russian Federation \\
+\email{mr.salixnew@gmail.com}
+\and
+JSC NICEVT, Moscow, Russian Federation\\
+\email{semenov@nicevt.ru}
+}
+
+\maketitle              % typeset the title of the contribution
+
+\begin{abstract}
+In this paper we consider the task of finding so called Blackhole pattern in directed unweighed graphs.
+Firstly, we analyse already existing algorithms and approaches. Secondly, we describe how structure of a graph
+affects their efficiency. Then we introduce our approach to graph preprocessing. Finally, we describe topological sort based heuristic
+and provide results of experimental comparison between our approach and previously developed algorithm.
+% We would like to encourage you to list your keywords within
+% the abstract section using the \keywords{...} command.
+\keywords{Directed networks $\cdot$ Subgraph mining}
+\end{abstract}
+%
+\section{Blackhole search in directed graph}
+%
+
+%
+\subsection{Task statement}
+%
+
+%
+\subsubsection{Subsection example}
+%
+
+%
+\subsection{Related work}
+%
+
+%
+\subsection{Known issues}
+%
+
+%
+\section{Graph perprocessing}
+%
+
+%
+\section{Graph topology}
+%
+
+%
+\section{Algorithm design}
+%
+
+%
+\section{Experimental part}
+%
+
+%
+\section{Conclusion}
+%
+
+%
+% ---- Bibliography ----
+%
+\bibliographystyle{spmpsci}
+\begin{thebibliography}{6}
+%
+
+\bibitem {a1:a2}
+Example
+\doi{doi:number}
+
+\bibitem {onlyurl}
+NCBI: National Center for Biotechnology Information. \url{http://www.ncbi.nlm.nih.gov}
+
+\end{thebibliography}
+\end{document}
