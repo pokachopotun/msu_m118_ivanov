@@ -77,7 +77,7 @@ and provide results of experimental comparison between our approach and previous
 \end{abstract}
 %
 \section{Blackhole search in directed graph}
-%
+applications Anti-Money Laundering \cite{semenov2017survey}
 
 %
 \subsection{Task statement}
@@ -112,10 +112,10 @@ The second is the blackhole search itself. This step is done after preprocessing
 \FIXME{не понял логику абзаца: большая SCC может жрать много времени, граф может из нее состоять, и лучше сжать ее до 1 вершины}
 
 As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
-For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's vertices. 
-In such a case, it would be nice to consider large SCC as a single vertex, aggregating all incoming and outcoming peripheral edges
+For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
+In such a case, it would be nice to consider large SCC as a single node, aggregating all incoming and outcoming peripheral edges
 of original SCC.
-On the preprocessing stage of the algorithm we reduce every SCC to a single vertex. The algorithm is not new and known as a graph condensation.
+On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
 
 More formally:\par
 \begin{definition}
@@ -131,30 +131,30 @@ TODO: Topological sort
 \end{definition}
 
 \begin{definition}
-Closure of vertex v is a set of all nodes reachable from v, including v.
+Closure of node v is a set of all nodes reachable from v, including v.
 \end{definition}
 
 \begin{definition}
 TODO: Reachable
 \end{definition}
 
-When we finally have an array, containing graph vertices in the topologically sorted order, we do the following:
+When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
 
-Define global array of used vertices. Initially, all vertices are unused.
-Then for every vertex from bottom to top:
+Define global array of used nodes. Initially, all nodes are unused.
+Then for every node from bottom to top:
 \begin{enumerate}
-    \item Acquire closure of unused vertices reachable from current vertex; 
-    \item Mark every vertex in the closure as used;
-    \item All the acquired vertices belong to the same SCC.
+    \item Acquire closure of unused nodes reachable from current node; 
+    \item Mark every node in the closure as used;
+    \item All the acquired nodes belong to the same SCC.
 \end{enumerate}
 
 The fact given in the last step can be shortly explained in the following way:
-topological sort guarantees that any vertex has index larger than indeces of her children.
-That is why, given that we process vertices from bottom to top, by the moment we process the vertex, all it's children are already marked used and no longer available for search.
+topological sort guarantees that any node has index larger than indeces of her children.
+That is why, given that we process nodes from bottom to top, by the moment we process the node, all it's children are already marked used and no longer available for search.
 As all the ways down are prohibited and there's no way up, we will acquire an SCC.\par
 
-As a result of the algorithm, described above, we have each vertex associated with certain SCC.
-SCCs itself form a graph with number of vertices less than or equal to one of the initial graph.
+As a result of the algorithm, described above, we have each node associated with certain SCC.
+SCCs itself form a graph with number of nodes less than or equal to one of the initial graph.
 
 Finally, we need to remove edges duplicates and the graph condesation is built. 
 
@@ -163,9 +163,9 @@ Finally, we need to remove edges duplicates and the graph condesation is built.
 
 %
 \subsection{Blackholes search}
-When the graph is prepared, we can move on to searching blackholes. The task is combinatorial in its nature, therefore, we aim to
-decrease the number of potential black holes.
-To understand the issue, we first describe BruteForce approach. \par
+When the graph is prepared, we can move on to searching blackholes. The problem is combinatorial in its nature, therefore, we aim to
+decrease the number of potential blackholes.
+To understand the issue, we first describe a brute-force approach. 
 
 \begin{definition}
 TODO: simple blackhole
@@ -187,17 +187,16 @@ TODO: complex blackhole
 TODO:
 \end{definition}
 
-To BruteForce the task we iterate over all possible unordered sets of nodes. 
-Then for every node we acquire its closure. Union of all such closures is a candidate blackhole.
-If candidate blackhole is a weakly connected subgraph, then it is a blackhole.
+%TODO: осознать
+In the BruteForce algorithm we iterate over all possible unordered sets of nodes. 
+Then for every node we acquire its closure. Union of all such closures is a potential blackhole.
+If the candidate blackhole is a weakly connected subgraph, then it is a blackhole.
 
-With BruteForce algorithm it is possible to find the same blackhole several times.
+With the BruteForce algorithm it is possible to find the same blackhole several times.
 We aim to avoid at least some of the duplicates and introduce heuristic for it.
 
-According to the definitions above if some node is not a root of blackhole, it can be omitted, as set of roots
-uniquely identify a blackhole.
-Every non-root node in blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for
-the given graph, we can skip bloated non-basis combinations of nodes.
+According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
+Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
 Of course, we could straightforward build the reachability matrix. But, it takes O(V \^ 3) time. Even though we decreased graph size
 in preprocessing step, it still can result in lots of computation. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later.\par
