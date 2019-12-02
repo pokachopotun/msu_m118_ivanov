@@ -87,7 +87,52 @@ The second is the blackhole search itself. This step is done after preprocessing
 %
 
 %
-\subsection{Graph perprocessing}
+\subsection{Graph preprocessing}
+As it was described in the Known issues section, large SCCs waste lots of computational time without adding any new blackholes.
+For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's vertices. 
+In such a case, it would be nice to consider large SCC as a single vertex, aggregating all incoming and outcoming peripheral edges
+of original SCC.
+On the preprocessing stage of algrithm, we reduce every SCC to a single vertex. The trick is not new and known as graph condensation.
+More formally:\par
+\begin{definition}
+TODO: Graph condensation definition
+\end{definition}
+
+In this article we use to use the following algorithm for finding graph condensation.\par
+
+First, we find topological sort of the initial graph. It takes O(E + V).
+\begin{definition}
+TODO: Topolorgical sort
+\end{definition}
+
+\begin{definition}
+TODO: Closure
+\end{definition}
+
+\begin{definition}
+TODO: Reachable
+\end{definition}
+
+When we finally have an array, containing graph vertices in the topologically sorted order, we do the following:
+
+Define global array of used vertices. Initially, all vertices are unused.
+Then for every vertex from bottom to top:
+\begin{enumerate}
+    \item Acquire closure of unused vertices reachable from current vertex; 
+    \item Mark every vertex in the closure as used;
+    \item All the acquired vertices belong to the same SCC.
+\end{enumerate}
+
+The fact given in the last step can be shortly explained in the following way:
+topological sort guarantees that any vertex has index larger than indeces of her children.
+That is why, given that we process vertices from bottom to top, by the moment we process the vertex, all it's children are already marked used and no longer available for search.
+As all the ways down are prohibited and there's no way up, we will acquire an SCC.\par
+
+As a result of the algorithm, described above, we have each vertex associated with certain SCC.
+SCCs itself form a graph with number of vertices less than or equal to one of the initial graph.
+
+Finally, we need to remove edges duplicates and the graph condesation is built.
+
 %
 
 %
