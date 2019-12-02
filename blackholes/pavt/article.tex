@@ -124,15 +124,15 @@ More formally:\par
 TODO: Graph condensation definition
 \end{definition}
 
-In this article we use to use the following algorithm for finding graph condensation.\par
-
+In this article we use the following algorithm for finding graph condensation.
+It was independently proposed by Kosaraju and Sharir back in 1979.\par 
 First, we find topological sort of the initial graph. It takes O(E + V).
 \begin{definition}
-TODO: Topolorgical sort
+TODO: Topological sort
 \end{definition}
 
 \begin{definition}
-TODO: Closure
+Closure of vertex v is a set of all nodes reachable from v, including v.
 \end{definition}
 
 \begin{definition}
@@ -157,12 +157,57 @@ As all the ways down are prohibited and there's no way up, we will acquire an SC
 As a result of the algorithm, described above, we have each vertex associated with certain SCC.
 SCCs itself form a graph with number of vertices less than or equal to one of the initial graph.
 
-Finally, we need to remove edges duplicates and the graph condesation is built.
+Finally, we need to remove edges duplicates and the graph condesation is built. 
+
 
 %
 
 %
-\subsection{Graph topology}
+\subsection{Blackholes search}
+When the graph is prepared, we can move on to searching blackholes. The task is combinatorial in its nature, therefore, we aim to
+decrease the number of potential black holes.
+To understand the issue, we first describe BruteForce approach. \par
+
+\begin{definition}
+TODO: simple blackhole
+\end{definition}
+
+\begin{definition}
+TODO: root of blackhole
+\end{definition}
+
+\begin{definition}
+TODO: basis of blackhole
+\end{definition}
+
+\begin{definition}
+TODO: complex blackhole
+\end{definition}
+
+\begin{definition}
+TODO:
+\end{definition}
+
+To BruteForce the task we iterate over all possible unordered sets of nodes. 
+Then for every node we acquire its closure. Union of all such closures is a candidate blackhole.
+If candidate blackhole is a weakly connected subgraph, then it is a blackhole.
+
+With BruteForce algorithm it is possible to find the same blackhole several times.
+We aim to avoid at least some of the duplicates and introduce heuristic for it.
+
+According to the definitions above if some node is not a root of blackhole, it can be omitted, as set of roots
+uniquely identify a blackhole.
+Every non-root node in blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for
+the given graph, we can skip bloated non-basis combinations of nodes.
+Of course, we could straightforward build the reachability matrix. But, it takes O(V \^ 3) time. Even though we decreased graph size
+in preprocessing step, it still can result in lots of computation. That is why, we will only try to partially skip duplicates and the rest will
+be filtered later.\par
+
+Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which, basically means, that
+we can lay those nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
+in the given roots closure. Finally, if some node lays on the i'th position on the topological sort and its closure size is i, than we can
+be conclude, that every node with index less than i in the topological sort will be reachable from v(i).
+
 %
 
 %
@@ -179,14 +224,4 @@ Finally, we need to remove edges duplicates and the graph condesation is built.
 \bibliographystyle{spmpsci}
 \bibliography{biblio}
 
-
-%\begin{thebibliography}{6}
-%\bibitem {a1:a2}
-%Example
-%\doi{doi:number}
-
-%\bibitem {onlyurl}
-%\NCBI: National Center for Biotechnology Information. \url{http://www.ncbi.nlm.nih.gov}
-
-%\end{thebibliography}
 \end{document}
