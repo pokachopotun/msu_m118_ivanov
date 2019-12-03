@@ -239,7 +239,51 @@ be filtered later in lazy manner.
 Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which basically means, that
 we can iterate over these nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
 in the given roots closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
-conclude, that every node with index less than $i$ in the topological sort will be reachable from $v[i]$. 
+conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsort[i]$. We will call such nodes special.
+
+If there are two special nodes under the same root, union of their closures will be equal to the closure of topologically higher node.
+Hence, union of closures for any subset of special nodes under the same root will result into closure of the highest special node.
+
+Let's consider two nodes in the closure of global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
+special one should be topologically lower than non-special. Otherwise it would be one node basis.
+
+To sum up: if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure. 
+
+Imagine, we are given a graph and a set of nodes. What is the algorithm to decide whether these nodes form the basis of a blackhole? We shall decide if there's at least
+one non-basic node.
+First, we need to know what special nodes there are. To find out, we will take every global root of condensated graph and find topoological sort of its closure.
+Those vertices, which suffice the rule above, we will mark as "special". 
+This step can be precalculated.
+Now, we shall calculate how many special nodes for every root there is in the given set. If there is more than one special node for root - the set is to be called non-basis and
+omitted. Also we shall check if there are any non-special nodes lower than the special ones, and if those found - omit the node set.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G(V,E)$ -- directed acyclic graph (Graph condensation)}
+			\Output{$Special$ -- }
+			// build the used direction sets\\ 
+			\ForEach{$v \in C$}{
+				$B(v) = \{s_i: \alpha_{u_i, s_i} \in BFS(CDG(C, E), v)\}$
+			}
+			\ForEach{$\alpha_{v_1, s_1}, \alpha_{v_2, s_2} \in C: v_2 = v_1 + s_1, (\alpha_{v_1, s_1}, \alpha_{v_2, s_2}) \notin E, s_1 \ge min\_dir$}{
+				\If{$s_1 \notin B(\alpha_{v_2,s_2})$}{
+					add $(\alpha_{v_1, s_1}, \alpha_{v_2, s_2})$ to $E$\\
+					// rebuild used direction set for $\alpha_{v_1, s_1}$\\
+					\ForEach{$v \in BFS(CDG(C, \bar{E}), \alpha_{v_1, s_1})$}{
+						$B(v) = B(v) \cup B(\alpha_{v_2, s_2})$
+					}
+				}
+			}
+			\label{alg:add_additional_edge}
+			\caption{Adding edges to CDG.}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
 TopSortFilter algorithm:
 \begin{enumerate}
     \item For every node 
