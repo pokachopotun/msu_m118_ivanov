@@ -13,6 +13,8 @@
 % RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage[boxed,vlined,ruled]{algorithm2e}
 
 % to typeset URLs, URIs, and DOIs
 \usepackage{url}
@@ -107,7 +109,7 @@ The second is the blackhole search itself. This step is done after preprocessing
 \subsection{Graph Preprocessing}
 \FIXME{не забыть описать в KnownIssues}
 
-\FIXME{не забыть вставить ссылки на RMAT \cite{chakrabarti2004r}, SSCA2 \cite{bader2005design}, \cite{random-uniform}, SmallWorld \cite{watts1999networks}}
+\FIXME{не забыть вставить ссылки SmallWorld \cite{watts1999networks}}
 
 As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
 For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
@@ -161,7 +163,7 @@ Finally, we need to remove edges duplicates and the graph condesation is built.
 %
 
 %
-\subsection{Blackholes search}
+\subsection{Blackholes Search}
 When the graph is prepared, we can move on to searching blackholes. The problem is combinatorial in its nature, therefore, we aim to
 decrease the number of potential blackholes.
 To understand the issue, we first describe a brute-force approach. 
@@ -186,6 +188,35 @@ TODO: complex blackhole
 TODO:
 \end{definition}
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$CDG(C, E)$ -- channel dependency graph for a system topology with 
+				direction order routing, \\
+				min\_dir -- directions, which are less than this will not be considered}
+			\Output{$CDG$ with added edges}
+			// build the used direction sets\\ 
+			\ForEach{$v \in C$}{
+				$B(v) = \{s_i: \alpha_{u_i, s_i} \in BFS(CDG(C, E), v)\}$
+			}
+			\ForEach{$\alpha_{v_1, s_1}, \alpha_{v_2, s_2} \in C: v_2 = v_1 + s_1, (\alpha_{v_1, s_1}, \alpha_{v_2, s_2}) \notin E, s_1 \ge min\_dir$}{
+				\If{$s_1 \notin B(\alpha_{v_2,s_2})$}{
+					add $(\alpha_{v_1, s_1}, \alpha_{v_2, s_2})$ to $E$\\
+					// rebuild used direction set for $\alpha_{v_1, s_1}$\\
+					\ForEach{$v \in BFS(CDG(C, \bar{E}), \alpha_{v_1, s_1})$}{
+						$B(v) = B(v) \cup B(\alpha_{v_2, s_2})$
+					}
+				}
+			}
+			\label{alg:add_additional_edge}
+			\caption{Adding edges to CDG.}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
 %TODO: осознать
 In the BruteForce algorithm we iterate over all possible unordered sets of nodes. 
 Then for every node we acquire its closure. Union of all such closures is a potential blackhole.
@@ -196,45 +227,45 @@ We aim to avoid at least some of the duplicates and introduce heuristic for it.
 
 According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
 Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
-Of course, we could straightforward build the reachability matrix. But, it takes O(V \^ 3) time. Even though we decreased graph size
+
+\FIXME{определить $G=(V, E)$}
+\FIXME{определить v[i]}
+
+Of course, we could straightforward build the reachability matrix. But, it takes $O(V^3)$ time. Even though we decreased graph size
 in preprocessing step, it still can result in lots of computation. It's worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later in lazy manner.
 
-Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which, basically means, that
-we can lay those nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
-in the given roots closure. Finally, if some node lays on the i'th position on the topological sort and its closure size is i, then we can 
-conclude, that every node with index less than i in the topological sort will be reachable from topsort[i].
-
+Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which basically means, that
+we can iterate over these nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
+in the given roots closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
+conclude, that every node with index less than $i$ in the topological sort will be reachable from $v[i]$. 
 TopSortFilter algorithm:
-\begin{enumerated}
+\begin{enumerate}
     \item For every node 
     \item Calculate topological sort order
     \item Calculate closure size for every vertex
     \item For every node
-
+\end{enumerate}
 %
+\section{Experimental Results}
+To demonstrate efficiency of our approach, we conducted a series of experiments. We ran the both algorithms (New Jersey and TopSort) on a 
+set of graphs. 
 
-%
-\section{Experimental part}
-To demonstrate efficiency of our approach, we conducted a series of experiments. We ran both algorithms (New Jersey team and ours) on a 
-set of graphs.
-
-iBlackhole algorithm was implemented in accordance with the pseudocode in th original article. Divide and Conquer heuristic were not used for it.
+iBlackhole algorithm was implemented in accordance with the pseudocode in the original article. Divide and Conquer heuristic were not used for it.
 Our algorithm first applies condensation-based preprocessing and then uses BruteForce with partial reachability heuristic implemented via topsort.
 Both algorithms filter duplicates 
 
-
-For these experiments we chose RMAT, Uniform Random (UR) and SSCA2 graph types. Those were generated for scales from 4 to 22
-with step 2. Size i means that graph has 2 pow i nodes and 32 * V edges. Actual count of edges to process can differ from these ideal values, as duplicate edges 
-and self-loops are omitted when reading graph from file.
+For these experiments we chose Uniform Random (UR) \cite{random-uniform}, RMAT \cite{chakrabarti2004r},  and SSCA2 \cite{bader2005design} graph types. Those were generated for scales from 4 to 22
+with step 2. Size $i$ means that graph has $2^i$ nodes and $32*V$ edges. Actual count of edges to process can differ from these ideal values, as duplicate edges and self-loops are omitted when reading graph from file. Configuration of the considered graphs is presented in Table \ref{tabular:graphs}.
 
 \begin{table}[]
-\caption{Configurations of experimental graphs}
-\label{tabular:tableconfigurations}
+\caption{Configuration of experimental graphs}
+\label{tabular:graphs}
 \begin{center}
-\begin{tabular}{ccc}
+\begin{tabular}{c|c|c}
 Graph Type & Nodes Count & Edges Count \\
+\hline
 RMAT.04 & 16 & 177 \\
 RMAT.06 & 64 & 1270 \\
 RMAT.08 & 256 & 6663 \\
@@ -269,13 +300,13 @@ UR.22 & 4194304 & 134217174
 \end{center}
 \end{table}
 
-We've been conducting our experiments on a Linux machine with the following specifications:
+We have been conducting our experiments on a Linux machine with the following specifications:
 \begin{itemize}
+    \item CPU: Intel Core i7-8550U CPU @ 4GHz
+    \item RAM: 15802 MiB
     \item OS: Ubuntu 16.04 xenial
     \item Kernel: x86\_64 Linux 4.15.0-46-generic
     \item Shell: bash 4.3.48
-    \item CPU: Intel Core i7-8550U CPU @ 4GHz
-    \item RAM: 15802MiB
 \end{itemize}
 
 All runs were performed in a single-thread mode. We allowed up to 20 minutes of working time for every run. In order to save time,
@@ -287,8 +318,9 @@ Please, mention, that "blackhole found" means that we have a set of vertex numbe
 \caption{Experimental results}
 \label{tabular:tableresults}
 \begin{center}
-\begin{tabular}{ccccccccc}
+\begin{tabular}{c|c|c|c|c|c|c|c|c}
 Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
+\hline
 RMAT & 04 & NewJersey & 1 & 0.000265422 & TopSort & 1 & 0.000115912 \\
 RMAT & 06 & NewJersey & 1 & 0.0121347 & TopSort & 1 & 0.00034812 \\
 RMAT & 08 & NewJersey & 1 & 1.66685 & TopSort & 1 & 0.00146486 \\
@@ -312,7 +344,7 @@ SSCA2 & 12 & NewJersey & 343 & 1200 & TopSort & 5870 & 1200 \\
 \caption{Experimental results. Part 2}
 \label{tabular:tableresults2}
 \begin{center}
-\begin{tabular}{ccccccccc}
+\begin{tabular}{c|c|c|c|c|c|c|c|c}
 Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
 SSCA2 & 14 & NewJersey & 1433 & 1200 & TopSort & 323671 & 1200 \\
 SSCA2 & 16 & NewJersey & 5829 & 1200 & TopSort & 893376 & 1200 \\
@@ -339,7 +371,8 @@ UR & 22 & NewJersey & 0 & 1200 & TopSort & 1 & 373.244
 
 %
 \section{Conclusion}
-%
+
+\textit{Comment for the reviewer}. In the final paper revision we add parallel implementation of the TopSort algorithm and present much detailed evaluation on the larger graphs. 
 
 %
 % ---- Bibliography ----
