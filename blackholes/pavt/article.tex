@@ -115,13 +115,14 @@ In such a case, it would be nice to consider large SCC as a single node, aggrega
 of original SCC.
 On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
 
-More formally:\par
+More formally:
+
 \begin{definition}
 TODO: Graph condensation definition
 \end{definition}
 
 In this article we use the following algorithm for finding graph condensation.
-It was independently proposed by Kosaraju and Sharir back in 1979. \FIXME{Ссылку на эту статью} \par
+It was independently proposed by Kosaraju and Sharir back in 1979. \FIXME{Ссылку на эту статью}
 
 First, we find topological sort of the initial graph. It takes O(E + V).
 \begin{definition}
@@ -149,7 +150,7 @@ Then for every node from bottom to top:
 The fact given in the last step can be shortly explained in the following way:
 topological sort guarantees that any node has index larger than indeces of her children.
 That is why, given that we process nodes from bottom to top, by the moment we process the node, all it's children are already marked used and no longer available for search.
-As all the ways down are prohibited and there's no way up, we will acquire an SCC.\par
+As all the ways down are prohibited and there's no way up, we will acquire an SCC.
 
 As a result of the algorithm, described above, we have each node associated with certain SCC.
 SCCs itself form a graph with number of nodes less than or equal to one of the initial graph.
@@ -196,23 +197,37 @@ We aim to avoid at least some of the duplicates and introduce heuristic for it.
 According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
 Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
 Of course, we could straightforward build the reachability matrix. But, it takes O(V \^ 3) time. Even though we decreased graph size
-in preprocessing step, it still can result in lots of computation. That is why, we will only try to partially skip duplicates and the rest will
-be filtered later.\par
+in preprocessing step, it still can result in lots of computation. It's worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
+Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
+be filtered later in lazy manner.
 
 Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which, basically means, that
 we can lay those nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
 in the given roots closure. Finally, if some node lays on the i'th position on the topological sort and its closure size is i, then we can 
-conclude, that every node with index less than i in the topological sort will be reachable from v(i).
+conclude, that every node with index less than i in the topological sort will be reachable from topsort[i].
+
+TopSortFilter algorithm:
+\begin{enumerated}
+    \item For every node 
+    \item Calculate topological sort order
+    \item Calculate closure size for every vertex
+    \item For every node
 
 %
 
 %
 \section{Experimental part}
 To demonstrate efficiency of our approach, we conducted a series of experiments. We ran both algorithms (New Jersey team and ours) on a 
-set of graphs. \par
+set of graphs.
+
+iBlackhole algorithm was implemented in accordance with the pseudocode in th original article. Divide and Conquer heuristic were not used for it.
+Our algorithm first applies condensation-based preprocessing and then uses BruteForce with partial reachability heuristic implemented via topsort.
+Both algorithms filter duplicates 
+
+
 For these experiments we chose RMAT, Uniform Random (UR) and SSCA2 graph types. Those were generated for scales from 4 to 22
 with step 2. Size i means that graph has 2 pow i nodes and 32 * V edges. Actual count of edges to process can differ from these ideal values, as duplicate edges 
-and self-loops are omitted when reading graph from file. \par
+and self-loops are omitted when reading graph from file.
 
 \begin{table}[]
 \caption{Configurations of experimental graphs}
@@ -266,12 +281,14 @@ We've been conducting our experiments on a Linux machine with the following spec
 All runs were performed in a single-thread mode. We allowed up to 20 minutes of working time for every run. In order to save time,
 algorithms did not print out found blackholes, but printed counter on every found and not filtered (by any reason) blackhole.
 
+Please, mention, that "blackhole found" means that we have a set of vertex numbers in memory ready to be printed out and it's already validated.
+
 \begin{table}[]
 \caption{Experimental results}
 \label{tabular:tableresults}
 \begin{center}
 \begin{tabular}{ccccccccc}
-Graph & Type & Algorithm & Blackholes & Time & Algorithm & Blackholes & Time \\
+Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
 RMAT & 04 & NewJersey & 1 & 0.000265422 & TopSort & 1 & 0.000115912 \\
 RMAT & 06 & NewJersey & 1 & 0.0121347 & TopSort & 1 & 0.00034812 \\
 RMAT & 08 & NewJersey & 1 & 1.66685 & TopSort & 1 & 0.00146486 \\
@@ -287,6 +304,16 @@ SSCA2 & 06 & NewJersey & 11 & 1200 & TopSort & 70 & 0.00121528 \\
 SSCA2 & 08 & NewJersey & 42 & 1200 & TopSort & 263314 & 1200 \\
 SSCA2 & 10 & NewJersey & 85 & 1200 & TopSort & 114411 & 1200 \\
 SSCA2 & 12 & NewJersey & 343 & 1200 & TopSort & 5870 & 1200 \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[]
+\caption{Experimental results. Part 2}
+\label{tabular:tableresults2}
+\begin{center}
+\begin{tabular}{ccccccccc}
+Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
 SSCA2 & 14 & NewJersey & 1433 & 1200 & TopSort & 323671 & 1200 \\
 SSCA2 & 16 & NewJersey & 5829 & 1200 & TopSort & 893376 & 1200 \\
 SSCA2 & 18 & NewJersey & 23179 & 1200 & TopSort & 224567 & 1200 \\
@@ -306,6 +333,8 @@ UR & 22 & NewJersey & 0 & 1200 & TopSort & 1 & 373.244
 \end{center}
 \end{table}
 
+
+\pagebreak
 %
 
 %
