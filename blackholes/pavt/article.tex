@@ -188,35 +188,6 @@ TODO: complex blackhole
 TODO:
 \end{definition}
 
-\begin{figure}[H]
-	\begin{center}
-		\begin{algorithm}[H]
-			\SetAlgoLined
-			\SetKwInOut{Input}{Input}
-			\SetKwInOut{Output}{Output}
-			\Input{$CDG(C, E)$ -- channel dependency graph for a system topology with 
-				direction order routing, \\
-				min\_dir -- directions, which are less than this will not be considered}
-			\Output{$CDG$ with added edges}
-			// build the used direction sets\\ 
-			\ForEach{$v \in C$}{
-				$B(v) = \{s_i: \alpha_{u_i, s_i} \in BFS(CDG(C, E), v)\}$
-			}
-			\ForEach{$\alpha_{v_1, s_1}, \alpha_{v_2, s_2} \in C: v_2 = v_1 + s_1, (\alpha_{v_1, s_1}, \alpha_{v_2, s_2}) \notin E, s_1 \ge min\_dir$}{
-				\If{$s_1 \notin B(\alpha_{v_2,s_2})$}{
-					add $(\alpha_{v_1, s_1}, \alpha_{v_2, s_2})$ to $E$\\
-					// rebuild used direction set for $\alpha_{v_1, s_1}$\\
-					\ForEach{$v \in BFS(CDG(C, \bar{E}), \alpha_{v_1, s_1})$}{
-						$B(v) = B(v) \cup B(\alpha_{v_2, s_2})$
-					}
-				}
-			}
-			\label{alg:add_additional_edge}
-			\caption{Adding edges to CDG.}
-		\end{algorithm}
-	\end{center}
-\end{figure}
-
 %TODO: осознать
 In the BruteForce algorithm we iterate over all possible unordered sets of nodes. 
 Then for every node we acquire its closure. Union of all such closures is a potential blackhole.
@@ -246,16 +217,24 @@ Hence, union of closures for any subset of special nodes under the same root wil
 
 Let's consider two nodes in the closure of global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
 special one should be topologically lower than non-special. Otherwise it would be one node basis.
-
-To sum up: if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure. 
+To sum up: if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure.
 
 Imagine, we are given a graph and a set of nodes. What is the algorithm to decide whether these nodes form the basis of a blackhole? We shall decide if there's at least
 one non-basic node.
-First, we need to know what special nodes there are. To find out, we will take every global root of condensated graph and find topoological sort of its closure.
-Those vertices, which suffice the rule above, we will mark as "special". 
-This step can be precalculated.
-Now, we shall calculate how many special nodes for every root there is in the given set. If there is more than one special node for root - the set is to be called non-basis and
-omitted. Also we shall check if there are any non-special nodes lower than the special ones, and if those found - omit the node set.
+\begin{enumerate}
+    \item First, we need to know what special nodes there are. This step can be precalculated. 
+    To find out, we will take every global root of condensated graph and find topoological sort of its closure.
+    Those vertices, which suffice the rule above, we will mark as "special". 
+    \item Now, we shall calculate how many special nodes for every root there is in the given set. If there is more than one special node for root - the set is to be called non-basis and
+    omitted. 
+    \FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
+    \item Also we shall check if there are any non-special nodes lower than the special ones in related root topsort order, and if those found - omit the node set.
+    When we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, omit this set.
+    \FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
+    \item Otherwise, we have a valid basis of a blackhole.
+    To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
+    Finally, we check for candidate set weak connectivity and if it is present - print blackhole.
+\end{enumerate}
 
 \begin{figure}[H]
 	\begin{center}
@@ -263,37 +242,123 @@ omitted. Also we shall check if there are any non-special nodes lower than the s
 			\SetAlgoLined
 			\SetKwInOut{Input}{Input}
 			\SetKwInOut{Output}{Output}
-			\Input{$G(V,E)$ -- directed acyclic graph (Graph condensation)}
-			\Output{$Special$ -- }
-			// build the used direction sets\\ 
-			\ForEach{$v \in C$}{
-				$B(v) = \{s_i: \alpha_{u_i, s_i} \in BFS(CDG(C, E), v)\}$
+			\Input{$G(V,E)$ -- directed acyclic graph (Graph condensation) \\
+                                $Cand(G)$ -- set of nodes; candidate to be basis}
+			\Output{$True/False$}
+                        // (1) precalc special nodes for every root \\
+                        \ForEach{$r \in Roots(G)$} {
+                            $Special_r = \emptyset$ \\
+                            $tsOrder_r = TopSort(r)$ \\
+                            \For{$i = 0; i<|tsOrder_r|; i=i + 1$} {
+                                $v = tsOrder_r[i]$ \\
+                                $C_v = Closure(v)$ \\
+                                \If{$|C_v| == i$} {
+                                    $Special_r = Special_r \cup v$ \\
+                                }
+                            }
+                        }
+			// (2) check for excluding specials \\
+			\ForEach{$v \in Cand(G)$} {
+                            \ForEach{$r \in Roots(G)$} {
+                                \If{$v \in Special_r$} {
+                                    $Spec_r = Spec_r \cup v$ \\
+                                    \If{$|Spec_r| > 1$} {
+                                        \Return $False$ \\
+                                    }
+                                }
+                            }
 			}
-			\ForEach{$\alpha_{v_1, s_1}, \alpha_{v_2, s_2} \in C: v_2 = v_1 + s_1, (\alpha_{v_1, s_1}, \alpha_{v_2, s_2}) \notin E, s_1 \ge min\_dir$}{
-				\If{$s_1 \notin B(\alpha_{v_2,s_2})$}{
-					add $(\alpha_{v_1, s_1}, \alpha_{v_2, s_2})$ to $E$\\
-					// rebuild used direction set for $\alpha_{v_1, s_1}$\\
-					\ForEach{$v \in BFS(CDG(C, \bar{E}), \alpha_{v_1, s_1})$}{
-						$B(v) = B(v) \cup B(\alpha_{v_2, s_2})$
-					}
-				}
-			}
-			\label{alg:add_additional_edge}
-			\caption{Adding edges to CDG.}
+                        // (3) Check for candidates reachable from one another \\
+                        \ForEach{$(v, u) \in Cand(G) \times Cand(G)$} {
+                            \If{v is reachable from u} {
+                                \Return $False$ \\
+                            }
+                        }
+                        \Return $True$
+			\label{alg:isbasis}
+			\caption{BasisOrNot}
 		\end{algorithm}
 	\end{center}
 \end{figure}
 
-TopSortFilter algorithm:
-\begin{enumerate}
-    \item For every node 
-    \item Calculate topological sort order
-    \item Calculate closure size for every vertex
-    \item For every node
-\end{enumerate}
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G(V,E)$ -- directed graph}
+			\Output{$Blackhole$ -- set of blackholes of different sizes}
+                        
+                        $Blackhole = \emptyset$\\
+                        $Build\ graph\ condensation\ Cond(V',E')$\\
+                        \For{$i = 1\ to\ |V'|$} {
+                            \ForEach{$B_i \in V'(i)$} {
+                                \If{$BasisOrNot(Cond(V',E'),B_i)$} {
+                                    \If{$B_i$\ is\ weakly\ connected} {
+                                        $BlackHole = Blackhole \cup B_i$ \\
+                                    }
+                                }
+                            }
+                        }
+                        \Return $Blackhole$
+			\label{alg:topsort}
+			\caption{TopSort}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G$ -- directed graph \\
+                                $V$ -- set of all nodes \\
+                                $E$ -- set of all edges \\
+                                $n$ -- max number of nodes each blackhole can contain}
+			\Output{$Blackhole$ -- 1 to n-node blackhole set of G}
+
+                        $Blackhole = \emptyset$ \\
+                        \For{$i = 1\ to\ n$} {
+                            $P_i = \{v | d_{out}(v) < i\}$ \\
+                            \ForEach{$v \in P_i$} {
+                                \If{$v \notin C_{i-1}$} {
+                                    \If{$at\ least\ one\ of\ v's\ directed\ successors\ are\ not\ in\ P_i$} {
+                                        $remove\ v\ from\ P_i$\\
+                                        $remove\ all\ v's\ predecessors\ from\ P_i$\\
+                                    }
+                                }
+                            }
+                        }
+                        $C_i = P_i$\\
+                        \ForEach{$v \in C_i$} {
+                            \If{$|Closure(v)| == i$} {
+                                $Blackhole = Blackhole \cup Closure(v)$
+                            }
+                            \If{$|Closure(v)| >= i$} {
+                                $remove\ v\ from\ C_i$ \\
+                                $remove\ all\ v's\ predecessors\ from\ C_i$ \\
+                            }
+                        }
+                        $F_i = C_i$\\
+                        \ForEach{$B \in F_i(i)$} {
+                            \If{$G(B)\ is\ weakly\ connected$} {
+                                \If{$d_{out}(B) == 0$} {
+                                    $Blackhole = Blackhole \cup B$ \\
+                                }
+                            }
+                        }
+                        \Return $Blackhole$
+			\label{alg:iblackhole}
+			\caption{iBlackHole}
+		\end{algorithm}
+	\end{center}
+\end{figure}
 %
 \section{Experimental Results}
-To demonstrate efficiency of our approach, we conducted a series of experiments. We ran the both algorithms (New Jersey and TopSort) on a 
+To demonstrate efficiency of our approach, we conducted a series of experiments. We ran the both algorithms (New Jersey \ref{alg:iblackhole} and TopSort ) on a 
 set of graphs. 
 
 iBlackhole algorithm was implemented in accordance with the pseudocode in the original article. Divide and Conquer heuristic were not used for it.
