@@ -86,10 +86,6 @@ applications Anti-Money Laundering \cite{semenov2017survey}
 %
 
 %
-\subsubsection{Subsection example}
-%
-
-%
 \subsection{Related Work}
 \cite{li2010detecting,li2012mining,li2014mining,hong2015detecting}
 
@@ -112,7 +108,7 @@ The second is the blackhole search itself. This step is done after preprocessing
 \FIXME{не забыть вставить ссылки SmallWorld \cite{watts1999networks}}
 
 As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
-For certain graph types (RMAT, SmallWorld) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
+For certain graph types (RMAT, SmallWorld\cite{watts1999networks}) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
 In such a case, it would be nice to consider large SCC as a single node, aggregating all incoming and outcoming peripheral edges
 of original SCC.
 On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
@@ -120,15 +116,22 @@ On the preprocessing stage of the algorithm we reduce every SCC to a single node
 More formally:
 
 \begin{definition}
-TODO: Graph condensation definition
+Set of nodes in a directed graph is called a Strongly Connected Component (SCC) if every node is reachable from every other node.
 \end{definition}
 
-In this article we use the following algorithm for finding graph condensation.
+\begin{definition}
+If every SCC of directed graph is contracted to a single node, the resulting graph is directed acyclic graph, which is call the condensation of G.
+\end{definition}
+
+In this article we use the following algorithm for finding graph condensation. \ref{alg:condensation}
 It was independently proposed by Kosaraju and Sharir back in 1979. \FIXME{Ссылку на эту статью}
 
-First, we find topological sort of the initial graph. It takes O(E + V).
+First, we find topological sort of the initial graph..
+
 \begin{definition}
-TODO: Topological sort
+Topological sort or topological ordering of a directed graph is a linear ordering of 
+its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$,
+$v$ comes before $u$ in the ordering.
 \end{definition}
 
 \begin{definition}
@@ -136,7 +139,7 @@ Closure of node v is a set of all nodes reachable from v, including v.
 \end{definition}
 
 \begin{definition}
-TODO: Reachable
+
 \end{definition}
 
 When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
@@ -154,11 +157,45 @@ topological sort guarantees that any node has index larger than indeces of her c
 That is why, given that we process nodes from bottom to top, by the moment we process the node, all it's children are already marked used and no longer available for search.
 As all the ways down are prohibited and there's no way up, we will acquire an SCC.
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G(V,E)$ -- directed graph}
+			\Output{$G'(V',E')$ -- directed acyclic graph }
+                        $tsOrder = TopSort(G)$ \\
+                        $scc = [-1\ for\ i = 1\ to\ |V|] $ \\ 
+                        $component = 0$ \\
+                        \ForEach{$v \in tsOrder$} {
+                            \If{$scc[v] == -1$} {
+                                $C_v = Closure(v)$ \\
+                                \ForEach{$u \in C_v$} {
+                                    $scc[u] = component$ \\
+                                }
+                                $component = component + 1$ \\
+                            }
+                        }
+
+                        $E' = \emptyset$ \\
+                        $V' = \emptyset$ \\
+                        \ForEach{$(u,v) \in V \times V$} {
+                            \If{$scc[u] \neq scc[v]$} {
+                               $V' = V' \cup \{scc[u], scc[v]\}$ \\ 
+                               $E' = E' \cup (scc[u], scc[v])$ \\ 
+                            }
+                        }
+                        \Return $G'$
+			\label{alg:condensation}
+			\caption{Graph condensation. Kosarayu, Sharir}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
 As a result of the algorithm, described above, we have each node associated with certain SCC.
 SCCs itself form a graph with number of nodes less than or equal to one of the initial graph.
-
-Finally, we need to remove edges duplicates and the graph condesation is built. 
-
+Finally, we need to remove edges duplicates and the graph condesation is built.
 
 %
 
@@ -168,24 +205,21 @@ When the graph is prepared, we can move on to searching blackholes. The problem 
 decrease the number of potential blackholes.
 To understand the issue, we first describe a brute-force approach. 
 
-\begin{definition}
-TODO: simple blackhole
+\begin{definition}{Root of blackhole.\\}
+Root of blackhole(subgraph) is a node, which has no incoming edges from other nodes in blackhole.
 \end{definition}
 
-\begin{definition}
-TODO: root of blackhole
+
+\begin{definition}{Blackhole basis. \\}
+Set of all roots of blackhole is called balckhole basis
 \end{definition}
 
-\begin{definition}
-TODO: basis of blackhole
+\begin{definition}{Simple blackhole. \\}
+A blackhole is called simple if its basis has consist of a single node, i.e. it has single root.
 \end{definition}
 
-\begin{definition}
-TODO: complex blackhole
-\end{definition}
-
-\begin{definition}
-TODO:
+\begin{definition}{Comples blackhole. \\}
+A blackhole is called complex if its basis consists of more than one node.
 \end{definition}
 
 %TODO: осознать
@@ -220,21 +254,27 @@ special one should be topologically lower than non-special. Otherwise it would b
 To sum up: if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure.
 
 Imagine, we are given a graph and a set of nodes. What is the algorithm to decide whether these nodes form the basis of a blackhole? We shall decide if there's at least
-one non-basic node.
+one non-basic node. It's done by \ref{alg:isbasis}
 \begin{enumerate}
     \item First, we need to know what special nodes there are. This step can be precalculated. 
     To find out, we will take every global root of condensated graph and find topoological sort of its closure.
     Those vertices, which suffice the rule above, we will mark as "special". 
     \item Now, we shall calculate how many special nodes for every root there is in the given set. If there is more than one special node for root - the set is to be called non-basis and
-    omitted. 
+    omitted.
     \FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
     \item Also we shall check if there are any non-special nodes lower than the special ones in related root topsort order, and if those found - omit the node set.
-    When we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, omit this set.
+    \item When we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, omit this set. 
     \FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
     \item Otherwise, we have a valid basis of a blackhole.
     To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
-    Finally, we check for candidate set weak connectivity and if it is present - print blackhole.
+    Finally, we check for weak connectivity and if it is present - print blackhole.
 \end{enumerate}
+
+\begin{remark}
+Of course, we still have to spend some computation time in order to decide, whether
+the candidate is worth checking or not, and we understand, that sometimes it can make process even more slower than before, but experimental results demostrate its efficiency.
+Our goal is to avoid this costly procedure of acquiring blackhole if possible.
+\end{remark}
 
 \begin{figure}[H]
 	\begin{center}
