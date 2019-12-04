@@ -77,47 +77,171 @@ and provide results of experimental comparison between our approach and previous
 % the abstract section using the \keywords{...} command.
 \keywords{Directed networks $\cdot$ Subgraph mining}
 \end{abstract}
-%
+
 \section{Blackhole search in directed graph}
 applications Anti-Money Laundering \cite{semenov2017survey}
 
-%
-\subsection{Task statement}
-%
+\subsection{Task statement and Preliminaries}
+In this section we provide some basic notations and definitions, which will be used in this paper.
 
-%
+Previously team of University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
+in directed graph. In this paper we consider simplified problem formulation, applied to directed unweighted graph.
+
+First, consider a directed graph G = G(V,E), where $V$ is the set of all nodes and E is the set if all edges.
+Assume, that we deal with the general case of graph, without any special restrictions, unless the opposite is stated. 
+
+\begin{definition}{Blackhole}
+Subset of nodes $B \in V$ is called a blackhole if there is no such pair of nodes $(u,v)$ that $u \in B$ and $v \in V \backslash B$
+and $(u,v) \in E$. 
+$G'(B, E')$ must form a weakly connected subgraph of G(V,E).
+\end{definition}
+
+The task is to find in unweighted directed graph as many blackholes as possible in restricted time.
+
+To support further discussion, we provide several more definitions.
+
+\begin{definition}
+Given a directed graph $G(V,E),\ v_i \in V,\ e_i \in E$, where $e_i = (v_{i-1}, v_i)$. We say that sequence $v_0e_1v_1e_2v_2...e_{k}v_{k}$
+forms a directed path from $v_0$ to $v_k$, if $v_i \neq v_j$ for all $0 <= i, j <= k, i \neq j$. The length of this directed path is $k$.
+\end{definition}
+
+\begin{definition}
+Given a directed graph $G(V,E), u,v \in V$. We say that $v$ is reachable from $u$ if there is a directed path that starts from $u$ and ends at $v$.
+\end{definition}
+
+\begin{definition}
+Given a directed graph $G(V,E), u,v \in V$. If $v$ is reachable from $u$, then we say $u$ is a predecessor of $v$ and $v$ is a successor if $u$.
+If there is an edge from $u$ to $v$, then $u$ is a direct predecessor of $v$, and $v$ is a direct successor if $u$.
+\end{definition}
+
+\begin{definition}
+Set of nodes in a directed graph is called a Strongly Connected Component(SCC) if every node is reachable from every other node.
+\end{definition}
+
+\begin{definition}
+Given a directed graph $G(V,E), v \in V$. The closure of $v$, denoted as $Closure(v)$, is defined as $Closure(v) = \{u\ |\ there\ is\ a\ directed\ path\ from\ v\ to\ s\} \cup \{v\}$.
+In other words: closure of node $v$ is a set of all nodes reachable from $v$, including $v$.
+\end{definition}
+
+The following lemmas will be given without proof. It is provided in \cite{li2010detecting}.
+
+\begin{lemma}
+If a node $v \in B$, where $B \subseteq V$ is a blackhole, then all the successors of $v$ are all in $B$.
+\end{lemma}
+
+\begin{lemma}
+If a node $v \in B$, where $B \subseteq V$ is a blackhole, then closure of $v$ is a subset of $B$.
+\end{lemma}
+
+\begin{lemma}
+Closure of $v$ forms a blackhole.
+\end{lemma}
+
+We will need the following statement to discuss issues of known approaches.
+\begin{lemma}
+Given graph $G(V,E)$, blackhole $B \subseteq V$, SCC $S \subseteq V$ and $v \in V : v \in S$. Then $\forall s \in S$ will be true $s \in B$.
+If any node in SCC belongs to blackhole, then all the nodes of this SCC belong to the same blackhole.
+\end{lemma}
+\begin{proof}
+    In SCC any node is reachable from any other node. This means, that any node in SCC contains the whole SCC in its closure.
+\end{proof}
+
 \subsection{Related Work}
-\cite{li2010detecting,li2012mining,li2014mining,hong2015detecting}
+The main contributor to the topic is the New Jersey University. They both formulated the task and provided an algorithm for
+blackhole detection in case of unweighted directed graph \cite{li2010detecting}. Two years later they published an algorithm
+for approximate blackholes search in general case (weighted graph)\cite{li2012mining,li2014mining}. Hong et al \cite{hong2015detecting} had
+an unusual application for blackhole mining in the city environment. They introduced original algorithm. Semenov et al. \cite{semenov2017survey}
+in 2017 provided a survey of common approaches to anti - money laundering by graph mining.
 
-%
-\subsection{Known Issues}
-%
+\subsection{Known issues}
+In this section we shortly discuss applicability of iBlackhole algorithm.
+iBlackhole \ref{alg:iblackhole} algorithm is designed for searching blackholes of fixed size. It has a great resource of parallelism, which is demonstrated
+by tests. However, survey by Li et al, doesn't cover case of large scale graphs, as they only run their algorithm on 1500 node networks, which seem quite
+a small size.
+Also, it is worth mentioning that there are graphs, which has a small amount of blackholes in relation to number of nodes. They consist
+of several large SCCs and relatively small amount of independent leaves (or roots). Here arise some questions considering applicability of
+iBlackhole algorithm:
+\begin{itemize}
+\item How do we know if there are blackholes of certain size? We have to check all the possible sizes, which can take too long even in parallel.
+\item If we check blackhole sizes consecutively, what is the expected time of the first blackhole found?
+\item How do we reduce search field for the BruteForce stage and avoid repeatedly checking the same combinations for different sizes?
+\end{itemize}
 
-%
-\section{Algorithm Design}
+Let's consider the following example:
+
+Graph consisting of $(10^6)$ nodes, all of them form a single SCC. It means that there is only one blackhole - the whole graph.
+Unless we do not know anything about the graph structrure and do not have large enough cluster, we have one to a million chance
+to efficiently choose target size of blackhole. In general case, we have to check $10^6$ possible sizes.
+
+Another example is common SmallWorld\cite{watts1999networks} graph. It has most of its nodes in one large SCC, couple of leaves and couple of roots.
+With iBlackhole algorithm and consequtive approach we will quickly discover all the small blackholes and then for a long time will try to discover
+blackholes inside an SCC.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G$ -- directed graph \\
+                                $V$ -- set of all nodes \\
+                                $E$ -- set of all edges \\
+                                $n$ -- max number of nodes each blackhole can contain}
+			\Output{$Blackhole$ -- 1 to n-node blackhole set of G}
+
+                        $Blackhole = \emptyset$ \\
+                        \For{$i = 1\ to\ n$} {
+                            $P_i = \{v | d_{out}(v) < i\}$ \\
+                            \ForEach{$v \in P_i$} {
+                                \If{$v \notin C_{i-1}$} {
+                                    \If{$at\ least\ one\ of\ v's\ directed\ successors\ are\ not\ in\ P_i$} {
+                                        $remove\ v\ from\ P_i$\\
+                                        $remove\ all\ v's\ predecessors\ from\ P_i$\\
+                                    }
+                                }
+                            }
+                        }
+                        $C_i = P_i$\\
+                        \ForEach{$v \in C_i$} {
+                            \If{$|Closure(v)| == i$} {
+                                $Blackhole = Blackhole \cup Closure(v)$
+                            }
+                            \If{$|Closure(v)| >= i$} {
+                                $remove\ v\ from\ C_i$ \\
+                                $remove\ all\ v's\ predecessors\ from\ C_i$ \\
+                            }
+                        }
+                        $F_i = C_i$\\
+                        \ForEach{$B \in F_i(i)$} {
+                            \If{$G(B)\ is\ weakly\ connected$} {
+                                \If{$d_{out}(B) == 0$} {
+                                    $Blackhole = Blackhole \cup B$ \\
+                                }
+                            }
+                        }
+                        \Return $Blackhole$
+			\label{alg:iblackhole}
+			\caption{iBlackHole}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
+\section{Algorithm design}
 We propose to look at the blackhole search problem from the following: it would be divided into two independent tasks. 
 The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to a restricted time span. 
 Decreased graph scale would definitely speed up the the calculation, as it can fall into a brute-force search in most cases.
 The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in a restricted time.
-%
 
 %
-\subsection{Graph Preprocessing}
-\FIXME{не забыть описать в KnownIssues}
-
+\subsection{Graph preprocessing}
 \FIXME{не забыть вставить ссылки SmallWorld \cite{watts1999networks}}
 
-As it was described in the Known Issues section, large SCCs waste lots of computational time without adding any new blackholes. 
+As it was described in the Known issues section, large SCCs waste lots of computational time without adding any new blackholes. 
 For certain graph types (RMAT, SmallWorld\cite{watts1999networks}) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
 In such a case, it would be nice to consider large SCC as a single node, aggregating all incoming and outcoming peripheral edges
 of original SCC.
 On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
-
 More formally:
-
-\begin{definition}
-Set of nodes in a directed graph is called a Strongly Connected Component (SCC) if every node is reachable from every other node.
-\end{definition}
 
 \begin{definition}
 If every SCC of directed graph is contracted to a single node, the resulting graph is directed acyclic graph, which is call the condensation of G.
@@ -134,9 +258,6 @@ its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$
 $v$ comes before $u$ in the ordering.
 \end{definition}
 
-\begin{definition}
-Closure of node v is a set of all nodes reachable from v, including v.
-\end{definition}
 
 \begin{definition}
 
@@ -209,16 +330,15 @@ To understand the issue, we first describe a brute-force approach.
 Root of blackhole(subgraph) is a node, which has no incoming edges from other nodes in blackhole.
 \end{definition}
 
-
 \begin{definition}{Blackhole basis. \\}
-Set of all roots of blackhole is called balckhole basis
+Set of all roots of blackhole is called blackhole basis
 \end{definition}
 
 \begin{definition}{Simple blackhole. \\}
-A blackhole is called simple if its basis has consist of a single node, i.e. it has single root.
+A blackhole is called simple if its basis consists of a single node, i.e. it has single root.
 \end{definition}
 
-\begin{definition}{Comples blackhole. \\}
+\begin{definition}{Complex blackhole. \\}
 A blackhole is called complex if its basis consists of more than one node.
 \end{definition}
 
@@ -233,9 +353,6 @@ We aim to avoid at least some of the duplicates and introduce heuristic for it.
 According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
 Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
 
-\FIXME{определить $G=(V, E)$}
-\FIXME{определить v[i]}
-
 Of course, we could straightforward build the reachability matrix. But, it takes $O(V^3)$ time. Even though we decreased graph size
 in preprocessing step, it still can result in lots of computation. It's worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
@@ -244,7 +361,7 @@ be filtered later in lazy manner.
 Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which basically means, that
 we can iterate over these nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
 in the given roots closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
-conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsort[i]$. We will call such nodes special.
+conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder[i]$. We will call such nodes special.
 
 If there are two special nodes under the same root, union of their closures will be equal to the closure of topologically higher node.
 Hence, union of closures for any subset of special nodes under the same root will result into closure of the highest special node.
@@ -348,54 +465,6 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
 	\end{center}
 \end{figure}
 
-\begin{figure}[H]
-	\begin{center}
-		\begin{algorithm}[H]
-			\SetAlgoLined
-			\SetKwInOut{Input}{Input}
-			\SetKwInOut{Output}{Output}
-			\Input{$G$ -- directed graph \\
-                                $V$ -- set of all nodes \\
-                                $E$ -- set of all edges \\
-                                $n$ -- max number of nodes each blackhole can contain}
-			\Output{$Blackhole$ -- 1 to n-node blackhole set of G}
-
-                        $Blackhole = \emptyset$ \\
-                        \For{$i = 1\ to\ n$} {
-                            $P_i = \{v | d_{out}(v) < i\}$ \\
-                            \ForEach{$v \in P_i$} {
-                                \If{$v \notin C_{i-1}$} {
-                                    \If{$at\ least\ one\ of\ v's\ directed\ successors\ are\ not\ in\ P_i$} {
-                                        $remove\ v\ from\ P_i$\\
-                                        $remove\ all\ v's\ predecessors\ from\ P_i$\\
-                                    }
-                                }
-                            }
-                        }
-                        $C_i = P_i$\\
-                        \ForEach{$v \in C_i$} {
-                            \If{$|Closure(v)| == i$} {
-                                $Blackhole = Blackhole \cup Closure(v)$
-                            }
-                            \If{$|Closure(v)| >= i$} {
-                                $remove\ v\ from\ C_i$ \\
-                                $remove\ all\ v's\ predecessors\ from\ C_i$ \\
-                            }
-                        }
-                        $F_i = C_i$\\
-                        \ForEach{$B \in F_i(i)$} {
-                            \If{$G(B)\ is\ weakly\ connected$} {
-                                \If{$d_{out}(B) == 0$} {
-                                    $Blackhole = Blackhole \cup B$ \\
-                                }
-                            }
-                        }
-                        \Return $Blackhole$
-			\label{alg:iblackhole}
-			\caption{iBlackHole}
-		\end{algorithm}
-	\end{center}
-\end{figure}
 %
 \section{Experimental Results}
 To demonstrate efficiency of our approach, we conducted a series of experiments. We ran the both algorithms (New Jersey \ref{alg:iblackhole} and TopSort ) on a 
@@ -406,7 +475,7 @@ Our algorithm first applies condensation-based preprocessing and then uses Brute
 Both algorithms filter duplicates 
 
 For these experiments we chose Uniform Random (UR) \cite{random-uniform}, RMAT \cite{chakrabarti2004r},  and SSCA2 \cite{bader2005design} graph types. Those were generated for scales from 4 to 22
-with step 2. Size $i$ means that graph has $2^i$ nodes and $32*V$ edges. Actual count of edges to process can differ from these ideal values, as duplicate edges and self-loops are omitted when reading graph from file. Configuration of the considered graphs is presented in Table \ref{tabular:graphs}.
+with step 2. Size $i$ means that graph has $2^i$ nodes and $32*V$ edges. Actual count of edges to process can differ from these ideal values, as duplicate edges and self-loops are omitted when readinggraph from file. Configuration of the considered graphs is presented in Table \ref{tabular:graphs}.
 
 \begin{table}[]
 \caption{Configuration of experimental graphs}
@@ -463,6 +532,20 @@ algorithms did not print out found blackholes, but printed counter on every foun
 
 Please, mention, that "blackhole found" means that we have a set of vertex numbers in memory ready to be printed out and it's already validated.
 
+As it is shown in the Tables \ref{tabular:tableresults}, \ref{tabular:tableresults2}, our TopSort approach to blackhole search shows better perfoermance on small RMAT graphs.
+And it stays in advantage up to RMAT-22. Apparently, condensation preprocessing takes more time on larger graphs and increases time spent before finding
+the first blackhole. Nevertheless our algorithm shows significantly better performance in those cases when preprocessing saves more time. Also, we suppose
+that total working time on large graphs for our algorithm will be less, and this is the point for future survey.
+
+\FIXME{Это, вообще говоря, странно}
+SSCA2 graphs in our survey can be characterized with absolute absence of SCCs consisting of more than one node. Preprocessing here doesn't give any
+certain advantage, but only takes time. As we can see, on smaller graphs our approach beats iBlackhole algorithm, but slows down on larger graphs.
+We guess that the reason is less efficient order of search for our algorithm. One used in iBlackHole will faster print smaller balckholes, and later will try
+to find larger ones, meanwhile our approach will check blackholes of all sizes.
+
+Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute force is
+avoided completely in this case, making calculation time impressively small in comparison to iBlackhole algorithm.
+
 \begin{table}[]
 \caption{Experimental results}
 \label{tabular:tableresults}
@@ -513,15 +596,16 @@ UR & 22 & NewJersey & 0 & 1200 & TopSort & 1 & 373.244
 \end{tabular}
 \end{center}
 \end{table}
-
-
 \pagebreak
-%
 
-%
 \section{Conclusion}
 
 \textit{Comment for the reviewer}. In the final paper revision we add parallel implementation of the TopSort algorithm and present much detailed evaluation on the larger graphs. 
+
+In this paper we formulated and addressed some issues in application of already known iBlackhole algorithm. We introduced and tested two different ideas of optimization, combined into
+our TopSort algorithm. Those are: graph condensation preprocessing and topsort bruteforce optimization. We tested out approach on three different types of graphs and number of scales.
+In case of large SCCs we demostrate definite advantage over iBlackhole algorithm. Then, we can relatively fast detect total absence of blackholes, but sometimes quite costly preprocessing
+deminishes any boost of productivity and out performance degrades.
 
 %
 % ---- Bibliography ----
