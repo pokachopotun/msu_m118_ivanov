@@ -78,59 +78,58 @@ and provide results of experimental comparison between our approach and previous
 \keywords{Directed networks $\cdot$ Subgraph mining}
 \end{abstract}
 
-\section{Blackhole search in directed graph}
+\section{Blackhole Search in Directed Graph}
 applications Anti-Money Laundering \cite{semenov2017survey}
 
-\subsection{Task statement and Preliminaries}
-In this section we provide some basic notations and definitions, which will be used in this paper.
+\subsection{Problem Statement and Preliminaries}
+In this section we provide some basic notations and definitions, which will be used in this paper. In this paper we consider simplified problem formulation, applied to directed unweighted graph.
 
-Previously team of University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
-in directed graph. In this paper we consider simplified problem formulation, applied to directed unweighted graph.
+First, consider a directed graph $G = G(V,E)$, where $V$ is a set of all nodes and $E$ is a set if all edges of the graph. 
+\FIXME{Мне кажется, это лишнее предложение, так не пишут в статьях:} Assume that we deal with the general case of graph, without any special restrictions, unless the opposite is stated. 
 
-First, consider a directed graph G = G(V,E), where $V$ is the set of all nodes and E is the set if all edges.
-Assume, that we deal with the general case of graph, without any special restrictions, unless the opposite is stated. 
-
-\begin{definition}{Blackhole}
-Subset of nodes $B \in V$ is called a blackhole if there is no such pair of nodes $(u,v)$ that $u \in B$ and $v \in V \backslash B$
-and $(u,v) \in E$. 
-$G'(B, E')$ must form a weakly connected subgraph of G(V,E).
+\begin{definition}
+Subset of nodes $B \in V$ is called a blackhole if  the following two conditions are satisfied: 
+1) Subgraph $G'(B, E')$ induced by $B$ is weakly connected, 
+%$|B| \geq 2$,
+and
+2) there is no such pair of nodes $(u,v)$ that $u \in B$, $v \in V \backslash B$ and $(u,v) \in E$.
 \end{definition}
 
-The task is to find in unweighted directed graph as many blackholes as possible in restricted time.
+The goal is to find in unweighted directed graph as many blackholes as possible in restricted time.
 
 To support further discussion, we provide several more definitions.
 
+\FIXME{Удалил возможные кратные ребра в определении 2, это важно?}
 \begin{definition}
-Given a directed graph $G(V,E),\ v_i \in V,\ e_i \in E$, where $e_i = (v_{i-1}, v_i)$. We say that sequence $v_0e_1v_1e_2v_2...e_{k}v_{k}$
-forms a directed path from $v_0$ to $v_k$, if $v_i \neq v_j$ for all $0 <= i, j <= k, i \neq j$. The length of this directed path is $k$.
+For a given directed graph $G(V,E)$ we say that sequence $v_0v_1v_2...v_{k}$ of $v_i \in V, 0 \leq i \leq k$ forms a directed path from $v_0$ to $v_k$, if there are edges $(v_{i-1}, v_i) \in E, 1 \leq i \leq k$ and $v_i \neq v_j$ for all $0 \leq i, j \leq k, i \neq j$. The length of this directed path is $k$.
 \end{definition}
 
 \begin{definition}
-Given a directed graph $G(V,E), u,v \in V$. We say that $v$ is reachable from $u$ if there is a directed path that starts from $u$ and ends at $v$.
+For a given directed graph $G(V,E)$ we say that $v \in V$ is reachable from $u \in V$ if there is a directed path that starts from $u$ and ends at $v$.
 \end{definition}
 
 \begin{definition}
-Given a directed graph $G(V,E), u,v \in V$. If $v$ is reachable from $u$, then we say $u$ is a predecessor of $v$ and $v$ is a successor if $u$.
+For a given directed graph $G(V,E)$ if $v \in V$ is reachable from $u \in V$, then we say $u$ is a predecessor of $v$ and $v$ is a successor if $u$.
 If there is an edge from $u$ to $v$, then $u$ is a direct predecessor of $v$, and $v$ is a direct successor if $u$.
 \end{definition}
 
 \begin{definition}
-Set of nodes in a directed graph is called a Strongly Connected Component(SCC) if every node is reachable from every other node.
+Set of nodes in a directed graph $G$ is called a Strongly Connected Component (SCC) if every node of $G$ is reachable from every other node of $G$.
 \end{definition}
 
 \begin{definition}
-Given a directed graph $G(V,E), v \in V$. The closure of $v$, denoted as $Closure(v)$, is defined as $Closure(v) = \{u\ |\ there\ is\ a\ directed\ path\ from\ v\ to\ s\} \cup \{v\}$.
-In other words: closure of node $v$ is a set of all nodes reachable from $v$, including $v$.
+For a given directed graph $G(V,E)$. The closure of $v \in V$ is $Closure(v) = \{u\ |\ there\ is\ a\ directed\ path\ from\ v\ to\ u\} \cup \{v\}$.
+In other words, a closure of node $v$ is a set of all nodes reachable from $v$, including $v$.
 \end{definition}
 
-The following lemmas will be given without proof. It is provided in \cite{li2010detecting}.
+The following lemmas are proved in \cite{li2010detecting}.
 
 \begin{lemma}
-If a node $v \in B$, where $B \subseteq V$ is a blackhole, then all the successors of $v$ are all in $B$.
+If a node $v \in B$, where $B \subseteq V$ is a blackhole, then all the successors of $v$ are in $B$.
 \end{lemma}
 
 \begin{lemma}
-If a node $v \in B$, where $B \subseteq V$ is a blackhole, then closure of $v$ is a subset of $B$.
+If a node $v \in B$, where $B \subseteq V$ is a blackhole, then the closure of $v$ is a subset of $B$.
 \end{lemma}
 
 \begin{lemma}
@@ -147,6 +146,11 @@ If any node in SCC belongs to blackhole, then all the nodes of this SCC belong t
 \end{proof}
 
 \subsection{Related Work}
+
+% Previously 
+Authors from the University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
+in directed graph.
+
 The main contributor to the topic is the New Jersey University. They both formulated the task and provided an algorithm for
 blackhole detection in case of unweighted directed graph \cite{li2010detecting}. Two years later they published an algorithm
 for approximate blackholes search in general case (weighted graph)\cite{li2012mining,li2014mining}. Hong et al \cite{hong2015detecting} had
@@ -173,7 +177,7 @@ Graph consisting of $(10^6)$ nodes, all of them form a single SCC. It means that
 Unless we do not know anything about the graph structrure and do not have large enough cluster, we have one to a million chance
 to efficiently choose target size of blackhole. In general case, we have to check $10^6$ possible sizes.
 
-Another example is common SmallWorld\cite{watts1999networks} graph. It has most of its nodes in one large SCC, couple of leaves and couple of roots.
+Another example is common SmallWorld \cite{watts1999networks} graph. It has most of its nodes in one large SCC, couple of leaves and couple of roots.
 With iBlackhole algorithm and consequtive approach we will quickly discover all the small blackholes and then for a long time will try to discover
 blackholes inside an SCC.
 
