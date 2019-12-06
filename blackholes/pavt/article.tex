@@ -81,6 +81,13 @@ and provide results of experimental comparison between our approach and previous
 \section{Blackhole Search in Directed Graph}
 applications Anti-Money Laundering \cite{semenov2017survey}
 
+Semenov et al. \cite{semenov2017survey}
+in 2017 provided a survey of common approaches to anti - money laundering by graph mining.
+
+The online detection of black holes/volcanos can timely
+reflect anomalous events, such as disasters, catastrophic accidents,
+and therefore help keep public safety \cite{hong2015detecting}.
+
 \subsection{Problem Statement and Preliminaries}
 In this section we provide some basic notations and definitions, which will be used in this paper. In this paper we consider simplified problem formulation, applied to directed unweighted graph.
 
@@ -138,24 +145,23 @@ Closure of $v$ forms a blackhole.
 
 We will need the following statement to discuss issues of known approaches.
 \begin{lemma}
-Given graph $G(V,E)$, blackhole $B \subseteq V$, SCC $S \subseteq V$ and $v \in V : v \in S$. Then $\forall s \in S$ will be true $s \in B$.
-If any node in SCC belongs to blackhole, then all the nodes of this SCC belong to the same blackhole.
+For a given graph $G(V,E)$, SCC $S \subseteq V,\ blackhole\ B \subseteq V$ if $\ \exists v \in S: v \in B$,  then $\forall s \in S$ will be true $s \in B$.
+In other words, if any node in SCC belongs to a blackhole, then all the nodes of this SCC belong to the same blackhole.
 \end{lemma}
 \begin{proof}
-    In SCC any node is reachable from any other node. This means, that any node in SCC contains the whole SCC in its closure.
+    In SCC any node is reachable from any other node. This means, that any node $v$ in SCC contains the whole SCC in its closure. By Lemma 3 the whole SCC belongs to the same blackhole as $v$. 
 \end{proof}
 
 \subsection{Related Work}
 
 % Previously 
-Authors from the University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
+%Authors from the University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
 in directed graph.
 
-The main contributor to the topic is the New Jersey University. They both formulated the task and provided an algorithm for
-blackhole detection in case of unweighted directed graph \cite{li2010detecting}. Two years later they published an algorithm
-for approximate blackholes search in general case (weighted graph)\cite{li2012mining,li2014mining}. Hong et al \cite{hong2015detecting} had
-an unusual application for blackhole mining in the city environment. They introduced original algorithm. Semenov et al. \cite{semenov2017survey}
-in 2017 provided a survey of common approaches to anti - money laundering by graph mining.
+The main contributor to the blackhole detecting problem is the authors from the University of New Jersey. They both formulated the task and provided an algorithm for blackhole detection in case of unweighted directed graph \cite{li2010detecting}. 
+Two years later they published an algorithm for approximate blackhole search in general case (weighted graph) \cite{li2012mining,li2014mining}. 
+Hong et al \cite{hong2015detecting} had
+an unusual application for blackhole mining in the city environment. They introduced an original algorithm.  
 
 \subsection{Known issues}
 In this section we shortly discuss applicability of iBlackhole algorithm.
