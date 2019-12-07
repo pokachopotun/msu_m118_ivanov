@@ -170,7 +170,6 @@ of several large SCCs and relatively small number of independent leaves (or root
 iBlackhole algorithm:
 \begin{itemize}
 \item How do we know if there are blackholes of certain size? We have to check all the possible sizes, which can take too much time even in parallel.
-\item If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? \FIXME{мы отвечаем на этот вопрос?}
 \item How do we reduce the search space for the brute-force stage and avoid repeatedly checking the same combinations for different candidate sizes?
 \end{itemize}
 
@@ -235,7 +234,7 @@ We claim that with looking from small to large size candidates in the iBlackhole
 
 \section{Algorithm Design}
 We propose to look at the blackhole search problem from the following: it would be divided into two independent tasks. 
-\FIXME{У нас есть ограничение на суммарное время фазу препроцессинга?}
+\FIXME{ограничение на суммарное время - да, 20 минут}
 The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to a restricted time span. 
 Decreased graph scale would definitely speed up the the calculation, as it can fall into a brute-force search in most cases.
 The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in a restricted time.
@@ -260,7 +259,7 @@ First, we find topological sort of the initial graph..
 \begin{definition}
 Topological sort or topological ordering of a directed graph is a linear ordering of 
 its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$,
-$v$ comes before $u$ in the ordering.
+$v$ comes before $u$ in the topological ordering.
 \end{definition}
 
 When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
@@ -334,6 +333,8 @@ Root of a blackhole is a node, which has no incoming edges from other nodes in t
 Set of all roots of a blackhole is called the blackhole basis.
 \end{definition}
 
+\FIXME{избежать путаницы между brute-force в разных местах статьи}
+
 Note, that a blackhole basis can consist of a single node or more than one node. 
 
 %TODO: осознать
@@ -347,15 +348,16 @@ We aim to avoid at least some of the duplicates and introduce heuristic for it.
 According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
 Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
 
+\FIXME{не совсем понял логику в общем тексте}
 Of course, we could straightforward build the reachability matrix. But, it takes $O(V^3)$ time. Even though we decreased graph size
-in preprocessing step, it still can result in lots of computation. It's worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
+in preprocessing step, it still can result in lots of computation. It is worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later in lazy manner.
 
-Let's consider a closure of a single blackhole root. Let this closure to be acquired by depth-first search, which basically means, that
-we can iterate over these nodes in topologically sorted order. Also, while traversing this graph, we can calculate size of closure for each node
-in the given roots closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
-conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder[i]$. We will call such nodes special.
+Let's consider a closure of a single blackhole root $r$. Let this closure to be acquired by depth-first search, which basically means, that
+we can iterate by $i$ over these nodes in topologically sorted order $topsortOrder(r)[i]$. Also, while traversing this graph, we can calculate size of closure for each node
+in the given root closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
+conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder(r)[i]$. We will call such nodes special.
 
 If there are two special nodes under the same root, union of their closures will be equal to the closure of topologically higher node.
 Hence, union of closures for any subset of special nodes under the same root will result into closure of the highest special node.
@@ -600,6 +602,8 @@ In this paper we formulated and addressed some issues in application of already 
 our TopSort algorithm. Those are: graph condensation preprocessing and topsort bruteforce optimization. We tested out approach on three different types of graphs and number of scales.
 In case of large SCCs we demostrate definite advantage over iBlackhole algorithm. Then, we can relatively fast detect total absence of blackholes, but sometimes quite costly preprocessing
 deminishes any boost of productivity and out performance degrades.
+\FIXME{можно написать в TODO}
+If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
 
 %
 % ---- Bibliography ----
