@@ -162,28 +162,26 @@ Hong et al \cite{hong2015detecting} had
 an unusual application for blackhole mining in the city environment. They introduced an original algorithm.  
 
 \subsection{Known issues}
-In this section we shortly discuss applicability of iBlackhole algorithm.
-iBlackhole \ref{alg:iblackhole} algorithm is designed for searching blackholes of fixed size. It has a great resource of parallelism, which is demonstrated
-by tests. However, survey by Li et al, doesn't cover case of large scale graphs, as they only run their algorithm on 1500 node networks, which seem quite
+In this section we shortly discuss applicability of the iBlackhole algorithm, proposed in \cite{li2010detecting}.
+The iBlackhole algorithm (see Algorithm \ref{alg:iblackhole}) is designed for searching blackholes of fixed size. Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which are quite
 a small size.
-Also, it is worth mentioning that there are graphs, which has a small amount of blackholes in relation to number of nodes. They consist
-of several large SCCs and relatively small amount of independent leaves (or roots). Here arise some questions considering applicability of
+Also, there are graphs, which has a small number of blackholes in relation to number of nodes. They consist
+of several large SCCs and relatively small number of independent leaves (or roots). Here arise some questions considering applicability of
 iBlackhole algorithm:
 \begin{itemize}
-\item How do we know if there are blackholes of certain size? We have to check all the possible sizes, which can take too long even in parallel.
-\item If we check blackhole sizes consecutively, what is the expected time of the first blackhole found?
-\item How do we reduce search field for the BruteForce stage and avoid repeatedly checking the same combinations for different sizes?
+\item How do we know if there are blackholes of certain size? We have to check all the possible sizes, which can take too much time even in parallel.
+\item If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? \FIXME{мы отвечаем на этот вопрос?}
+\item How do we reduce the search space for the brute-force stage and avoid repeatedly checking the same combinations for different candidate sizes?
 \end{itemize}
 
 Let's consider the following example:
 
-Graph consisting of $(10^6)$ nodes, all of them form a single SCC. It means that there is only one blackhole - the whole graph.
+Graph consisting of $(10^6)$ nodes, all of them form a single SCC. It means that there is only one blackhole -- the whole graph.
 Unless we do not know anything about the graph structrure and do not have large enough cluster, we have one to a million chance
 to efficiently choose target size of blackhole. In general case, we have to check $10^6$ possible sizes.
 
-Another example is common SmallWorld \cite{watts1999networks} graph. It has most of its nodes in one large SCC, couple of leaves and couple of roots.
-With iBlackhole algorithm and consequtive approach we will quickly discover all the small blackholes and then for a long time will try to discover
-blackholes inside an SCC.
+Another example is well-known small-world graphs \cite{watts1999networks}. It has most of its nodes in one large SCC, couple of leaves and couple of roots.
+We claim that with looking from small to large size candidates in the iBlackhole algorithm we will quickly discover all the small blackholes and then for a long time will try to discover blackholes inside an SCC.
 
 \begin{figure}[H]
 	\begin{center}
@@ -191,72 +189,71 @@ blackholes inside an SCC.
 			\SetAlgoLined
 			\SetKwInOut{Input}{Input}
 			\SetKwInOut{Output}{Output}
-			\Input{$G$ -- directed graph \\
-                                $V$ -- set of all nodes \\
-                                $E$ -- set of all edges \\
-                                $n$ -- max number of nodes each blackhole can contain}
-			\Output{$Blackhole$ -- 1 to n-node blackhole set of G}
+			\Input{$G(v, E)$ -- directed graph, $V$ -- set of nodes, $E$ -- set of edges, \\
+                   $n$ -- max number of nodes each blackhole can contain}
+			\Output{$Blackholes$ -- 1 to n-node blackhole set of G}
 
-                        $Blackhole = \emptyset$ \\
+                        $Blackholes = \emptyset, C_0 = \emptyset$ \\
                         \For{$i = 1\ to\ n$} {
-                            $P_i = \{v | d_{out}(v) < i\}$ \\
+                            $P_i = \{v | d_{out}(v) < i\}$  
+                            \tcp*[f]{$d_{out}(v)$ is an out degree of $v$} \\
                             \ForEach{$v \in P_i$} {
                                 \If{$v \notin C_{i-1}$} {
-                                    \If{$at\ least\ one\ of\ v's\ directed\ successors\ are\ not\ in\ P_i$} {
+                                    \If{$at\ least\ one\ of\ direct\  successors\ of\ v\ are\ not\ in\ P_i$} {
                                         $remove\ v\ from\ P_i$\\
                                         $remove\ all\ v's\ predecessors\ from\ P_i$\\
                                     }
                                 }
                             }
                         }
-                        $C_i = P_i$\\
+                        $C_i = P_i$  \tcp*[f]{$C_i$ -- list of candidates} \\
                         \ForEach{$v \in C_i$} {
                             \If{$|Closure(v)| == i$} {
-                                $Blackhole = Blackhole \cup Closure(v)$
+                                $Blackholes = Blackholes \cup Closure(v)$
                             }
                             \If{$|Closure(v)| >= i$} {
                                 $remove\ v\ from\ C_i$ \\
                                 $remove\ all\ v's\ predecessors\ from\ C_i$ \\
                             }
                         }
-                        $F_i = C_i$\\
-                        \ForEach{$B \in F_i(i)$} {
+                        \tcc{Apply the brute-force algorithm to $C_(i)$ --  set of all possible subsets containing $i$ nodes}
+                        \ForEach{$B \in C_i(i)$} {
                             \If{$G(B)\ is\ weakly\ connected$} {
                                 \If{$d_{out}(B) == 0$} {
-                                    $Blackhole = Blackhole \cup B$ \\
+                                    $Blackholes = Blackholes \cup B$ \\
                                 }
                             }
                         }
-                        \Return $Blackhole$
+                        \Return $Blackholes$
 			\label{alg:iblackhole}
 			\caption{iBlackHole}
 		\end{algorithm}
 	\end{center}
 \end{figure}
 
-\section{Algorithm design}
+\FIXME{Мы реализовали этот алгоритм}
+
+\section{Algorithm Design}
 We propose to look at the blackhole search problem from the following: it would be divided into two independent tasks. 
+\FIXME{У нас есть ограничение на суммарное время фазу препроцессинга?}
 The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to a restricted time span. 
 Decreased graph scale would definitely speed up the the calculation, as it can fall into a brute-force search in most cases.
 The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in a restricted time.
 
 %
-\subsection{Graph preprocessing}
-\FIXME{не забыть вставить ссылки SmallWorld \cite{watts1999networks}}
-
-As it was described in the Known issues section, large SCCs waste lots of computational time without adding any new blackholes. 
-For certain graph types (RMAT, SmallWorld\cite{watts1999networks}) it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
+\subsection{Graph Preprocessing}
+As it was described above, large SCCs waste lots of computational time without adding any new blackholes. 
+For small-world graphs it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
 In such a case, it would be nice to consider large SCC as a single node, aggregating all incoming and outcoming peripheral edges
 of original SCC.
 On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
 More formally:
 
 \begin{definition}
-If every SCC of directed graph is contracted to a single node, the resulting graph is directed acyclic graph, which is call the condensation of G.
+If every SCC of a directed graph $G$ is contracted to a single node, the resulting graph is a directed acyclic graph, which is called the condensation of $G$.
 \end{definition}
 
-In this article we use the following algorithm for finding graph condensation. \ref{alg:condensation}
-It was independently proposed by Kosaraju and Sharir back in 1979. \FIXME{Ссылку на эту статью}
+In this paper we use the algorithm of Sharir for finding graph condensation \cite{sharir1981strong}. 
 
 First, we find topological sort of the initial graph..
 
@@ -264,11 +261,6 @@ First, we find topological sort of the initial graph..
 Topological sort or topological ordering of a directed graph is a linear ordering of 
 its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$,
 $v$ comes before $u$ in the ordering.
-\end{definition}
-
-
-\begin{definition}
-
 \end{definition}
 
 When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
@@ -329,26 +321,20 @@ Finally, we need to remove edges duplicates and the graph condesation is built.
 %
 
 %
-\subsection{Blackholes Search}
+\subsection{Blackhole Search}
 When the graph is prepared, we can move on to searching blackholes. The problem is combinatorial in its nature, therefore, we aim to
 decrease the number of potential blackholes.
 To understand the issue, we first describe a brute-force approach. 
 
-\begin{definition}{Root of blackhole.\\}
-Root of blackhole(subgraph) is a node, which has no incoming edges from other nodes in blackhole.
+\begin{definition}
+Root of a blackhole is a node, which has no incoming edges from other nodes in the blackhole.
 \end{definition}
 
-\begin{definition}{Blackhole basis. \\}
-Set of all roots of blackhole is called blackhole basis
+\begin{definition}
+Set of all roots of a blackhole is called the blackhole basis.
 \end{definition}
 
-\begin{definition}{Simple blackhole. \\}
-A blackhole is called simple if its basis consists of a single node, i.e. it has single root.
-\end{definition}
-
-\begin{definition}{Complex blackhole. \\}
-A blackhole is called complex if its basis consists of more than one node.
-\end{definition}
+Note, that a blackhole basis can consist of a single node or more than one node. 
 
 %TODO: осознать
 In the BruteForce algorithm we iterate over all possible unordered sets of nodes. 
