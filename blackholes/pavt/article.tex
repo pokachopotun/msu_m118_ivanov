@@ -293,7 +293,36 @@ Further we use the concept of the topological order in a graph.
 	$v$ comes before $u$ in the topological ordering.
 \end{definition}
 
-Let's consider a closure of a single blackhole root $r$. Let this closure to be acquired by depth-first search, which basically means, that
+\begin{definition}
+    Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$, and
+    ${|Closure(v)| \forall v \in Closure(r)}$ - closure sizes of all nodes reachable from $r$. We say that node $v$ is special under root $r$
+    $v \in Special_r \subseteq Closure(r)$, if its closure size $|Closure(v)|$ equals to its 1-based index in array $topSortOrder_r$.
+\end{definition}
+
+\begin{definition}
+    Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$,
+    $v \in Special_r$ and $u \in Closure(r)$. We say that $v$ dominates $u$ under root $r$, if  $v$ has larger index in $topSortOrder_r$.
+\end{definition}
+
+\begin{theorem}
+    Given graph $G(V,E)$, one of its roots $r \in Roots(G)$, and $v \in Special_r, u \in Closure(r)$.
+    If $v$ dominates $u$ under $r$ then $u$ is reachable from $v$.
+\end{theorem}
+\begin{proof}
+    By definition of special node $v$ has closure size equal to its index in $topSortOrder_r$. All the nodes of $Closure(v)$ has lesser indeces 
+    in $topSortOrder_r$ than $v$. Hence $\forall $u$ \in Closure(v)$ $u$ is reachable from $v$.
+\end{proof}
+
+\begin{theorem}
+   Given graph $G(V,E)$, one of its roots $r \in Roots(G)$, and $v \in Special_r$, $u \in Closure(r)$. 
+   If $v$ dominates $u$ under root $r$, then $Closure(v) \cup Closure(u) = Closure(v)$.
+\end{theorem}
+\begin{proof}
+    According to previous theorem, if $v$ dominates $u$ under root $r$, then $u$ is reachalbe from $v$. Then $u \in Closure(v)$,
+    which means that $Closure(u) \subset Closure(v)$.
+\end{proof}
+
+Let's consider a closure of a single global root $r$. Let this closure to be acquired by depth-first search, which basically means, that
 we can iterate by $i$ over these nodes in topologically sorted order $topsortOrder_r[i]$. 
 
 Also, while traversing this graph, we can calculate size of closure for each node
@@ -317,7 +346,7 @@ First, we need to know what special nodes there are. This step can be precalcula
 To find out, we take every global root of the condensated graph and find topological sort of its closure.
 Those vertices, which satisfy the rule above, we mark as special.
 
-\FIXME{зачем второй этап?} 
+\FIXME{зачем второй этап?}
 Second, we calculate how many special nodes for every root there is in the given set. If there is more than one special node for root, the $Cand$ set is called non-basis and will be omitted in the high-level TopSort blackhole mining Algorithm \ref{alg:topsort}.
 
 %\FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
