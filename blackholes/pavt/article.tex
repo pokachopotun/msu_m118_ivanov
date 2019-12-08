@@ -106,7 +106,7 @@ In this section we provide some basic notations and definitions, which will be u
 First, consider a directed graph $G = G(V,E)$, where $V$ is a set of nodes and $E$ is a set of edges of the graph. 
 
 \begin{definition}
-Subset of nodes $B \in V$ is called a blackhole if  the following two conditions are satisfied: 
+Subset of nodes $B \subseteq V$ is called a blackhole if  the following two conditions are satisfied: 
 1) Subgraph $G'(B, E')$ induced by $B$ is weakly connected, 
 %$|B| \geq 2$,
 and
@@ -129,7 +129,7 @@ For a given directed graph $G(V,E)$ we say that $v \in V$ is reachable from $u \
 
 \begin{definition}
 For a given directed graph $G(V,E)$ if $v \in V$ is reachable from $u \in V$, then we say $u$ is a predecessor of $v$ and $v$ is a successor if $u$.
-If there is an edge from $u$ to $v$, then $u$ is a direct predecessor of $v$, and $v$ is a direct successor if $u$.
+If there is an edge from $u$ to $v$, then $u$ is a direct predecessor of $v$, and $v$ is a direct successor of $u$.
 \end{definition}
 
 \begin{definition}
@@ -158,7 +158,7 @@ Closure of $v$ forms a blackhole.
 
 \subsection{Known Issues}
 In this section we discuss applicability of the iBlackhole algorithm, proposed in \cite{li2010detecting}.
-The iBlackhole algorithm (see Algorithm \ref{alg:iblackhole}) is designed for searching blackholes of fixed size. Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which are quite
+The iBlackhole algorithm (see Algorithm \ref{alg:iblackhole}) is designed for searching blackholes of fixed size. Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which is quite
 a small size.
 
 We will need the following statement to discuss issues of the known approach.
@@ -292,13 +292,13 @@ Further we use the concept of the topological order in a graph.
 
 \begin{definition}
 	Given graph $G(V, E)$, a root $r \in Roots(G)$, $topSortOrder_r$ -- topological sort of $Closure(r)$ and 
-	$|Closure(v)|,\ \forall v \in Closure(r)$ --
+	$|Closure(v)|\ \forall v \in Closure(r)$ --
 	closure sizes of all nodes reachable from $r$. We say that node $v$ is special under root $r$, if its closure size  equals to its 1-based index in array $topSortOrder_r$. Note that set of special nodes $Special_r \subseteq Closure(r)$.
 \end{definition}
 
 
 \begin{remark}
-    Specialness of a node is decided independently under different roots. One node can be special for root $r1$ and non-special for $r2$ at
+    Specialness of a node is decided independently under different roots. One node can be special for root $r_1$ and non-special for $r_2$ at
     the same time. It is illustrated in Figure \ref{fig:specialnodes}.
 \end{remark}
 
@@ -325,7 +325,7 @@ Further we use the concept of the topological order in a graph.
 \FIXME{посмотреть еще раз внимательно}
 \begin{proof}
     By definition of special node $v$ has closure size equal to its index in $topSortOrder_r$. All the nodes of $Closure(v)$ has lesser indices 
-    in $topSortOrder_r$ than $v$. Hence $\forall $u$ \in Closure(v)$ $u$ is reachable from $v$.
+    in $topSortOrder_r$ than $v$. Hence $\forall u \in Closure(v)$ $u$ is reachable from $v$.
 \end{proof}
 
 \begin{theorem}
