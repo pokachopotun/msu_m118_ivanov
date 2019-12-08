@@ -307,8 +307,14 @@ Further we use the concept of the topological order in a graph.
 
 \begin{remark}
     Specialness of a node is decided independently under different roots. One node can be special for root $r1$ and non special for $r2$ at
-    the same time.
+    the same time. It is illustrated in Figure \ref{fig:specialnodes}
 \end{remark}
+
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{specialnodes.pdf}
+	\caption{Special nodes in a graph with two roots.}
+	\label{fig:specialnodes}
+\end{figure}
 
 \begin{definition}
     Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$,
