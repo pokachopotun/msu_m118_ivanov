@@ -46,15 +46,15 @@
 \begin{document}
 \mainmatter              % start of a contribution
 %
-\title{Topological approach to finding blackholes in directed networks}
+\title{Topological Approach to Finding Blackholes in Directed Networks}
 %
-\titlerunning{Topological black holes mining}  % abbreviated title (for running head)
+\titlerunning{Topological Blackholes Mining}  % abbreviated title (for running head)
 %                                     also used for the TOC unless
 %                                     \toctitle is used
 %
 \author{Denis Ivanov\inst{1} \and Alexander Semenov\inst{2}}
 %
-\authorrunning{Ivanov, Semenov} % abbreviated author list (for running head)
+\authorrunning{D. Ivanov, A. Semenov} % abbreviated author list (for running head)
 %
 %%%% list of authors for the TOC (use if author list has to be modified)
 \tocauthor{Denis Ivanov and Alexander Semenov}
@@ -69,15 +69,15 @@ JSC NICEVT, Moscow, Russian Federation\\
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-In this paper we consider the problem of finding so called Blackhole pattern in directed unweighted graphs.
+In this paper we consider the problem of finding so called blackhole pattern in directed unweighted graphs.
 Firstly, we analyse already existing algorithms and approaches. Secondly, we describe how structure of a graph
 affects their efficiency. Then we introduce our approach to graph preprocessing. Finally, we describe topological sort based heuristic
-and provide results of experimental comparison between our approach and previously developed algorithm.
-\keywords{Directed networks $\cdot$ Subgraph mining}
+and provide results of experimental comparison between our approach and the previously developed algorithm.
+\keywords{Directed networks $\cdot$ Subgraph mining $\cdot$ Blackhole}
 \end{abstract}
 
 \section{Blackhole Search in Directed Graph}
-The task of pattern mining in directed graphs finds its aplications in different areas. In 2010 Li et al.\cite{li2010mining} state
+The task of pattern mining in directed graphs finds its aplications in different areas. In 2010 Li et al.\cite{li2010detecting} state
 that governments are interested in detecting cases of financial fraud. They formulate the task for finding cases of illegal collaboration, and introduce dual patterns:
 blackhole and volcano. Those appear when a group of traders perform operations only between each other in order to manipulate market.
 Continuing study of different financial fraud casese, in 2017 Semenov et al. \cite{semenov2017survey} provided a survey of common approaches to anti - money laundering by graph mining.
@@ -459,7 +459,7 @@ All runs were performed in a single-thread mode. We allowed up to 20 minutes of 
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{rmat.pdf}
-	\caption{Algorithm results on RMAT graphs.}
+	\caption{Algorithm results on RMAT graphs}
 	\label{fig:rmat}
 \end{figure}
 
@@ -475,12 +475,12 @@ to find larger ones, meanwhile our approach will check blackholes of all sizes.
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{ssca2.pdf}
-	\caption{Algorithm results on SSCA2 graphs.}
+	\caption{Algorithm results on SSCA2 graphs}
 	\label{fig:ssca2}
 \end{figure}
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{ur.pdf}
-	\caption{Algorithm results on Uniform Random graph.}
+	\caption{Algorithm results on Uniform Random graph}
 	\label{fig:ur}
 \end{figure}
 
