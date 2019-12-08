@@ -26,7 +26,7 @@
 \def\letter{$^{\textrm{(\Letter)}}$}
 
 %%%%%% DEBUG section %%%%%%
-\newcommand*{\DEBUG}{}
+%\newcommand*{\DEBUG}{}
 
 \ifdefined\DEBUG
 \usepackage[T2A]{fontenc}
@@ -72,8 +72,8 @@ JSC NICEVT, Moscow, Russian Federation\\
 In this paper we consider the problem of finding so called blackhole pattern in directed unweighted graphs.
 Firstly, we analyse already existing algorithms and approaches. Secondly, we describe how structure of a graph
 affects their efficiency. Then we introduce our approach to graph preprocessing. Finally, we describe topological sort based heuristic
-and provide results of experimental comparison between our approach and the previously developed algorithm.
-\keywords{Directed networks $\cdot$ Subgraph mining $\cdot$ Blackhole}
+and present results of experimental comparison between our approach and the previously developed algorithm.
+\keywords{Directed networks $\cdot$ Subgraph mining $\cdot$ Blackhole pattern}
 \end{abstract}
 
 \section{Introduction}
@@ -333,11 +333,16 @@ Further we use the concept of the topological order in a graph.
    If $v$ dominates $u$ under root $r$, then $Closure(v) \cup Closure(u) = Closure(v)$.
 \end{theorem}
 \begin{proof}
-    According to the previous theorem, if $v$ dominates $u$ under root $r$, then $u$ is reachalbe from $v$. Then $u \in Closure(v)$,
+    According to the previous theorem, if $v$ dominates $u$ under root $r$, then $u$ is reachable from $v$. Then $u \in Closure(v)$,
     which means that $Closure(u) \subset Closure(v)$.
 \end{proof}
 
 %TODO: Осознать до конца
+\begin{definition}
+	Those nodes of graph G(V,E) that have no incoming edges are called $Global\ roots$. 
+\end{definition}
+
+
 Let's consider two nodes in the closure of a global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
 the special one should not dominate non-special. Otherwise non-special node can be omitted from basis.
 In general, if given a set of nodes, we shall remove all dominated ones in order for the rest to be a proper basis.
@@ -348,14 +353,12 @@ In general, if given a set of nodes, we shall remove all dominated ones in order
 Algorithm \ref{alg:isbasis} IsBasis tests a set of nodes as a blackhole basis.
 This algorthm takes a set of nodes as input. It returns $True$, if given set forms a proper basis,
 and  $False$ otherwise. This algortihm is used as a part of TopSort \ref{alg:topsort} algorithm, which is looking over
-blackhole basis candidates and sorts unproper ones out. If $IsBasis$ returns False on a basis candidate, this candidate is to be omitted.
+blackhole basis candidates and sorts unproper ones out. If $IsBasis$ returns False on a basis candidate, this candidate is omitted.
 
 IsBasis algorithm does the following.
 First, we need to know what special nodes there are. This step can be precalculated. 
 \FIXME{как вычисляются global roots?}
-\begin{remark}
-    Those nodes of graph G(V,E) that have no incoming edges are called $Global\ roots$. 
-\end{remark}
+
 To find out, we take every global root of the condensated graph and find topological sort of its closure.
 Those vertices, which satisfy definition, we mark as special for according roots.
 
@@ -371,13 +374,13 @@ If so, we omit this set.
 %\FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
 
 If all previous checks did not return $False$ (omit), then $IsBasis$ returns $True$.
-Thus we return to TopSort algorithm and we have a valid basis of a blackhole.
+Thus we return to the TopSort algorithm and we have a valid basis of a blackhole.
 To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
 Finally, we check for weak connectivity and if it is present, then print the blackhole.
 
 Clearly, we still have to spend some computation time in order to decide, whether
 the candidate is worth checking or not, and we understand, that sometimes it can make process even more slower than before,
-but experimental results demostrate its efficiency.
+but experimental results demonstrate its efficiency.
 Our goal is to avoid this costly procedure of acquiring blackhole if possible.
 
 \begin{figure}[H]
@@ -495,7 +498,7 @@ the first blackhole. Nevertheless, our algorithm shows significantly better perf
 that total working time on large graphs for our algorithm will be less, and this is the point for the future work.
 
 \FIXME{Это, вообще говоря, странно}
-SSCA2 graphs in our survey can be characterized with absolute absence of SCCs consisting of more than one node. Preprocessing here does not allow to obtain any
+SSCA2 graphs in our evaluation can be characterized with absolute absence of SCCs consisting of more than one node. Preprocessing here does not allow to obtain any
 certain advantage, but only takes time. As we can see, on small graphs our approach beats the iBlackhole algorithm, but slows down on larger graphs.
 We guess that the reason is less efficient order of search for our algorithm. One used in iBlackHole will faster print smaller blackholes, and later will try
 to find larger ones, meanwhile our approach will check blackholes of all sizes.
@@ -517,8 +520,8 @@ avoided completely in this case, making calculation time impressively small in c
 
 \section{Conclusion}
 
-In this paper we addressed some issues in application of the already known iBlackhole algorithm. We introduced and tested two different ideas of optimization, combined into
-our TopSort algorithm. Those are graph condensation preprocessing and topological sort of the brute-force optimization. We tested our approach on three different types of graphs and number of scales.
+In this paper we addressed some issues in application of the already known iBlackhole algorithm. We proposed and tested two different ideas of optimization, combined into
+our TopSort algorithm. Those are graph condensation preprocessing and topological sort of the brute-force optimization. We tested our approach on three different types of graphs and number of scales. We originally consider the blackhole detection problem on graphs with number of nodes larger than 1 million. 
 
 In case of graph with large strong connected components we demostrate definite advantage over the iBlackhole algorithm. Then, we can relatively fast in the case of total blackhole absence, but sometimes quite costly preprocessing
 deminishes any performance boost and our advantage  degrades.
