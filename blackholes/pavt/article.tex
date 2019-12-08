@@ -439,56 +439,12 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
 
 %
 \section{Experimental Results}
-To demonstrate efficiency of our approach, we conducted a series of experiments. We ran the both algorithms (New Jersey \ref{alg:iblackhole} and TopSort ) on a 
-set of graphs. 
 
-iBlackhole algorithm was implemented in accordance with the pseudocode in the original article. Divide and Conquer heuristic were not used for it.
-Our algorithm first applies condensation-based preprocessing and then uses BruteForce with partial reachability heuristic implemented via topsort.
-Both algorithms filter duplicates 
+To demonstrate efficiency of our approach, we conducted a series of experiments for the iBlackhole and TopSort algorithms. 
+
 
 For these experiments we chose Uniform Random (UR) \cite{random-uniform}, RMAT \cite{chakrabarti2004r},  and SSCA2 \cite{bader2005design} graph types. Those were generated for scales from 4 to 22
-with step 2. Size $i$ means that graph has $2^i$ nodes and $32*V$ edges. Actual count of edges to process can differ from these ideal values, as duplicate edges and self-loops are omitted when readinggraph from file. Configuration of the considered graphs is presented in Table \ref{tabular:graphs}.
-
-\begin{table}[]
-\caption{Configuration of experimental graphs}
-\label{tabular:graphs}
-\begin{center}
-\begin{tabular}{c|c|c}
-Graph Type & Nodes Count & Edges Count \\
-\hline
-RMAT.04 & 16 & 177 \\
-RMAT.06 & 64 & 1270 \\
-RMAT.08 & 256 & 6663 \\
-RMAT.10 & 1024 & 30186 \\
-RMAT.12 & 4096 & 126988 \\
-RMAT.14 & 16384 & 517554 \\
-RMAT.16 & 65536 & 2087072 \\
-RMAT.18 & 262144 & 7892410 \\
-RMAT.20 & 1048576 & 32993233 \\
-RMAT.22 & 4194304 & 67099679 \\
-SSCA2.04 & 16 & 120 \\
-SSCA2.06 & 64 & 722 \\
-SSCA2.08 & 256 & 2668 \\
-SSCA2.10 & 1024 & 10529 \\
-SSCA2.12 & 4096 & 43603 \\
-SSCA2.14 & 16384 & 173477 \\
-SSCA2.16 & 65536 & 677649 \\
-SSCA2.18 & 262144 & 2724762 \\
-SSCA2.20 & 1048576 & 10902287 \\
-SSCA2.22 & 4194304 & 43580024 \\
-UR.04 & 16 & 207 \\
-UR.06 & 64 & 1614 \\
-UR.08 & 256 & 7652 \\
-UR.10 & 1024 & 32201 \\
-UR.12 & 4096 & 130486 \\
-UR.14 & 16384 & 523740 \\
-UR.16 & 65536 & 2096570 \\
-UR.18 & 262144 & 8388074 \\
-UR.20 & 1048576 & 33553908 \\
-UR.22 & 4194304 & 134217174
-\end{tabular}
-\end{center}
-\end{table}
+with step 2. Size $i$ means that graph has $2^i$ nodes and approximately $32*V$ edges. 
 
 We have been conducting our experiments on a Linux machine with the following specifications:
 \begin{itemize}
@@ -499,38 +455,50 @@ We have been conducting our experiments on a Linux machine with the following sp
     \item Shell: bash 4.3.48
 \end{itemize}
 
-All runs were performed in a single-thread mode. We allowed up to 20 minutes of working time for every run. In order to save time,
-algorithms did not print out found blackholes, but printed counter on every found and not filtered (by any reason) blackhole.
+All runs were performed in a single-thread mode. We allowed up to 20 minutes of working time for every run. This time includes graph preprocessing for the TopSort algorithm.
 
-Please, mention, that "blackhole found" means that we have a set of vertex numbers in memory ready to be printed out and it's already validated.
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{rmat.pdf}
+	\caption{Algorithm results on RMAT graphs.}
+	\label{fig:rmat}
+\end{figure}
 
-As it is shown in the Tables \ref{tabular:tableresults}, \ref{tabular:tableresults2}, our TopSort approach to blackhole search shows better performance on small RMAT graphs.
-And it stays in advantage up to RMAT-22. Apparently, condensation preprocessing takes more time on larger graphs and increases time spent before finding
-the first blackhole. Nevertheless our algorithm shows significantly better performance in those cases when preprocessing saves more time. Also, we suppose
-that total working time on large graphs for our algorithm will be less, and this is the point for future survey.
+As it is shown in the Figures \ref{fig:rmat}, \ref{fig:ssca2} and \ref{fig:ur}, our TopSort approach to blackhole search shows better performance on small RMAT graphs and it stays in advantage up to RMAT-22. Apparently, condensation preprocessing takes more time on larger graphs and increases time spent before finding
+the first blackhole. Nevertheless, our algorithm shows significantly better performance in those cases when preprocessing saves more time. Also, we suppose
+that total working time on large graphs for our algorithm will be less, and this is the point for the future work.
 
 \FIXME{Это, вообще говоря, странно}
-SSCA2 graphs in our survey can be characterized with absolute absence of SCCs consisting of more than one node. Preprocessing here doesn't give any
-certain advantage, but only takes time. As we can see, on smaller graphs our approach beats iBlackhole algorithm, but slows down on larger graphs.
-We guess that the reason is less efficient order of search for our algorithm. One used in iBlackHole will faster print smaller balckholes, and later will try
+SSCA2 graphs in our survey can be characterized with absolute absence of SCCs consisting of more than one node. Preprocessing here does not allow to obtain any
+certain advantage, but only takes time. As we can see, on small graphs our approach beats the iBlackhole algorithm, but slows down on larger graphs.
+We guess that the reason is less efficient order of search for our algorithm. One used in iBlackHole will faster print smaller blackholes, and later will try
 to find larger ones, meanwhile our approach will check blackholes of all sizes.
 
-Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute force is
-avoided completely in this case, making calculation time impressively small in comparison to iBlackhole algorithm.
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{ssca2.pdf}
+	\caption{Algorithm results on SSCA2 graphs.}
+	\label{fig:ssca2}
+\end{figure}
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{ur.pdf}
+	\caption{Algorithm results on Uniform Random graph.}
+	\label{fig:ur}
+\end{figure}
 
-\pagebreak
+Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute force is
+avoided completely in this case, making calculation time impressively small in comparison to the iBlackhole algorithm.
+
 
 \section{Conclusion}
 
-In this paper we formulated and addressed some issues in application of already known iBlackhole algorithm. We introduced and tested two different ideas of optimization, combined into
-our TopSort algorithm. Those are: graph condensation preprocessing and topsort bruteforce optimization. We tested out approach on three different types of graphs and number of scales.
-In case of large SCCs we demostrate definite advantage over iBlackhole algorithm. Then, we can relatively fast detect total absence of blackholes, but sometimes quite costly preprocessing
-deminishes any boost of productivity and out performance degrades.
+In this paper we addressed some issues in application of the already known iBlackhole algorithm. We introduced and tested two different ideas of optimization, combined into
+our TopSort algorithm. Those are graph condensation preprocessing and topological sort of the brute-force optimization. We tested our approach on three different types of graphs and number of scales.
+
+In case of graph with large strong connected components we demostrate definite advantage over the iBlackhole algorithm. Then, we can relatively fast in the case of total blackhole absence, but sometimes quite costly preprocessing
+deminishes any performance boost and our advantage  degrades.
 \FIXME{можно написать в TODO}
 If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
 
-
-\textit{Comment for the reviewer}. In the final paper revision we add parallel implementation of the TopSort algorithm and present much detailed evaluation on the larger graphs. 
+\textit{Comment for the reviewer}. In the final paper revision we enhance our TopSort algorithm, add its parallel implementation and present much detailed evaluation on the larger graphs. 
 
 %
 % ---- Bibliography ----
@@ -538,20 +506,5 @@ If we check blackhole sizes consecutively, what is the expected time of the firs
 \bibliographystyle{spmpsci}
 \bibliography{biblio}
 
-\begin{figure}[p]
-    \includegraphics[width=\linewidth]{rmat.pdf}
-    \caption{RMAT}
-    \label{fig:rmat}
-\end{figure}
-\begin{figure}[p]
-    \includegraphics[width=\linewidth]{ssca2.pdf}
-    \caption{SSCA2}
-    \label{fig:ssca2}
-\end{figure}
-\begin{figure}[p]
-    \includegraphics[width=\linewidth]{ur.pdf}
-    \caption{UR}
-    \label{fig:ur}
-\end{figure}
 
 \end{document}
