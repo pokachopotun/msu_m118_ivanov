@@ -76,19 +76,35 @@ and provide results of experimental comparison between our approach and the prev
 \keywords{Directed networks $\cdot$ Subgraph mining $\cdot$ Blackhole}
 \end{abstract}
 
-\section{Blackhole Search in Directed Graph}
-The task of pattern mining in directed graphs finds its aplications in different areas. In 2010 Li et al.\cite{li2010detecting} state
-that governments are interested in detecting cases of financial fraud. They formulate the task for finding cases of illegal collaboration, and introduce dual patterns:
-blackhole and volcano. Those appear when a group of traders perform operations only between each other in order to manipulate market.
-Continuing study of different financial fraud casese, in 2017 Semenov et al. \cite{semenov2017survey} provided a survey of common approaches to anti - money laundering by graph mining.
-There are other applications. For example, the online detection of black holes/volcanos can timely 
-reflect anomalous events, such as disasters, catastrophic accidents, and therefore help keep public safety \cite{hong2015detecting}.
+\section{Introduction}
+
+One of the most relevant features of graphs representing real systems is community
+structure, or clustering. Detecting communities
+is of great importance in sociology, biology and computer science, disciplines where systems are
+often represented as graphs \cite{fortunato2010community}.
+
+In 2010 Li et al.\cite{li2010detecting} for the first time formulated a novel problem for finding blackhole and volcano patterns in a large directed graph. Specifically, a blackhole pattern is a group of graph nodes 
+that there are only incoming edges to this group from the rest nodes in the graph. In contrast, a volcano pattern is a
+group which only has outgoing edges to the rest nodes in the graph. 
+
+Both patterns can be observed in real world.
+For instance, in a trading network, a blackhole pattern may represent a group of traders who are
+manipulating the market. Also, blackhole and volcano patterns can represent the money laundering model \cite{semenov2017survey}.
+The online detection of blackholes and volcanos can timely 
+reflect anomalous events, such as disasters, catastrophic accidents, and therefore helps to keep public safety \cite{hong2015detecting}.
+
+The main contributor to the blackhole detecting problem is the authors from the University of New Jersey. They both formulated the task and proposed an algorithm for blackhole detection in case of unweighted directed graph \cite{li2010detecting}. 
+Two years later they published an algorithm for approximate blackhole search in general case (weighted graph) \cite{li2012mining,li2014mining}. 
+Hong et al \cite{hong2015detecting} consider application for online blackhole mining in the city environment. They introduced an original algorithm an approximate solution of the problem for dynamic graphs.  
+
+In this paper we consider simplified problem formulation, applied to a directed unweighted graph.
+
+\FIXME{переход к дальнейшему}
 
 \subsection{Problem Statement and Preliminaries}
-In this section we provide some basic notations and definitions, which will be used in this paper. In this paper we consider simplified problem formulation, applied to directed unweighted graph.
+In this section we provide some basic notations and definitions, which will be used in this paper. 
 
-First, consider a directed graph $G = G(V,E)$, where $V$ is a set of all nodes and $E$ is a set if all edges of the graph. 
-\FIXME{Мне кажется, это лишнее предложение, так не пишут в статьях:} Assume that we deal with the general case of graph, without any special restrictions, unless the opposite is stated. 
+First, consider a directed graph $G = G(V,E)$, where $V$ is a set of nodes and $E$ is a set if edges of the graph. 
 
 \begin{definition}
 Subset of nodes $B \in V$ is called a blackhole if  the following two conditions are satisfied: 
@@ -139,7 +155,7 @@ If a node $v \in B$, where $B \subseteq V$ is a blackhole, then the closure of $
 Closure of $v$ forms a blackhole.
 \end{lemma}
 
-We will need the following statement to discuss issues of known approaches.
+We will need the following statement to discuss issues of the known approaches.
 \begin{lemma}
 For a given graph $G(V,E)$, SCC $S \subseteq V,\ blackhole\ B \subseteq V$ if $\ \exists v \in S: v \in B$,  then $\forall s \in S$ will be true $s \in B$.
 In other words, if any node in SCC belongs to a blackhole, then all the nodes of this SCC belong to the same blackhole.
@@ -148,16 +164,6 @@ In other words, if any node in SCC belongs to a blackhole, then all the nodes of
     In SCC any node is reachable from any other node. This means, that any node $v$ in SCC contains the whole SCC in its closure. By Lemma 3 the whole SCC belongs to the same blackhole as $v$. 
 \end{proof}
 
-\subsection{Related Work}
-
-% Previously 
-%Authors from the University of New Jersey gave \cite{li2010detecting} general and simplified problem formulation for blackhole search
-in directed graph.
-
-The main contributor to the blackhole detecting problem is the authors from the University of New Jersey. They both formulated the task and provided an algorithm for blackhole detection in case of unweighted directed graph \cite{li2010detecting}. 
-Two years later they published an algorithm for approximate blackhole search in general case (weighted graph) \cite{li2012mining,li2014mining}. 
-Hong et al \cite{hong2015detecting} had
-an unusual application for blackhole mining in the city environment. They introduced an original algorithm.  
 
 \subsection{Known issues}
 In this section we shortly discuss applicability of the iBlackhole algorithm, proposed in \cite{li2010detecting}.
@@ -504,6 +510,9 @@ our TopSort algorithm. Those are graph condensation preprocessing and topologica
 
 In case of graph with large strong connected components we demostrate definite advantage over the iBlackhole algorithm. Then, we can relatively fast in the case of total blackhole absence, but sometimes quite costly preprocessing
 deminishes any performance boost and our advantage  degrades.
+
+%We originally evaluate blackhole algorithm Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which are quite a small size.
+
 \FIXME{можно написать в TODO}
 If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
 
