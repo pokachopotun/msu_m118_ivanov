@@ -280,7 +280,7 @@ According to the definitions above if some node is not a root of a blackhole, it
 Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
 
 \FIXME{не совсем понял логику в общем тексте}
-Of course, we could straightforward build the reachability matrix. But, it takes $O(V^3)$ time. Even though we decreased graph size
+Of course, we could straightforward build the reachability matrix. But, it takes \FIXME{ Not sure $O(V^3)$ } time. Even though we decreased graph size
 in preprocessing step, it still can result in lots of computation. It is worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later in lazy manner.
@@ -299,10 +299,19 @@ Further we use the concept of the topological order in a graph.
     $v \in Special_r \subseteq Closure(r)$, if its closure size $|Closure(v)|$ equals to its 1-based index in array $topSortOrder_r$.
 \end{definition}
 
+\begin{remark}
+    Specialness of a node is decided independently under different roots. One node can be special for root $r1$ and non special for $r2$ at
+    the same time.
+\end{remark}
+
 \begin{definition}
     Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$,
     $v \in Special_r$ and $u \in Closure(r)$. We say that $v$ dominates $u$ under root $r$, if  $v$ has larger index in $topSortOrder_r$.
 \end{definition}
+
+\begin{remark}
+    If given two special nodes under the same root, ont of them is always dominated by the other.
+\end{remark}
 
 \begin{theorem}
     Given graph $G(V,E)$, one of its roots $r \in Roots(G)$, and $v \in Special_r, u \in Closure(r)$.
@@ -322,20 +331,10 @@ Further we use the concept of the topological order in a graph.
     which means that $Closure(u) \subset Closure(v)$.
 \end{proof}
 
-Let's consider a closure of a single global root $r$. Let this closure to be acquired by depth-first search, which basically means, that
-we can iterate by $i$ over these nodes in topologically sorted order $topsortOrder_r[i]$. 
-
-Also, while traversing this graph, we can calculate size of closure for each node
-in the given root closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
-conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder_r[i]$. We will call such nodes special.
-
-If there are two special nodes under the same root, union of their closures will be equal to the closure of topologically higher node.
-Hence, union of closures for any subset of special nodes under the same root will result into closure of the highest special node.
-
 %TODO: Осознать до конца
 Let's consider two nodes in the closure of a global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
-the special one should be topologically lower than non-special. Otherwise it would be one node basis.
-To summarize, if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure.
+the special one should not dominate non-special. Otherwise non-special node can be omitted from basis.
+In general, if given a set of nodes, we shall remove all dominated ones in order for the rest to be a proper basis.
 
 %We shall decide if there's at least
 %one non-basic node.
@@ -344,16 +343,14 @@ Algorithm \ref{alg:isbasis} IsBasis tests a set of nodes as a blackhole basis.
 First, we need to know what special nodes there are. This step can be precalculated. 
 \FIXME{как вычисляются global roots?}
 To find out, we take every global root of the condensated graph and find topological sort of its closure.
-Those vertices, which satisfy the rule above, we mark as special.
+Those vertices, which satisfy definition, we mark as special for according roots.
 
 \FIXME{зачем второй этап?}
-Second, we calculate how many special nodes for every root there is in the given set. If there is more than one special node for root, the $Cand$ set is called non-basis and will be omitted in the high-level TopSort blackhole mining Algorithm \ref{alg:topsort}.
-
 %\FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
 
-Also we check if there are any non-special nodes lower than the special ones in the related root topological order, and if those found, then omit the node set.
+Second, if there are any dominated nodes (special or non-special) under any of the roots, we omit the node set.
 
-Third, when we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, we omit this set. 
+Third, when we are out of cheap heuristics, we check if any of the candidate nodes are reachable from one another. If so, we omit this set. 
 
 %\FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
  
@@ -377,21 +374,33 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
                         \tcc{(1) calculate special nodes for every root} 
                         \ForEach{$r \in Roots(G)$} {
                             $Special_r = \emptyset$ \\
-                            $build\ topsortOrder_r$ \\
-                            \For{$i = 0; i<|topsortOrder_r|; i=i + 1$} {
-                                $v = topsortOrder_r[i]$ \\
+                            $build\ topSortOrder_r$ \\
+                            \For{$i = 0; i<|topSortOrder_r|; i=i + 1$} {
+                                $v = topSortOrder_r[i]$ \\
                                 $C_v = Closure(v)$ \\
                                 \If{$|C_v| == i$} {
                                     $Special_r = Special_r \cup v$ \\
+                                    $maxSpecialIndex_r = max(maxSpecialIndex_r, i)$ \\
                                 }
                             }
                         }
-			\tcc{(2) check for excluding specials} 
+			\tcc{(2) check for dominated nodes} 
+                        \ForEach{$r \in Roots(G)$} {
+                            $maxSpecialIndex_r = -1$ \\
+                        }
 			\ForEach{$v \in Cand$} {
                             \ForEach{$r \in Roots(G)$} {
                                 \If{$v \in Special_r$} {
-                                    $Spec_r = Spec_r \cup v$ \\
-                                    \If{$|Spec_r| > 1$} {
+                                    $vTopSortIndex_r = arg_v (topSortOrder_r)$ \\
+                                    $maxSpecialIndex_r = max(maxSpecialIndex_r, vTopSortIndex_r)$ \\
+                                }
+                            }
+			}
+			\ForEach{$v \in Cand$} {
+                            \ForEach{$r \in Roots(G)$} {
+                                \If{$v \in Closure(r)$} {
+                                    $vTopSortIndex_r = arg_v (topSortOrder_r)$ \\
+                                    \If{$vTopSortIndex_r < maxSpecialIndex_r$} {
                                         \Return $False$ \\
                                     }
                                 }
