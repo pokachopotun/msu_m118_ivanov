@@ -69,12 +69,10 @@ JSC NICEVT, Moscow, Russian Federation\\
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-In this paper we consider the task of finding so called Blackhole pattern in directed unweighed graphs.
+In this paper we consider the problem of finding so called Blackhole pattern in directed unweighted graphs.
 Firstly, we analyse already existing algorithms and approaches. Secondly, we describe how structure of a graph
 affects their efficiency. Then we introduce our approach to graph preprocessing. Finally, we describe topological sort based heuristic
 and provide results of experimental comparison between our approach and previously developed algorithm.
-% We would like to encourage you to list your keywords within
-% the abstract section using the \keywords{...} command.
 \keywords{Directed networks $\cdot$ Subgraph mining}
 \end{abstract}
 
@@ -245,8 +243,7 @@ As it was described above, large SCCs waste lots of computational time without a
 For small-world graphs it can be crucial, because one SCC can contain up to 100\% of all graph's nodes. 
 In such a case, it would be nice to consider large SCC as a single node, aggregating all incoming and outcoming peripheral edges
 of original SCC.
-On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is not new and known as a graph condensation.
-More formally:
+On the preprocessing stage of the algorithm we reduce every SCC to a single node. The algorithm is known as a graph condensation.
 
 \begin{definition}
 If every SCC of a directed graph $G$ is contracted to a single node, the resulting graph is a directed acyclic graph, which is called the condensation of $G$.
@@ -254,72 +251,6 @@ If every SCC of a directed graph $G$ is contracted to a single node, the resulti
 
 In this paper we use the algorithm of Sharir for finding graph condensation \cite{sharir1981strong}. 
 
-First, we find topological sort of the initial graph..
-
-\begin{definition}
-Topological sort or topological ordering of a directed graph is a linear ordering of 
-its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$,
-$v$ comes before $u$ in the topological ordering.
-\end{definition}
-
-When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
-
-Define global array of used nodes. Initially, all nodes are unused.
-Then for every node from bottom to top:
-\begin{enumerate}
-    \item Acquire closure of unused nodes reachable from current node; 
-    \item Mark every node in the closure as used;
-    \item All the acquired nodes belong to the same SCC.
-\end{enumerate}
-
-The fact given in the last step can be shortly explained in the following way:
-topological sort guarantees that any node has index larger than indeces of her children.
-That is why, given that we process nodes from bottom to top, by the moment we process the node, all it's children are already marked used and no longer available for search.
-As all the ways down are prohibited and there's no way up, we will acquire an SCC.
-
-\begin{figure}[H]
-	\begin{center}
-		\begin{algorithm}[H]
-			\SetAlgoLined
-			\SetKwInOut{Input}{Input}
-			\SetKwInOut{Output}{Output}
-			\Input{$G(V,E)$ -- directed graph}
-			\Output{$G'(V',E')$ -- directed acyclic graph }
-                        $tsOrder = TopSort(G)$ \\
-                        $scc = [-1\ for\ i = 1\ to\ |V|] $ \\ 
-                        $component = 0$ \\
-                        \ForEach{$v \in tsOrder$} {
-                            \If{$scc[v] == -1$} {
-                                $C_v = Closure(v)$ \\
-                                \ForEach{$u \in C_v$} {
-                                    $scc[u] = component$ \\
-                                }
-                                $component = component + 1$ \\
-                            }
-                        }
-
-                        $E' = \emptyset$ \\
-                        $V' = \emptyset$ \\
-                        \ForEach{$(u,v) \in V \times V$} {
-                            \If{$scc[u] \neq scc[v]$} {
-                               $V' = V' \cup \{scc[u], scc[v]\}$ \\ 
-                               $E' = E' \cup (scc[u], scc[v])$ \\ 
-                            }
-                        }
-                        \Return $G'$
-			\label{alg:condensation}
-			\caption{Graph condensation. Kosarayu, Sharir}
-		\end{algorithm}
-	\end{center}
-\end{figure}
-
-As a result of the algorithm, described above, we have each node associated with certain SCC.
-SCCs itself form a graph with number of nodes less than or equal to one of the initial graph.
-Finally, we need to remove edges duplicates and the graph condesation is built.
-
-%
-
-%
 \subsection{Blackhole Search}
 When the graph is prepared, we can move on to searching blackholes. The problem is combinatorial in its nature, therefore, we aim to
 decrease the number of potential blackholes.
@@ -354,40 +285,56 @@ in preprocessing step, it still can result in lots of computation. It is worth m
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later in lazy manner.
 
+Further we use the concept of the topological order in a graph.  
+
+\begin{definition}
+	Topological sort or topological ordering of a directed graph is a linear ordering of 
+	its vertices such that for every directed edge $(u,v)$ from node $u$ to node $v$,
+	$v$ comes before $u$ in the topological ordering.
+\end{definition}
+
 Let's consider a closure of a single blackhole root $r$. Let this closure to be acquired by depth-first search, which basically means, that
-we can iterate by $i$ over these nodes in topologically sorted order $topsortOrder(r)[i]$. Also, while traversing this graph, we can calculate size of closure for each node
+we can iterate by $i$ over these nodes in topologically sorted order $topsortOrder_r[i]$. 
+
+Also, while traversing this graph, we can calculate size of closure for each node
 in the given root closure. Finally, if some node is in the $i$-th position of the topological sort and its closure size is $i$, then we can 
-conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder(r)[i]$. We will call such nodes special.
+conclude, that every node with index less than $i$ in the topological sort will be reachable from $topsortOrder_r[i]$. We will call such nodes special.
 
 If there are two special nodes under the same root, union of their closures will be equal to the closure of topologically higher node.
 Hence, union of closures for any subset of special nodes under the same root will result into closure of the highest special node.
 
-Let's consider two nodes in the closure of global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
-special one should be topologically lower than non-special. Otherwise it would be one node basis.
-To sum up: if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure.
+%TODO: Осознать до конца
+Let's consider two nodes in the closure of a global root. One of them is non-special, the other one is special. In order for these two nodes to be basis
+the special one should be topologically lower than non-special. Otherwise it would be one node basis.
+To summarize, if given a set of nodes, we shall remove nodes topologically lower than highest ones special nodes in every global root closure.
 
-Imagine, we are given a graph and a set of nodes. What is the algorithm to decide whether these nodes form the basis of a blackhole? We shall decide if there's at least
-one non-basic node. It's done by \ref{alg:isbasis}
-\begin{enumerate}
-    \item First, we need to know what special nodes there are. This step can be precalculated. 
-    To find out, we will take every global root of condensated graph and find topoological sort of its closure.
-    Those vertices, which suffice the rule above, we will mark as "special". 
-    \item Now, we shall calculate how many special nodes for every root there is in the given set. If there is more than one special node for root - the set is to be called non-basis and
-    omitted.
-    \FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
-    \item Also we shall check if there are any non-special nodes lower than the special ones in related root topsort order, and if those found - omit the node set.
-    \item When we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, omit this set. 
-    \FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
-    \item Otherwise, we have a valid basis of a blackhole.
-    To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
-    Finally, we check for weak connectivity and if it is present - print blackhole.
-\end{enumerate}
+%We shall decide if there's at least
+%one non-basic node.
 
-\begin{remark}
-Of course, we still have to spend some computation time in order to decide, whether
+Algorithm \ref{alg:isbasis} IsBasis tests a set of nodes as a blackhole basis. 
+First, we need to know what special nodes there are. This step can be precalculated. 
+\FIXME{как вычисляются global roots?}
+To find out, we take every global root of the condensated graph and find topological sort of its closure.
+Those vertices, which satisfy the rule above, we mark as special.
+
+\FIXME{зачем второй этап?} 
+Second, we calculate how many special nodes for every root there is in the given set. If there is more than one special node for root, the $Cand$ set is called non-basis and will be omitted in the high-level TopSort blackhole mining Algorithm \ref{alg:topsort}.
+
+%\FIXME{partially implemented: по факту тут алгоритм применяется только к первому корню. Это было проще реализовать. }
+
+Also we check if there are any non-special nodes lower than the special ones in the related root topological order, and if those found, then omit the node set.
+
+Third, when we are out of heuristics, we check if any of the candidate nodes are reachable from one another. If so, we omit this set. 
+
+%\FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
+ 
+Otherwise, we have a valid basis of a blackhole.
+To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
+Finally, we check for weak connectivity and if it is present, then print the blackhole.
+
+Clearly, we still have to spend some computation time in order to decide, whether
 the candidate is worth checking or not, and we understand, that sometimes it can make process even more slower than before, but experimental results demostrate its efficiency.
 Our goal is to avoid this costly procedure of acquiring blackhole if possible.
-\end{remark}
 
 \begin{figure}[H]
 	\begin{center}
@@ -395,23 +342,23 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
 			\SetAlgoLined
 			\SetKwInOut{Input}{Input}
 			\SetKwInOut{Output}{Output}
-			\Input{$G(V,E)$ -- directed acyclic graph (Graph condensation) \\
-                                $Cand(G)$ -- set of nodes; candidate to be basis}
-			\Output{$True/False$}
-                        // (1) precalc special nodes for every root \\
+			\Input{$G(V,E)$ -- directed acyclic graph (after graph condensation) \\
+                                $Cand \subset V$ -- set of nodes, candidate to be basis}
+			\Output{$True, if\ Cand\ is\ a\ basis, False\ otherwise$}
+                        \tcc{(1) calculate special nodes for every root} 
                         \ForEach{$r \in Roots(G)$} {
                             $Special_r = \emptyset$ \\
-                            $tsOrder_r = TopSort(r)$ \\
-                            \For{$i = 0; i<|tsOrder_r|; i=i + 1$} {
-                                $v = tsOrder_r[i]$ \\
+                            $build\ topsortOrder_r$ \\
+                            \For{$i = 0; i<|topsortOrder_r|; i=i + 1$} {
+                                $v = topsortOrder_r[i]$ \\
                                 $C_v = Closure(v)$ \\
                                 \If{$|C_v| == i$} {
                                     $Special_r = Special_r \cup v$ \\
                                 }
                             }
                         }
-			// (2) check for excluding specials \\
-			\ForEach{$v \in Cand(G)$} {
+			\tcc{(2) check for excluding specials} 
+			\ForEach{$v \in Cand$} {
                             \ForEach{$r \in Roots(G)$} {
                                 \If{$v \in Special_r$} {
                                     $Spec_r = Spec_r \cup v$ \\
@@ -421,7 +368,7 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
                                 }
                             }
 			}
-                        // (3) Check for candidates reachable from one another \\
+                        \tcc{(3) check for candidates reachable from one another}
                         \ForEach{$(v, u) \in Cand(G) \times Cand(G)$} {
                             \If{v is reachable from u} {
                                 \Return $False$ \\
@@ -429,7 +376,7 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
                         }
                         \Return $True$
 			\label{alg:isbasis}
-			\caption{BasisOrNot}
+			\caption{IsBasis}
 		\end{algorithm}
 	\end{center}
 \end{figure}
@@ -441,20 +388,20 @@ Our goal is to avoid this costly procedure of acquiring blackhole if possible.
 			\SetKwInOut{Input}{Input}
 			\SetKwInOut{Output}{Output}
 			\Input{$G(V,E)$ -- directed graph}
-			\Output{$Blackhole$ -- set of blackholes of different sizes}
+			\Output{$Blackholes$ -- set of blackholes of different sizes}
                         
                         $Blackhole = \emptyset$\\
                         $Build\ graph\ condensation\ Cond(V',E')$\\
                         \For{$i = 1\ to\ |V'|$} {
                             \ForEach{$B_i \in V'(i)$} {
-                                \If{$BasisOrNot(Cond(V',E'),B_i)$} {
+                                \If{$IsBasis(Cond(V',E'),B_i)$} {
                                     \If{$B_i$\ is\ weakly\ connected} {
-                                        $BlackHole = Blackhole \cup B_i$ \\
+                                        $Blackholes = Blackholes \cup B_i$ \\
                                     }
                                 }
                             }
                         }
-                        \Return $Blackhole$
+                        \Return $Blackholes$
 			\label{alg:topsort}
 			\caption{TopSort}
 		\end{algorithm}
@@ -528,7 +475,7 @@ algorithms did not print out found blackholes, but printed counter on every foun
 
 Please, mention, that "blackhole found" means that we have a set of vertex numbers in memory ready to be printed out and it's already validated.
 
-As it is shown in the Tables \ref{tabular:tableresults}, \ref{tabular:tableresults2}, our TopSort approach to blackhole search shows better perfoermance on small RMAT graphs.
+As it is shown in the Tables \ref{tabular:tableresults}, \ref{tabular:tableresults2}, our TopSort approach to blackhole search shows better performance on small RMAT graphs.
 And it stays in advantage up to RMAT-22. Apparently, condensation preprocessing takes more time on larger graphs and increases time spent before finding
 the first blackhole. Nevertheless our algorithm shows significantly better performance in those cases when preprocessing saves more time. Also, we suppose
 that total working time on large graphs for our algorithm will be less, and this is the point for future survey.
@@ -542,61 +489,9 @@ to find larger ones, meanwhile our approach will check blackholes of all sizes.
 Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute force is
 avoided completely in this case, making calculation time impressively small in comparison to iBlackhole algorithm.
 
-\begin{table}[]
-\caption{Experimental results}
-\label{tabular:tableresults}
-\begin{center}
-\begin{tabular}{c|c|c|c|c|c|c|c|c}
-Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
-\hline
-RMAT 04 & iBlackhole & 1 & 0.00039521 & TopSort & 1 & 0.000115912 \\
-RMAT & 06 & iBlackhole & 1 & 0.0040142 & TopSort & 1 & 0.00034812 \\
-RMAT & 08 & iBlackhole & 1 & 0.0637587 & TopSort & 1 & 0.00146486 \\
-RMAT & 10 & iBlackhole & 6 & 1200 & TopSort & 10 & 0.00684045 \\
-RMAT & 12 & iBlackhole & 29 & 1200 & TopSort & 971738 & 1200 \\
-RMAT & 14 & iBlackhole & 187 & 1200 & TopSort & 735128 & 1200 \\
-RMAT & 16 & iBlackhole & 1192 & 1200 & TopSort & 373705 & 1200 \\
-RMAT & 18 & iBlackhole & 5161 & 1200 & TopSort & 10286 & 1200 \\
-RMAT & 20 & iBlackhole & 609 & 1200 & TopSort & 48867 & 1200 \\
-RMAT & 22 & iBlackhole & 108 & 1200 & TopSort & 0 & 1200 \\
-SSCA2 & 04 & iBlackhole & 16 & 0.255101 & TopSort & 16 & 0.000189925 \\
-SSCA2 & 06 & iBlackhole & 11 & 1200 & TopSort & 70 & 0.00121528 \\
-SSCA2 & 08 & iBlackhole & 42 & 1200 & TopSort & 263314 & 1200 \\
-SSCA2 & 10 & iBlackhole & 85 & 1200 & TopSort & 114411 & 1200 \\
-SSCA2 & 12 & iBlackhole & 343 & 1200 & TopSort & 5870 & 1200 \\
-\end{tabular}
-\end{center}
-\end{table}
-
-\begin{table}[]
-\caption{Experimental results. Part 2}
-\label{tabular:tableresults2}
-\begin{center}
-\begin{tabular}{c|c|c|c|c|c|c|c|c}
-Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
-SSCA2 & 14 & iBlackhole & 1433 & 1200 & TopSort & 323671 & 1200 \\
-SSCA2 & 16 & iBlackhole & 5829 & 1200 & TopSort & 893376 & 1200 \\
-SSCA2 & 18 & iBlackhole & 23179 & 1200 & TopSort & 224567 & 1200 \\
-SSCA2 & 20 & iBlackhole & 92347 & 1200 & TopSort & 24199 & 1200 \\
-SSCA2 & 22 & iBlackhole & 370770 & 1200 & TopSort & 0 & 1200 \\
-UR & 04 & iBlackhole & 1 & 0.000263955 & TopSort & 1 & 0.000115029 \\
-UR & 06 & iBlackhole & 1 & 0.00222731 & TopSort & 1 & 0.000331235 \\
-UR & 08 & iBlackhole & 1 & 0.0868632 & TopSort & 1 & 0.00147483 \\
-UR & 10 & iBlackhole & 1 & 1.93527 & TopSort & 1 & 0.00670724 \\
-UR & 12 & iBlackhole & 1 & 46.1463 & TopSort & 1 & 0.034011 \\
-UR & 14 & iBlackhole & 1 & 1169.28 & TopSort & 1 & 0.47257 \\
-UR & 16 & iBlackhole & 0 & 1200 & TopSort & 1 & 3.05003 \\
-UR & 18 & iBlackhole & 0 & 1200 & TopSort & 1 & 14.5788 \\
-UR & 20 & iBlackhole & 0 & 1200 & TopSort & 1 & 67.7176 \\
-UR & 22 & iBlackhole & 0 & 1200 & TopSort & 1 & 373.244 \\
-\end{tabular}
-\end{center}
-\end{table}
 \pagebreak
 
 \section{Conclusion}
-
-\textit{Comment for the reviewer}. In the final paper revision we add parallel implementation of the TopSort algorithm and present much detailed evaluation on the larger graphs. 
 
 In this paper we formulated and addressed some issues in application of already known iBlackhole algorithm. We introduced and tested two different ideas of optimization, combined into
 our TopSort algorithm. Those are: graph condensation preprocessing and topsort bruteforce optimization. We tested out approach on three different types of graphs and number of scales.
@@ -604,6 +499,9 @@ In case of large SCCs we demostrate definite advantage over iBlackhole algorithm
 deminishes any boost of productivity and out performance degrades.
 \FIXME{можно написать в TODO}
 If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
+
+
+\textit{Comment for the reviewer}. In the final paper revision we add parallel implementation of the TopSort algorithm and present much detailed evaluation on the larger graphs. 
 
 %
 % ---- Bibliography ----

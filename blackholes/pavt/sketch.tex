@@ -1,0 +1,107 @@
+First, we find topological sort of the initial graph..
+
+When we finally have an array, containing graph nodes in the topologically sorted order, we do the following:
+
+Define global array of used nodes. Initially, all nodes are unused.
+Then for every node from bottom to top:
+\begin{enumerate}
+	\item Acquire closure of unused nodes reachable from current node; 
+	\item Mark every node in the closure as used;
+	\item All the acquired nodes belong to the same SCC.
+\end{enumerate}
+
+The fact given in the last step can be shortly explained in the following way:
+topological sort guarantees that any node has index larger than indeces of her children.
+That is why, given that we process nodes from bottom to top, by the moment we process the node, all it's children are already marked used and no longer available for search.
+As all the ways down are prohibited and there's no way up, we will acquire an SCC.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{algorithm}[H]
+			\SetAlgoLined
+			\SetKwInOut{Input}{Input}
+			\SetKwInOut{Output}{Output}
+			\Input{$G(V,E)$ -- directed graph}
+			\Output{$G'(V',E')$ -- directed acyclic graph }
+			$tsOrder = TopSort(G)$ \\
+			$scc = [-1\ for\ i = 1\ to\ |V|] $ \\ 
+			$component = 0$ \\
+			\ForEach{$v \in tsOrder$} {
+				\If{$scc[v] == -1$} {
+					$C_v = Closure(v)$ \\
+					\ForEach{$u \in C_v$} {
+						$scc[u] = component$ \\
+					}
+					$component = component + 1$ \\
+				}
+			}
+			
+			$E' = \emptyset$ \\
+			$V' = \emptyset$ \\
+			\ForEach{$(u,v) \in V \times V$} {
+				\If{$scc[u] \neq scc[v]$} {
+					$V' = V' \cup \{scc[u], scc[v]\}$ \\ 
+					$E' = E' \cup (scc[u], scc[v])$ \\ 
+				}
+			}
+			\Return $G'$
+			\label{alg:condensation}
+			\caption{Graph condensation. Kosarayu, Sharir}
+		\end{algorithm}
+	\end{center}
+\end{figure}
+
+As a result of the condensation algorithm we have each node associated with certain SCC.
+SCCs itself form a graph with number of nodes less than or equal to one of the initial graph.
+Finally, we need to remove edges duplicates and the graph condesation is built.
+
+\begin{table}[]
+	\caption{Experimental results}
+	\label{tabular:tableresults}
+	\begin{center}
+		\begin{tabular}{c|c|c|c|c|c|c|c|c}
+			Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
+			\hline
+			RMAT 04 & iBlackhole & 1 & 0.00039521 & TopSort & 1 & 0.000115912 \\
+			RMAT & 06 & iBlackhole & 1 & 0.0040142 & TopSort & 1 & 0.00034812 \\
+			RMAT & 08 & iBlackhole & 1 & 0.0637587 & TopSort & 1 & 0.00146486 \\
+			RMAT & 10 & iBlackhole & 6 & 1200 & TopSort & 10 & 0.00684045 \\
+			RMAT & 12 & iBlackhole & 29 & 1200 & TopSort & 971738 & 1200 \\
+			RMAT & 14 & iBlackhole & 187 & 1200 & TopSort & 735128 & 1200 \\
+			RMAT & 16 & iBlackhole & 1192 & 1200 & TopSort & 373705 & 1200 \\
+			RMAT & 18 & iBlackhole & 5161 & 1200 & TopSort & 10286 & 1200 \\
+			RMAT & 20 & iBlackhole & 609 & 1200 & TopSort & 48867 & 1200 \\
+			RMAT & 22 & iBlackhole & 108 & 1200 & TopSort & 0 & 1200 \\
+			SSCA2 & 04 & iBlackhole & 16 & 0.255101 & TopSort & 16 & 0.000189925 \\
+			SSCA2 & 06 & iBlackhole & 11 & 1200 & TopSort & 70 & 0.00121528 \\
+			SSCA2 & 08 & iBlackhole & 42 & 1200 & TopSort & 263314 & 1200 \\
+			SSCA2 & 10 & iBlackhole & 85 & 1200 & TopSort & 114411 & 1200 \\
+			SSCA2 & 12 & iBlackhole & 343 & 1200 & TopSort & 5870 & 1200 \\
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\begin{table}[]
+	\caption{Experimental results. Part 2}
+	\label{tabular:tableresults2}
+	\begin{center}
+		\begin{tabular}{c|c|c|c|c|c|c|c|c}
+			Graph & Type & Algorithm & Blackholes & Time(s) & Algorithm & Blackholes & Time(s) \\
+			SSCA2 & 14 & iBlackhole & 1433 & 1200 & TopSort & 323671 & 1200 \\
+			SSCA2 & 16 & iBlackhole & 5829 & 1200 & TopSort & 893376 & 1200 \\
+			SSCA2 & 18 & iBlackhole & 23179 & 1200 & TopSort & 224567 & 1200 \\
+			SSCA2 & 20 & iBlackhole & 92347 & 1200 & TopSort & 24199 & 1200 \\
+			SSCA2 & 22 & iBlackhole & 370770 & 1200 & TopSort & 0 & 1200 \\
+			UR & 04 & iBlackhole & 1 & 0.000263955 & TopSort & 1 & 0.000115029 \\
+			UR & 06 & iBlackhole & 1 & 0.00222731 & TopSort & 1 & 0.000331235 \\
+			UR & 08 & iBlackhole & 1 & 0.0868632 & TopSort & 1 & 0.00147483 \\
+			UR & 10 & iBlackhole & 1 & 1.93527 & TopSort & 1 & 0.00670724 \\
+			UR & 12 & iBlackhole & 1 & 46.1463 & TopSort & 1 & 0.034011 \\
+			UR & 14 & iBlackhole & 1 & 1169.28 & TopSort & 1 & 0.47257 \\
+			UR & 16 & iBlackhole & 0 & 1200 & TopSort & 1 & 3.05003 \\
+			UR & 18 & iBlackhole & 0 & 1200 & TopSort & 1 & 14.5788 \\
+			UR & 20 & iBlackhole & 0 & 1200 & TopSort & 1 & 67.7176 \\
+			UR & 22 & iBlackhole & 0 & 1200 & TopSort & 1 & 373.244 \\
+		\end{tabular}
+	\end{center}
+\end{table}
