@@ -99,11 +99,10 @@ Hong et al \cite{hong2015detecting} consider application for online blackhole mi
 
 In this paper we consider simplified problem formulation, applied to a directed unweighted graph.
 
-\FIXME{переход к дальнейшему}
-
-\subsection{Problem Statement and Preliminaries}
+\section{Preliminaries}
 In this section we provide some basic notations and definitions, which will be used in this paper. 
 
+\subsection{Problem Statement} 
 First, consider a directed graph $G = G(V,E)$, where $V$ is a set of nodes and $E$ is a set if edges of the graph. 
 
 \begin{definition}
@@ -116,6 +115,7 @@ and
 
 The goal is to find in unweighted directed graph as many blackholes as possible in restricted time.
 
+\subsection{Definitions}
 To support further discussion, we provide several more definitions.
 
 \FIXME{Удалил возможные кратные ребра в определении 2, это важно?}
@@ -155,31 +155,30 @@ If a node $v \in B$, where $B \subseteq V$ is a blackhole, then the closure of $
 Closure of $v$ forms a blackhole.
 \end{lemma}
 
-We will need the following statement to discuss issues of the known approaches.
-\begin{lemma}
-For a given graph $G(V,E)$, SCC $S \subseteq V,\ blackhole\ B \subseteq V$ if $\ \exists v \in S: v \in B$,  then $\forall s \in S$ will be true $s \in B$.
-In other words, if any node in SCC belongs to a blackhole, then all the nodes of this SCC belong to the same blackhole.
-\end{lemma}
-\begin{proof}
-    In SCC any node is reachable from any other node. This means, that any node $v$ in SCC contains the whole SCC in its closure. By Lemma 3 the whole SCC belongs to the same blackhole as $v$. 
-\end{proof}
 
-
-\subsection{Known issues}
-In this section we shortly discuss applicability of the iBlackhole algorithm, proposed in \cite{li2010detecting}.
+\subsection{Known Issues}
+In this section we discuss applicability of the iBlackhole algorithm, proposed in \cite{li2010detecting}.
 The iBlackhole algorithm (see Algorithm \ref{alg:iblackhole}) is designed for searching blackholes of fixed size. Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which are quite
 a small size.
+
+We will need the following statement to discuss issues of the known approach.
+\begin{lemma}
+	For a given graph $G(V,E)$, SCC $S \subseteq V,\ blackhole\ B \subseteq V$ if $\ \exists v \in S: v \in B$,  then $\forall s \in S$ will be true $s \in B$.
+	In other words, if any node in SCC belongs to a blackhole, then all the nodes of this SCC belong to the same blackhole.
+\end{lemma}
+\begin{proof}
+	In SCC any node is reachable from any other node. This means, that any node $v$ in SCC contains the whole SCC in its closure. By Lemma 3 the whole SCC belongs to the same blackhole as $v$. 
+\end{proof}
+
 Also, there are graphs, which has a small number of blackholes in relation to number of nodes. They consist
-of several large SCCs and relatively small number of independent leaves (or roots). Here arise some questions considering applicability of
+of several large SCCs and relatively small number of independent leaves (or roots). Here arise some questions considering applicability of the
 iBlackhole algorithm:
 \begin{itemize}
 \item How do we know if there are blackholes of certain size? We have to check all the possible sizes, which can take too much time even in parallel.
 \item How do we reduce the search space for the brute-force stage and avoid repeatedly checking the same combinations for different candidate sizes?
 \end{itemize}
 
-Let's consider the following example:
-
-Graph consisting of $(10^6)$ nodes, all of them form a single SCC. It means that there is only one blackhole -- the whole graph.
+Let's consider the following example. A graph is consist of $(10^6)$ nodes, all of them form a single SCC. It means that there is only one blackhole -- the whole graph.
 Unless we do not know anything about the graph structrure and do not have large enough cluster, we have one to a million chance
 to efficiently choose target size of blackhole. In general case, we have to check $10^6$ possible sizes.
 
@@ -219,7 +218,7 @@ We claim that with looking from small to large size candidates in the iBlackhole
                                 $remove\ all\ v's\ predecessors\ from\ C_i$ \\
                             }
                         }
-                        \tcc{Apply the brute-force algorithm to $C_(i)$ --  set of all possible subsets containing $i$ nodes}
+                        \tcc{Apply the brute-force algorithm to $C_i(i)$ --  set of all possible subsets of $C_i$ containing $i$ nodes}
                         \ForEach{$B \in C_i(i)$} {
                             \If{$G(B)\ is\ weakly\ connected$} {
                                 \If{$d_{out}(B) == 0$} {
@@ -229,16 +228,13 @@ We claim that with looking from small to large size candidates in the iBlackhole
                         }
                         \Return $Blackholes$
 			\label{alg:iblackhole}
-			\caption{iBlackHole}
+			\caption{iBlackhole}
 		\end{algorithm}
 	\end{center}
 \end{figure}
 
-\FIXME{Мы реализовали этот алгоритм}
-
-\section{Algorithm Design}
+\section{Topological Algorithm Design}
 We propose to look at the blackhole search problem from the following: it would be divided into two independent tasks. 
-\FIXME{ограничение на суммарное время - да, 20 минут}
 The first one is graph preprocessing. Here we aim to simplify graph structure as far as it is possible with respect to a restricted time span. 
 Decreased graph scale would definitely speed up the the calculation, as it can fall into a brute-force search in most cases.
 The second is the blackhole search itself. This step is done after preprocessing and the goal here is to find as many blackholes as possible in a restricted time.
@@ -255,7 +251,7 @@ On the preprocessing stage of the algorithm we reduce every SCC to a single node
 If every SCC of a directed graph $G$ is contracted to a single node, the resulting graph is a directed acyclic graph, which is called the condensation of $G$.
 \end{definition}
 
-In this paper we use the algorithm of Sharir for finding graph condensation \cite{sharir1981strong}. 
+In this work we use the algorithm of Sharir for finding graph condensation \cite{sharir1981strong}. 
 
 \subsection{Blackhole Search}
 When the graph is prepared, we can move on to searching blackholes. The problem is combinatorial in its nature, therefore, we aim to
@@ -270,23 +266,18 @@ Root of a blackhole is a node, which has no incoming edges from other nodes in t
 Set of all roots of a blackhole is called the blackhole basis.
 \end{definition}
 
-\FIXME{избежать путаницы между brute-force в разных местах статьи}
-
 Note, that a blackhole basis can consist of a single node or more than one node. 
 
 %TODO: осознать
-In the BruteForce algorithm we iterate over all possible unordered sets of nodes. 
+In the brute-force approach we iterate over all possible unordered sets of nodes. 
 Then for every node we acquire its closure. Union of all such closures is a potential blackhole.
 If the candidate blackhole is a weakly connected subgraph, then it is a blackhole.
 
-With the BruteForce algorithm it is possible to find the same blackhole several times.
+With the brute-force approach it is possible to find the same blackhole several times.
 We aim to avoid at least some of the duplicates and introduce heuristic for it.
 
 According to the definitions above if some node is not a root of a blackhole, it can be omitted, as set of roots uniquely identify a blackhole.
-Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes.
-
-\FIXME{не совсем понял логику в общем тексте}
-Of course, we could straightforward build the reachability matrix. But, it takes \FIXME{ Not sure $O(V^3)$ } time. Even though we decreased graph size
+Every non-root node in a blackhole is reachable from one of the roots. Therefore, if we know reachability matrix for a given graph, we can skip bloated non-basis combinations of nodes. Of course, we could straightforward build the reachability matrix. But, it takes too much ($O(V^3)$) time. Even though we decreased graph size
 in preprocessing step, it still can result in lots of computation. It is worth mentioning that ultimate goal is to find at least some blackholes as soon as possible. 
 Difficult precalculation will affect the time of first blackhole discovery. That is why, we will only try to partially skip duplicates and the rest will
 be filtered later in lazy manner.
@@ -300,37 +291,40 @@ Further we use the concept of the topological order in a graph.
 \end{definition}
 
 \begin{definition}
-    Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$, and
-    ${|Closure(v)| \forall v \in Closure(r)}$ - closure sizes of all nodes reachable from $r$. We say that node $v$ is special under root $r$
-    $v \in Special_r \subseteq Closure(r)$, if its closure size $|Closure(v)|$ equals to its 1-based index in array $topSortOrder_r$.
+	Given graph $G(V, E)$, a root $r \in Roots(G)$, $topSortOrder_r$ -- topological sort of $Closure(r)$ and 
+	$|Closure(v)|,\ \forall v \in Closure(r)$ --
+	closure sizes of all nodes reachable from $r$. We say that node $v$ is special under root $r$, if its closure size  equals to its 1-based index in array $topSortOrder_r$. Note that set of special nodes $Special_r \subseteq Closure(r)$.
 \end{definition}
 
+
 \begin{remark}
-    Specialness of a node is decided independently under different roots. One node can be special for root $r1$ and non special for $r2$ at
-    the same time. It is illustrated in Figure \ref{fig:specialnodes}
+    Specialness of a node is decided independently under different roots. One node can be special for root $r1$ and non-special for $r2$ at
+    the same time. It is illustrated in Figure \ref{fig:specialnodes}.
 \end{remark}
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{specialnodes.pdf}
-	\caption{Special nodes in a graph with two roots.}
+	\caption{Example of special nodes in a graph with two roots}
 	\label{fig:specialnodes}
 \end{figure}
 
 \begin{definition}
-    Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, topological sort of $Closure(r)$ $topSortOrder_r = TopologicalSort(Closure(r))$,
-    $v \in Special_r$ and $u \in Closure(r)$. We say that $v$ dominates $u$ under root $r$, if  $v$ has larger index in $topSortOrder_r$.
+    Given graph $G(V, E)$, one of its roots $r \in Roots(G)$, $topSortOrder_r$ -- topological sort of $Closure(r)$,
+    $v \in Special_r$ and $u \in Closure(r)$. We say that $v$ dominates $u$ under root $r$, if $v$ has larger index than $u$ in $topSortOrder_r$. In other words, $v$ is on the right from $u$ in the $topSortOrder_r$ array.
 \end{definition}
 
 \begin{remark}
-    If given two special nodes under the same root, ont of them is always dominated by the other.
+    If given two special nodes under the same root, one of them is always dominated by the other.
 \end{remark}
 
 \begin{theorem}
     Given graph $G(V,E)$, one of its roots $r \in Roots(G)$, and $v \in Special_r, u \in Closure(r)$.
-    If $v$ dominates $u$ under $r$ then $u$ is reachable from $v$.
+    If $v$ dominates $u$ under $r$, then $u$ is reachable from $v$.
 \end{theorem}
+
+\FIXME{посмотреть еще раз внимательно}
 \begin{proof}
-    By definition of special node $v$ has closure size equal to its index in $topSortOrder_r$. All the nodes of $Closure(v)$ has lesser indeces 
+    By definition of special node $v$ has closure size equal to its index in $topSortOrder_r$. All the nodes of $Closure(v)$ has lesser indices 
     in $topSortOrder_r$ than $v$. Hence $\forall $u$ \in Closure(v)$ $u$ is reachable from $v$.
 \end{proof}
 
@@ -339,7 +333,7 @@ Further we use the concept of the topological order in a graph.
    If $v$ dominates $u$ under root $r$, then $Closure(v) \cup Closure(u) = Closure(v)$.
 \end{theorem}
 \begin{proof}
-    According to previous theorem, if $v$ dominates $u$ under root $r$, then $u$ is reachalbe from $v$. Then $u \in Closure(v)$,
+    According to the previous theorem, if $v$ dominates $u$ under root $r$, then $u$ is reachalbe from $v$. Then $u \in Closure(v)$,
     which means that $Closure(u) \subset Closure(v)$.
 \end{proof}
 
@@ -362,11 +356,11 @@ Those vertices, which satisfy definition, we mark as special for according roots
 
 Second, if there are any dominated nodes (special or non-special) under any of the roots, we omit the node set.
 
-Third, when we are out of cheap heuristics, we check if any of the candidate nodes are reachable from one another. If so, we omit this set. 
+Third, when we are out of cheap heuristic, we check if any of the candidate nodes are reachable from one another. If so, we omit this set in the high-level TopSort (Algorithm \ref{alg:topsort}).
 
 %\FIXME{partially implemented: здесь условие выглядит несколько иначе: в упорядоченном наборе кандидатов специальная вершина может быть только первой. Впрочем, возможно, что тут баг. }
  
-Otherwise, we have a valid basis of a blackhole.
+The TopSort algorithm is based on looking over blackhole basises. Thus we have a valid basis of a blackhole.
 To acquire blackhole we should, according to definition of basis, unite all the closures of basic nodes.
 Finally, we check for weak connectivity and if it is present, then print the blackhole.
 
@@ -505,7 +499,7 @@ to find larger ones, meanwhile our approach will check blackholes of all sizes.
 	\label{fig:ur}
 \end{figure}
 
-Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute force is
+Finally, we should point out, that our preprocessing dramatically speeds up blackhole search on the graphs, where no blackholes present at all. Brute-force is
 avoided completely in this case, making calculation time impressively small in comparison to the iBlackhole algorithm.
 
 
@@ -519,8 +513,7 @@ deminishes any performance boost and our advantage  degrades.
 
 %We originally evaluate blackhole algorithm Potentially it has a great resource of parallelism, however this work does not cover the case of large scale graphs, as they only run their algorithm on 1500 node networks, which are quite a small size.
 
-\FIXME{можно написать в TODO}
-If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
+%TODO: If we check blackhole sizes consecutively, what is the expected time of the first blackhole found? 
 
 \textit{Comment for the reviewer}. In the final paper revision we enhance our TopSort algorithm, add its parallel implementation and present much detailed evaluation on the larger graphs. 
 
