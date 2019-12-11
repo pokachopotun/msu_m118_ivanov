@@ -1,5 +1,5 @@
 polus: main.cpp
-	mpixlC -O2 main.cpp -o polus -fopenmp -lpthread
+	mpixlC -O2 main.cpp -o polus -qsmp=omp 
 
 bluegene: main.cpp
 	mpixlC -O2 main.cpp -o bluegene -fopenmp -lpthread
