@@ -107,6 +107,7 @@ private:
         gridN = atoi(argv[3]);
         gridM = atoi(argv[4]);
         gridT = atoi(argv[5]);
+        gridT += 1;
 
         // constraints
         xmax = atof(argv[6]);
@@ -137,8 +138,6 @@ private:
         mpiX = mpiRank / mpiM;
         mpiY = mpiRank % mpiM;
 
-        //printf("rank %d mpiX %d mpiY %d\n", mpiRank, mpiX, mpiY);
-
         bool isXMax = mpiX == mpiN - 1;  
         bool isYMax = mpiY == mpiM - 1;
 
@@ -148,7 +147,6 @@ private:
         int maxLocalYSize = gridM / mpiM;
         localYSize = isYMax ? maxLocalYSize + gridM % maxLocalYSize : maxLocalYSize;
 
-        //printf("rank %d localXSize %d localYSize %d\n", mpiRank, localXSize, localYSize);
         storedXSize = localXSize + 2;
         storedYSize = localYSize + 2;
 
@@ -158,11 +156,10 @@ private:
         xStart = mpiX * maxLocalXSize;
         yStart = mpiY * maxLocalYSize;
 
-        gridT += 1;
-        v1.reserve(gridT);
-        v2.reserve(gridT);
+        v1.reserve(2);
+        v2.reserve(2);
         
-        for (int i = 0; i < gridT; i++) {
+        for (int i = 0; i < 2; i++) {
             v1.push_back(new double[sliceSize]);
             v2.push_back(new double[sliceSize]);
         }
@@ -182,18 +179,6 @@ private:
         Neighbor[5] = GetDest(-1, 1);
         Neighbor[6] = GetDest(1, -1);
         Neighbor[7] = GetDest(1, 1);
-
-        /*printf("rank %d neigbors %d %d %d %d %d %d %d %d\n",
-            mpiRank,
-            Neighbor[0],
-            Neighbor[1],
-            Neighbor[2],
-            Neighbor[3],
-            Neighbor[4],
-            Neighbor[5],
-            Neighbor[6],
-            Neighbor[7]
-        ); */
 
         Tag[0] = 1;
         Tag[1] = 0;
@@ -291,14 +276,12 @@ private:
         while (res >= mod) {
             res -= mod;
         }
-        //printf("rank %d val %d d %d mod %d\n", mpiRank, val, d, mod);
         return res;
     }
 
     int GetDest(int dx, int dy) {
         int x = PlusMod(mpiX, dx, mpiN);
         int y = PlusMod(mpiY, dy, mpiM);
-        //printf("rank %d neighb %d %d x y %d %d\n", mpiRank, dx, dy, x, y);
         return GetMpiRank(x, y);
     }
 
@@ -474,7 +457,9 @@ public:
 
         for (int it = 0; it < gridT - 1; it++) {
             MPI_Barrier(MPI_COMM_WORLD);
-            
+
+            int cur = it % 2;
+            int nxt = (it + 1) % 2;
 
             #pragma omp parallel for collapse(2)
             for (int i = 0; i < localXSize; i++) {
@@ -491,51 +476,22 @@ public:
                         }
 
                         Calc iterCalc(localYSize, hx, hy, ht, i, j);
-                        iterCalc.CalcNextV1(v1[it + 1], v1[it], v2[it]);
-                        iterCalc.CalcNextV2(v2[it + 1], v1[it], v2[it]);
+                        iterCalc.CalcNextV1(v1[nxt], v1[cur], v2[cur]);
+                        iterCalc.CalcNextV2(v2[nxt], v1[cur], v2[cur]);
                     }
-                /*    {
-                        bool edgeY = (y == 0 || y == gridM - 1);
-                        bool edgeX = (x == 0 || x == gridN - 1);
-
-                        if (edgeX || edgeY) {
-                            continue;
-                        }
-
-                        iterCalc.CalcNextV2(v2[it + 1], v1[it], v2[it]);
-                    }a */
                 }
             }
 
-            InitV1x(v1[it + 1]);
-            InitV1y(v1[it + 1]);
-            InitV2x(v2[it + 1]);
-            InitV2y(v2[it + 1]);
+            InitV1x(v1[nxt]);
+            InitV1y(v1[nxt]);
+            InitV2x(v2[nxt]);
+            InitV2y(v2[nxt]);
 
-            ExchangeHalo(v1[it + 1]);
-            ExchangeHalo(v2[it + 1]);
+            ExchangeHalo(v1[nxt]);
+            ExchangeHalo(v2[nxt]);
            
-            ExchangeCyclicV1(v1[it + 1]);
-            ExchangeCyclicV1(v2[it + 1]);
-
-     /*       for (int i = 0; i < localXSize; i++) {
-                for (int j = 0; j < localYSize; j++) {
-                    int xi = GetX(i);
-                    int yj = GetY(j);
-                    double x = hx * xi;
-                    double y = hy * yj;
-                    double t = ht * (it);
-                    int pos = GetPos(i, j);
-                    double val1 = u1(x,y,t);
-                    double val2 = u2(x,y,t);
-                    double diff1 = fabs(u1(x, y, t) - v1[it][pos]);
-                    double diff2 = fabs(u2(x, y, t) - v2[it][pos]);
-                    cout << diff2 << " ";
-                }
-                cout << endl;
-            }
-           cout << endl;
-    */
+            ExchangeCyclicV1(v1[nxt]);
+            ExchangeCyclicV1(v2[nxt]);
         }
 
         MPI_Barrier(MPI_COMM_WORLD);
@@ -552,8 +508,9 @@ public:
                 int pos = GetPos(i, j);
                 double val1 = u1(x,y,t);
                 double val2 = u2(x,y,t);
-                double diff1 = abs(val1 - v1[gridT - 1][pos]);
-                double diff2 = abs(val2 - v2[gridT - 1][pos]);
+                int it = (gridT - 1) % 2;
+                double diff1 = abs(val1 - v1[it][pos]);
+                double diff2 = abs(val2 - v2[it][pos]);
                 delta1 = max(delta1, diff1);
                 delta2 = max(delta2, diff2);
                 if (printDebug)
