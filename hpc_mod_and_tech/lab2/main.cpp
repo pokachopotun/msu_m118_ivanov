@@ -12,6 +12,54 @@
 
 using namespace std;
 
+double u1(double x, double y, double t) {
+    return (t * t  + 1) * sin(2 * M_PI * x) * sin(2 * M_PI * y);
+}
+
+double u1t(double x, double y, double t) {
+    return 2 * t * sin(2 * M_PI * x) * sin(2 * M_PI * y);
+}
+
+double u1xx(double x, double y, double t) {
+    return (t * t  + 1) * sin(2 * M_PI * x) * sin(2 * M_PI * y) * (-4 * M_PI * M_PI);
+}
+
+double u1yy(double x, double y, double t) {
+    return (t * t  + 1) * sin(2 * M_PI * x) * sin(2 * M_PI * y) * (-4 * M_PI * M_PI);
+}
+
+double u1xy(double x, double y, double t) {
+    return (t * t  + 1) * cos(2 * M_PI * x) * cos(2 * M_PI * y) * (4 * M_PI * M_PI);
+}
+        
+double u2(double x, double y, double t) {
+    return (t * t + 1) * (cos(2 * M_PI * x) - 1) * (cos(2 * M_PI * y) - 1);
+}
+
+double u2t(double x, double y, double t) {
+    return 2 * t * (cos(2 * M_PI * x) - 1) * (cos(2 * M_PI * y) - 1);
+}
+
+double u2xx(double x, double y, double t) {
+    return (t * t + 1) * cos(2 * M_PI * x) * (cos(2 * M_PI * y) - 1) * (-4 * M_PI * M_PI);
+}
+
+double u2yy(double x, double y, double t) {
+    return (t * t + 1) * cos(2 * M_PI * y) * (cos(2 * M_PI * x) - 1) * (-4 * M_PI * M_PI);
+}
+
+double u2xy(double x, double y, double t) {
+    return (t * t + 1) * sin(2 * M_PI * x) * sin(2 * M_PI * y) * (4 * M_PI * M_PI);
+}
+
+double f1(double x, double y, double t) {
+    return u1t(x,y,t) - 2 * u1xx(x,y,t) - u1yy(x,y,t) - u2xy(x,y,t);
+}
+
+double f2(double x, double y, double t) {
+    return u2t(x,y,t) - u2xx(x,y,t) - 2 * u2yy(x,y,t) - u1xy(x,y,t);
+}
+
 class Calc {
 private:
     int tl, t, tr;
@@ -19,6 +67,7 @@ private:
     int bl, b, br;
     double hx, hy, ht;
     int i, j;
+    double x, y, time;
 
     double Laplas(double* v) {
         return (v[t] - 2 * v[m] + v[b]) / (hx * hx) + (v[l] - 2 * v[m] + v[r]) / (hy * hy);
@@ -33,7 +82,9 @@ private:
     }
 
 public:
-    Calc(int localYSize, double hx, double hy, double ht,  int i, int j) : hx(hx), hy(hy), ht(ht), i(i), j(j) {
+    Calc(int localYSize, double hx, double hy, double ht,  int i, int j, double x, double y, double time) 
+            : hx(hx), hy(hy), ht(ht), i(i), j(j), x(x), y(y), time(time)
+    {
         int storedYSize = localYSize + 2; 
 
         tl = storedYSize * (i) + j;
@@ -52,13 +103,13 @@ public:
     void CalcNextV1(double* next1, double* v1, double* v2) {
         double laplas1 = Laplas(v1);      
         double g1 = Grad1(v1, v2);
-        next1[m] = ht * (g1 + laplas1) + v1[m];
+        next1[m] = ht * (g1 + laplas1 + f1(x,y,time)) + v1[m];
     }
 
     void CalcNextV2(double* next2, double* v1, double* v2) {
         double laplas2 = Laplas(v2);
         double g2 = Grad2(v1, v2);
-        next2[m] = ht * (g2 + laplas2) + v2[m];
+        next2[m] = ht * (g2 + laplas2 + f2(x,y,time)) + v2[m];
     }
 };
 
@@ -477,7 +528,11 @@ public:
                             continue;
                         }
 
-                        Calc iterCalc(localYSize, hx, hy, ht, i, j);
+                        double x = GetX(i) * hx;
+                        double y = GetY(j) * hy;
+                        double t = ht * it;
+
+                        Calc iterCalc(localYSize, hx, hy, ht, i, j, x, y, t);
                         iterCalc.CalcNextV1(v1[nxt], v1[cur], v2[cur]);
                         iterCalc.CalcNextV2(v2[nxt], v1[cur], v2[cur]);
                     }
@@ -513,8 +568,8 @@ public:
                 int it = (gridT - 1) % 2;
                 double diff1 = abs(val1 - v1[it][pos]);
                 double diff2 = abs(val2 - v2[it][pos]);
-                delta1 = max(delta1, diff1);
-                delta2 = max(delta2, diff2);
+                delta1 += diff1 * diff1;
+                delta2 += diff2 * diff2;
                 if (printDebug)
                     cout << diff1 << " ";
             }
@@ -527,22 +582,14 @@ public:
         }
         MPI_Barrier(MPI_COMM_WORLD);
         double deltaMax1 = 0;
-        MPI_Reduce(&delta1, &deltaMax1, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&delta1, &deltaMax1, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         double deltaMax2 = 0;
-        MPI_Reduce(&delta2, &deltaMax2, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&delta2, &deltaMax2, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         
-        printf("RES %d time %le delta1 %le delta2 %le\n", mpiRank, time, delta1, delta2);
+        printf("RES %d time %le delta1 %le delta2 %le\n", mpiRank, time, sqrt(hx * hy * delta1), sqrt( hx * hy * delta2));
         if (mpiRank == 0) {
-            printf("RES Global wallTime %le ht %le delta1 %le delta2 %le sum %le\n", time, ht, deltaMax1, deltaMax2, deltaMax1 + deltaMax2);
+            printf("RES Global wallTime %le ht %le delta1 %le delta2 %le sum %le\n", time, ht, sqrt(hx * hy * deltaMax1), sqrt(hx * hy * deltaMax2), sqrt( hx * hy * (deltaMax1 + deltaMax2)));
         }
-    }
-
-    double u1(double x, double y, double t) {
-        return (t * t  + 1) * sin(2 * M_PI * x) * sin(2 * M_PI * y);
-    }
-            
-    double u2(double x, double y, double t) {
-        return (t * t + 1) * (cos(2 * M_PI * x) - 1) * (cos(2 * M_PI * y) - 1);
     }
 
     // t = 0 Initial condition
@@ -554,7 +601,9 @@ public:
     double Phi2(double x, double y) {
        return u2(x, y, 0);
     }
+
 };
+
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
