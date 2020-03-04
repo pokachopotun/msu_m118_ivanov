@@ -82,6 +82,7 @@ class TProcessor:
         self.ring_size = ring_size
         self.idx = idx
         self.leader = leader
+        self.failed_nodes = set()
         self.nxt = self.GetNextNode(self.idx)
         self.prev = self.GetPrevNode(self.idx)
         self.failure_aware = False
@@ -100,6 +101,7 @@ class TProcessor:
             if not self.failure_aware:
                 LogMethod(LogLevel.Events, self.idx, "ERROR", "PREVIOUS NODE FAILED")
                 self.failure_aware = True
+                self.failed_nodes.add(self.prev)
                 if self.prev == self.leader:
                     return self.InitiateElection()
                 else:
@@ -122,11 +124,23 @@ class TProcessor:
 
     def GetNextNode(self, cur):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "GetNextNode")
-        return (cur + 1) % self.ring_size
+        cand = cur
+        while True:
+            cand += 1
+            if cand >= self.ring_size:
+                cand -= self.ring_size
+            if not cand in self.failed_nodes:
+                return cand
 
     def GetPrevNode(self, cur):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "GetPrevNode")
-        return (cur + self.ring_size - 1) % self.ring_size
+        cand = cur
+        while True:
+            cand -= 1
+            if cand < 0:
+                cand += self.ring_size
+            if not cand in self.failed_nodes:
+                return cand
 
     def InitiateElection(self):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "InitiateElection")
@@ -142,18 +156,20 @@ class TProcessor:
         failed = message.numbers[0]
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "ProcessFailure")
         LogMethod(LogLevel.Failures, self.idx, "FAILURE", "ACKNOWLEDGED {}".format(failed))
+        self.failed_nodes.add(failed)
         if message.sender == self.idx:
-            self.failure_aware = True
+            self.failure_aware = False
             LogMethod(LogLevel.Failures, self.idx, "FAILURE", "END {}".format(failed))
             return None
         if self.nxt == failed:
             with self.mutex:
-                self.nxt = message.sender
+                self.nxt = self.GetNextNode(self.nxt)
         message.receiver = self.nxt
         return message
 
     def ProcessElection(self, message):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "ProcessElection")
+        self.failed_nodes.add(self.leader)
         if self.leader == self.nxt and self.leader != self.idx:
             with self.mutex:
                 self.nxt = self.GetNextNode(self.nxt)
