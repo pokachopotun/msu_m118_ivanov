@@ -145,7 +145,7 @@ class TProcessor:
     def InitiateElection(self):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "InitiateElection")
         LogMethod(LogLevel.Elections, self.idx, "ELECTION", "START")
-        return TMsg("ELECTION", self.idx, self.nxt, [self.idx])
+        return TMsg("ELECTION", self.idx, self.GetNextNode(self.idx), [self.idx])
 
     def NotifyFailure(self):
         LogMethod(LogLevel.Methods, self.idx, "TProcessor", "NotifyFailure")
