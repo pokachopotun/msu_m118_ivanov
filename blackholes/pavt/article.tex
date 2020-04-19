@@ -46,7 +46,7 @@
 \begin{document}
 \mainmatter              % start of a contribution
 %
-\title{Topological Approach to Finding Blackholes in Directed Networks}
+\title{Topological Approach to Finding Blackholes in Large Directed Networks}
 %
 \titlerunning{Topological Blackholes Mining}  % abbreviated title (for running head)
 %                                     also used for the TOC unless
@@ -69,7 +69,7 @@ JSC NICEVT, Moscow, Russian Federation\\
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-In this paper we consider the problem of finding so called blackhole pattern in directed unweighted graphs.
+In this paper we consider the problem of finding so called blackhole pattern in relatively large directed unweighted graphs.
 Firstly, we analyse already existing algorithms and approaches. Secondly, we describe how structure of a graph
 affects their efficiency. Then we introduce our approach to graph preprocessing. Finally, we describe topological sort based heuristic
 and present results of experimental comparison between our approach and the previously developed algorithm.
@@ -94,7 +94,7 @@ The online detection of blackholes and volcanos can timely
 reflect anomalous events, such as disasters, catastrophic accidents, and therefore helps to keep public safety \cite{hong2015detecting}.
 
 The main contributor to the blackhole detecting problem is the authors from the University of New Jersey. They both formulated the task and proposed an algorithm for blackhole detection in case of unweighted directed graph \cite{li2010detecting}. 
-Two years later they published an algorithm for approximate blackhole search in general case (weighted graph) \cite{li2012mining,li2014mining}. 
+Two years later they published an algorithm for approximate blackhole search in general case (weighted graph) \cite{li2012mining,li2014mining}. These works do not cover the case of large scale graphs, as the authors only run their algorithm on 1500 node networks, which is quite a small size.
 Hong et al \cite{hong2015detecting} consider application for online blackhole mining in the city environment. They introduced an original algorithm approximately solving the problem for dynamic graphs.  
 
 In this paper we consider simplified problem formulation, applied to a directed unweighted graph.
