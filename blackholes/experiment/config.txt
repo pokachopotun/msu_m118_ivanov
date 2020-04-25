@@ -1,5 +1,5 @@
-1 2 20 3
-RMAT rmat 
+1 4 22 3
+RMAT rmat
 SSCA2 market
 UR rgg
 

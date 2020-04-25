@@ -2,7 +2,6 @@ import os
 
 
 if __name__ == "__main__":
-    
     for filename in os.listdir("outputs"):
         path = os.path.join("outputs", filename)
         vals = [x.strip() for x in filename.split('.')]
@@ -21,5 +20,5 @@ if __name__ == "__main__":
                     s = vals[0]
                     if s == "It":
                         time = vals[3]
-        out = graph + "\t" + str(size) + "\t" + algo + "\t" + str(res) + "\t" + str(time)
-        print(out) 
+        out = graph + " " + str(size) + " " + algo + " " + str(res) + " " + str(time)
+        print(out)
