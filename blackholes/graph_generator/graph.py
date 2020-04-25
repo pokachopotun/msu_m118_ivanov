@@ -25,12 +25,12 @@ if __name__ == "__main__":
             inputfile = "inputs/" + id_str
 
             cmd1 = "./generator/generator -s " + scale_str + " -unweighted -file " + graphfile + " -type " + s.typeStr1
-            cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile
+            #cmd2 = "./graph_to_file/graph_to_file " + graphfile + " " + inputfile
             print(cmd1)
-            print(cmd2)
+            #print(cmd2)
 
             os.system(cmd1)
-            os.system(cmd2)
+            #os.system(cmd2)
 
 
 #define graph
