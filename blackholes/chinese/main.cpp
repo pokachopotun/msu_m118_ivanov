@@ -20,7 +20,7 @@ int bhCount = 0;
 int filtered = 0;
 
 int printDebugInfo = 0;
- 
+
 class Solution {
 public:
 
@@ -76,7 +76,6 @@ public:
         }
         return res;
     }
-                
 
     static void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<int>& tsOrder, int bhSize) {
         const int totalVertex = static_cast<int>(tsOrder.size());
@@ -293,7 +292,7 @@ void Print(const string& heading, const set<int>& closure) {
     cout << endl;
 }
 
-int main(int argc, char** argv) { 
+int main(int argc, char** argv) {
     const string inputFileName(argv[1]);
     int maxBHSize = atoi(argv[2]);
     if (argc >= 4) {
@@ -315,7 +314,7 @@ int main(int argc, char** argv) {
         } else {
             maxBHSize = min(maxBHSize, static_cast<int>(graph.size()));
         }
- 
+
         vector<TCandidates> candidates(maxBHSize + 1);
         for (int i = 1; i <= maxBHSize; i++) {
             cerr << "Iter: " << i << endl;
@@ -328,7 +327,7 @@ int main(int argc, char** argv) {
                 }
             }
             Print("P", candidates[i]);
-            
+
             TCandidates toRemove;
             for (int v : candidates[i]) {
                 if (toRemove.find(v) != toRemove.end()) {
@@ -337,12 +336,24 @@ int main(int argc, char** argv) {
                 if (candidates[i - 1].find(v) != candidates[i - 1].end()) {
                     continue;
                 }
+                bool remove = false;
+                for (int s : graph[v]) {
+                    if (candidates[i].find(s) == candidates[i].end() || toRemove.find(s) != toRemove.end()) {
+                        remove = true;
+                        break;
+                    }
+                }
+                if (remove) {
+                    TClosure revClosure = Solution::GetClosure(graphRev, v);
+                    toRemove.insert(revClosure.begin(), revClosure.end());
+                }
+               /* 
                 TClosure closure = Solution::GetClosure(graph, v);
                 Print("closure", closure);
                 if (!Solution::HasCandidates(closure, candidates[i])) {
                     TClosure revClosure = Solution::GetClosure(graphRev, v);
                     toRemove.insert(revClosure.begin(), revClosure.end());
-                } 
+                } */
             }
 
             for (int v : toRemove) {
@@ -389,7 +400,7 @@ int main(int argc, char** argv) {
             Solution::BruteForce(graph, graphUndir, order, i);
     // ---------------------------------------------
 /*            {
-    
+
                 TUsed used;
                 used.assign(graph.size(), 1);
                 for (int v : candidates[i]) {
@@ -406,7 +417,7 @@ int main(int argc, char** argv) {
                         bhCount++;
                         Solution::FoundBlackHole(cs);
                         // restricted closure of v is blackhole
-                        // Print("BH_F", closure);                    
+                        // Print("BH_F", closure);
                     }
                 }
             }
@@ -429,7 +440,7 @@ int main(int argc, char** argv) {
                     int dout = Solution::DegreeOut(closure, graph, graphRev);
                     if (cs == i && dout == 0) {
                         // restricted closure of v is blackhole
-                        Print("BH", closure);                    
+                        Print("BH", closure);
                     }
                 }
             } */
