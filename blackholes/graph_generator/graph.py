@@ -4,7 +4,7 @@ class Submission:
     def __init__(self, typeStr1, typeStr2):
         self.typeStr1 = typeStr1
         self.typeStr2 = typeStr2
-        self.command = r"mpisubmit.pl = -g --stdout=" + self.typeStr1 + "." 
+        self.command = r"mpisubmit.pl = -g --stdout=" + self.typeStr1 + "."
         pass
 
 if __name__ == "__main__":
@@ -14,10 +14,9 @@ if __name__ == "__main__":
         for i in range(t):
             typeStr1, typeStr2 = file.readline().strip().split()
             sub.append(Submission(typeStr1, typeStr2))
-    
     for s in sub:
         for scale in range(a, b + 1):
-            scale_str = "{:02d}".format(scale) 
+            scale_str = "{:02d}".format(scale)
             id_str = s.typeStr1 + "." + scale_str
             outfile = "outputs/" + id_str
             errfile = "errors/" + id_str
