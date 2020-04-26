@@ -4,7 +4,6 @@ project(topsort_cli)
 
 add_executable(topsort_cli main.cpp)
 
-add_subdirectory(lib)
 set_target_properties(topsort_cli PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
@@ -15,11 +14,11 @@ target_link_libraries(topsort_cli PRIVATE
 )
 
 target_include_directories(topsort_cli
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/"
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/io"
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/graph"
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/common"
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/algorithm"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/io"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/graph"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/common"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/algorithm"
 )
 
 if (MSVC)

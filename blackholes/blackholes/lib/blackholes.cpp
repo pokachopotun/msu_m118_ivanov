@@ -121,7 +121,7 @@ bool BruteNext(vector<size_t>& pos, size_t vertexCount) {
             continue;
         } else {
             cur++;
-            for (size_t j = i; j < sampleSize; j++) {
+            for (size_t j = i; j < sampleSize + 1; j++) {
                 pos[j] = pos[j - 1] + 1;
             }
             break;
@@ -137,7 +137,8 @@ void FoundBlackHole(size_t size) {
     cout << "bh_count" << bhCount << endl;
 }
 
-set<size_t> GetBlackHole(const TGraph& graph, const vector<size_t>& tsOrder, const vector<size_t>& pos) {
+set<size_t> GetBlackHole(const TGraph& graph,
+                         const vector<size_t>& tsOrder, const vector<size_t>& pos) {
     set<size_t> blackhole;
     TUsed used;
     used.assign(graph.size(), 0);
