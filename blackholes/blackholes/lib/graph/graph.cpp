@@ -36,17 +36,18 @@ TClosure GetClosure(const TGraph& g, size_t v) {
     used.resize(g.size());
     return ClosureBFS(g, used, v);
 }
-
-TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t v) {
+/* // old version. only good for shrinked graph.
+    // Do not create localUsed
+TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t s) {
     queue<size_t> q;
     TClosure closure;
-    if (!used[v]) {
-        q.push(v);
-        closure.insert(v);
+    if (!used[s]) {
+        q.push(s);
+        closure.insert(s);
     }
-    used[v] += 1;
+    used[s] += 1;
     while(!q.empty()) {
-        v = q.front();
+        size_t v = q.front();
         q.pop();
         for (size_t to : g[v]) {
             if (!used[to]) {
@@ -54,7 +55,34 @@ TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t v) {
                 q.push(to);
                 closure.insert(to);
             } else {
+                used[to] += 1; // size_t(to != s);
+            }
+        }
+    }
+    return closure;
+} */
+
+TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t s) {
+    TUsed localUsed(used.size(), 0);
+    queue<size_t> q;
+    TClosure closure;
+    if (!used[s]) {
+        q.push(s);
+        closure.insert(s);
+    }
+    used[s] += 1;
+    localUsed[s] += 1;
+    while(!q.empty()) {
+        size_t v = q.front();
+        q.pop();
+        for (size_t to : g[v]) {
+            if (!localUsed[to]) {
+                if (!used[to]) {
+                    q.push(to);
+                    closure.insert(to);
+                }
                 used[to] += 1;
+                localUsed[to] += 1;
             }
         }
     }

@@ -64,7 +64,7 @@ vector<size_t> TopSort(const TGraph& g){
     return order;
 }
 
-TComponents GetStrongConnectivityComponents(const TGraph& graph, const TGraph& graphRev) {
+TComponents GetStrongConnectivityComponents(const TGraph& graph, const TGraph& graphRev, size_t& componentCount) {
     auto&& markSingleSCC = [](const TGraph& g, vector<char>& used, TComponents& comp, size_t v, size_t compId) {
         vector<size_t> pos(g.size());
         stack<size_t> st;
@@ -89,13 +89,13 @@ TComponents GetStrongConnectivityComponents(const TGraph& graph, const TGraph& g
     TComponents scc(graph.size());
     vector<size_t> order = TopSort(graph);
     vector<char> used(graphRev.size());
-    size_t cnt = 0;
+    componentCount = 0;
     for (size_t v : order) {
         if (used[v]) {
             continue;
         }
-        markSingleSCC(graphRev, used, scc, v, cnt);
-        cnt++;
+        markSingleSCC(graphRev, used, scc, v, componentCount);
+        componentCount++;
     }
     return scc;
 }

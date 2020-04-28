@@ -7,25 +7,25 @@
 
 using namespace std;
 
-void Solve(const TGraph& graphCond) {
-    TGraph graphCondRev = GetReverseGraph(graphCond);
-    TGraph graphCondUndir = GetUndirGraph(graphCond);
-    vector<size_t> roots = GetRoots(graphCondRev);
+void TopsortSolver(const TGraph& graph, bool printDebugInfo) {
+    TGraph graphRev = GetReverseGraph(graph);
+    TGraph graphUndir = GetUndirGraph(graph);
+    vector<size_t> roots = GetRoots(graphRev);
     size_t maxid = 0;
     size_t maxsize = 0;
     for (size_t i = 0; i < roots.size(); i++) {
-        TClosure closure = GetClosure(graphCond, roots[i]);
+        TClosure closure = GetClosure(graph, roots[i]);
         if (closure.size() > maxsize) {
             maxid = i;
             maxsize = closure.size();
         }
     }
     swap(roots[0], roots[maxid]);
-    // Solution::Print("roots", roots);
-    vector<char> special(graphCond.size());
-    vector<size_t> tsOrder = TopSort(graphCond, roots, special);
-//           Solution::Print("topsort", tsOrder);
-    BruteForce(graphCond, graphCondUndir, tsOrder, special);
+    Print("roots", roots, printDebugInfo);
+    vector<char> special(graph.size());
+    vector<size_t> tsOrder = TopSort(graph, roots, special);
+    Print("topsort", tsOrder, printDebugInfo);
+    BruteForce(graph, graphUndir, tsOrder, special);
 }
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder) {
@@ -41,7 +41,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
         }
         while (true) {
             set<size_t> bh = GetBlackHole(graph, tsOrder, pos);
-            FoundBlackHole(bh.size());
+            FoundBlackHole(bh);
             // cout << "BH count " << bhCount << endl;
             // Print("BH", bh);
             if (!BruteNext(pos, totalVertex)) {
@@ -51,7 +51,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
     }
 }
 
-void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special) {
+void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
     size_t filtered = 0;
     size_t skipped = 0;
     const size_t totalVertex = static_cast<size_t>(tsOrder.size());
@@ -73,9 +73,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
             }
             if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
                 sampleSizeCount++;
-                FoundBlackHole(bh.size());
-                // cout << "BH count " << bhCount << endl;
-                // Print("BH", bh);
+                FoundBlackHole(bh);
             }
             while (true) {
                 stop = !BruteNext(pos, totalVertex);
@@ -102,9 +100,10 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
             break;
         }
 
-        //cout << "bh_count " << bhCount << endl;
-        cout << "bh_filtered " << filtered << endl;
-        cout << "bh_skipped " << skipped << endl;
+        if (printDebugInfo) {
+            cout << "bh_filtered " << filtered << endl;
+            cout << "bh_skipped " << skipped << endl;
+        }
     }
 }
 
@@ -130,11 +129,17 @@ bool BruteNext(vector<size_t>& pos, size_t vertexCount) {
     return res;
 }
 
-void FoundBlackHole(size_t size) {
-    (void)size;
+void FoundBlackHole(const set<size_t>& bh, bool printDebugInfo) {
     static size_t bhCount = 0;
     bhCount++;
-    cout << "bh_count" << bhCount << endl;
+    cout << "bh_count " << bhCount << endl;
+    if (printDebugInfo) {
+        cout << "BH: ";
+        for (size_t x : bh) {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
 }
 
 set<size_t> GetBlackHole(const TGraph& graph,
@@ -152,13 +157,16 @@ set<size_t> GetBlackHole(const TGraph& graph,
     for (size_t p : pos) {
         size_t x = tsOrder[p];
         if (used[x] >= 2) {
-            return {}; // means this blackhole has already been deteected;
+            return {}; // means this blackhole has already been detected;
         }
     }
     return blackhole;
 }
 
-void Print(const string& tag, const set<size_t>& v) {
+void Print(const string& tag, const set<size_t>& v, bool printDebugInfo) {
+    if (!printDebugInfo) {
+        return;
+    }
     cout << tag << ": ";
     for (size_t x : v) {
         cout << x << " ";
@@ -166,7 +174,10 @@ void Print(const string& tag, const set<size_t>& v) {
     cout << endl;
 }
 
-void Print(const string& tag, const vector<size_t>& v) {
+void Print(const string& tag, const vector<size_t>& v, bool printDebugInfo) {
+    if (!printDebugInfo) {
+        return;
+    }
     cout << tag << ": ";
     for (size_t x : v) {
         cout << x << " ";
@@ -174,7 +185,10 @@ void Print(const string& tag, const vector<size_t>& v) {
     cout << endl;
 }
 
-void Print(const string& tag, const vector<vector<size_t>>& vv) {
+void Print(const string& tag, const vector<vector<size_t>>& vv, bool printDebugInfo) {
+    if (!printDebugInfo) {
+        return;
+    }
     cout << tag << " BEGIN" << endl;
     for (size_t i = 0; i < vv.size(); i++) {
         const auto& v = vv[i];
