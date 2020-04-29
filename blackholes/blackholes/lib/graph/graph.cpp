@@ -37,7 +37,7 @@ TClosure GetClosure(const TGraph& g, size_t v) {
     return ClosureBFS(g, used, v);
 }
 /* // old version. only good for shrinked graph.
-    // Do not create localUsed
+    // Does not create localUsed
 TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t s) {
     queue<size_t> q;
     TClosure closure;

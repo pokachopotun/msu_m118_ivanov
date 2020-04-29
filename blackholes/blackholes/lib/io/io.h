@@ -6,7 +6,6 @@
 #include <fstream>
 #include <string>
 
-TGraph ReadGraphFromBinaryStream(std::istream& file);
 TGraph ReadGraphFromBinaryFile(const std::string& filename);
 
 TGraph ReadGraphFromTextStream(std::istream& stream);

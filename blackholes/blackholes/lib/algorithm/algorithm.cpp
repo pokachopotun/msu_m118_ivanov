@@ -100,7 +100,6 @@ TComponents GetStrongConnectivityComponents(const TGraph& graph, const TGraph& g
     return scc;
 }
 
-
 bool CheckConnectivity(const TGraph& graphUndir, const set<size_t>& bh) {
     TUsed used;
     used.assign(graphUndir.size(), 1);

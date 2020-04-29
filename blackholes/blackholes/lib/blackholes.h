@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <common.h>
 
 #include <cstddef>
@@ -7,10 +7,11 @@
 #include <set>
 #include <string>
 
-void TopsortSolver(const TGraph& graphCond, bool printDebugInfo = 0);
+void TopsortSolver(const TGraph& graphCond, bool useOpenMP = false, bool printDebugInfo = 0);
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const std::vector<size_t>& tsOrder);
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const std::vector<size_t>& tsOrder, const std::vector<char>& special, bool printDebugInfo = false);
+void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const std::vector<size_t>& tsOrder, const std::vector<char>& special, bool printDebugInfo = false);
 bool BruteNext(std::vector<size_t>& pos, size_t vertexCount);
 
 void FoundBlackHole(const std::set<size_t>& bh, bool printDebugInfo = false);

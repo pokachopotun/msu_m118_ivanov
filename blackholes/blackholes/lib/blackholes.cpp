@@ -1,18 +1,22 @@
+#include "omp.h"
+
 #include "blackholes.h"
 
 #include <algorithm.h>
 #include <graph.h>
 
+#include <atomic>
 #include <iostream>
 
 using namespace std;
 
-void TopsortSolver(const TGraph& graph, bool printDebugInfo) {
+void TopsortSolver(const TGraph& graph, bool useOpenMP, bool printDebugInfo) {
     TGraph graphRev = GetReverseGraph(graph);
     TGraph graphUndir = GetUndirGraph(graph);
     vector<size_t> roots = GetRoots(graphRev);
     size_t maxid = 0;
     size_t maxsize = 0;
+    // do in parallel!!
     for (size_t i = 0; i < roots.size(); i++) {
         TClosure closure = GetClosure(graph, roots[i]);
         if (closure.size() > maxsize) {
@@ -25,7 +29,11 @@ void TopsortSolver(const TGraph& graph, bool printDebugInfo) {
     vector<char> special(graph.size());
     vector<size_t> tsOrder = TopSort(graph, roots, special);
     Print("topsort", tsOrder, printDebugInfo);
-    BruteForce(graph, graphUndir, tsOrder, special);
+    if (useOpenMP) {
+        BruteForceParallel(graph, graphUndir, tsOrder, special);
+    } else {
+        BruteForce(graph, graphUndir, tsOrder, special);
+    }
 }
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder) {
@@ -34,7 +42,6 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
     vector<size_t> pos;
     pos.reserve(totalVertex);
     for (size_t sampleSize = 1; sampleSize <= totalVertex; sampleSize++) {
-        //cerr << "BF Sample size: " << sampleSize << endl;
         pos.resize(sampleSize);
         for (size_t i = 0; i < pos.size(); ++i) {
             pos[i] = i;
@@ -42,8 +49,6 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
         while (true) {
             set<size_t> bh = GetBlackHole(graph, tsOrder, pos);
             FoundBlackHole(bh);
-            // cout << "BH count " << bhCount << endl;
-            // Print("BH", bh);
             if (!BruteNext(pos, totalVertex)) {
                 break;
             }
@@ -54,13 +59,12 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
     size_t filtered = 0;
     size_t skipped = 0;
-    const size_t totalVertex = static_cast<size_t>(tsOrder.size());
+    const size_t totalVertex = tsOrder.size();
     const size_t maxSampleSize = totalVertex;
     vector<size_t> pos;
     pos.reserve(totalVertex);
     for (size_t sampleSize = 1; sampleSize <= min(maxSampleSize, totalVertex); sampleSize++) {
-        size_t sampleSizeCount = 0;
-        // cerr << "BF Sample size: " << sampleSize << endl;
+        size_t sampleSizeBlackholesFound = 0;
         pos.resize(sampleSize);
         for (size_t i = 0; i < pos.size(); ++i) {
             pos[i] = i;
@@ -72,7 +76,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
                 filtered++;
             }
             if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
-                sampleSizeCount++;
+                sampleSizeBlackholesFound++;
                 FoundBlackHole(bh);
             }
             while (true) {
@@ -96,14 +100,19 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
             }
         }
 
-        if (sampleSizeCount == 0) {
+        if (sampleSizeBlackholesFound == 0) {
             break;
         }
 
         if (printDebugInfo) {
+            cout << "sampleSize done " << sampleSize << endl;
             cout << "bh_filtered " << filtered << endl;
             cout << "bh_skipped " << skipped << endl;
         }
+    }
+    if (true) { //printDebugInfo) {
+        cout << "bh_filtered " << filtered << endl;
+        cout << "bh_skipped " << skipped << endl;
     }
 }
 
@@ -120,7 +129,7 @@ bool BruteNext(vector<size_t>& pos, size_t vertexCount) {
             continue;
         } else {
             cur++;
-            for (size_t j = i; j < sampleSize + 1; j++) {
+            for (size_t j = i; j < sampleSize; j++) {
                 pos[j] = pos[j - 1] + 1;
             }
             break;
@@ -129,10 +138,69 @@ bool BruteNext(vector<size_t>& pos, size_t vertexCount) {
     return res;
 }
 
+void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool) {
+    std::vector<size_t> pos;
+    pos.reserve(end);
+    for (size_t sampleSize = start; sampleSize < end; ++sampleSize) {
+        size_t totalVertex = tsOrder.size();
+        size_t sampleSizeBlackholesFound = 0;
+        pos.resize(sampleSize);
+        for (size_t i = 0; i < pos.size(); ++i) {
+            pos[i] = i;
+        }
+        bool stop = false;
+        while (!stop) {
+            set<size_t> bh = GetBlackHole(graph, tsOrder, pos);
+            if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
+                sampleSizeBlackholesFound++;
+                FoundBlackHole(bh);
+            }
+            while (true) {
+                stop = !BruteNext(pos, totalVertex);
+                if (stop) {
+                    break;
+                }
+                bool skip = false;
+                for (size_t i = 1; i < pos.size(); i++) {
+                    size_t p = pos[i];
+                    size_t v = tsOrder[p];
+                    if (special[v]) {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (!skip) {
+                    break;
+                }
+            }
+        }
+
+        if (sampleSizeBlackholesFound == 0) {
+            break;
+        }
+    }
+}
+
+void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
+    const size_t numThreads = 2;
+#pragma omp parallel for num_threads(2)
+    for (size_t i = 0; i < numThreads; i++) {
+        size_t share = tsOrder.size() / numThreads;
+        size_t start = share * i;
+        size_t end = start + share;
+        if (i == numThreads - 1) {
+            end = tsOrder.size();
+        }
+        ProcessSampleRange(start + 1, end + 1, graph, graphUndir, tsOrder, special, printDebugInfo);
+    }
+    (void)printDebugInfo;
+}
+
 void FoundBlackHole(const set<size_t>& bh, bool printDebugInfo) {
-    static size_t bhCount = 0;
-    bhCount++;
-    cout << "bh_count " << bhCount << endl;
+    static std::atomic<size_t> bhCount(0);
+    size_t oldValue = bhCount.fetch_add(1);
+    //printf("bh_count %zu\n", oldValue + 1);
+    cout << "bh_count " << oldValue + 1 << endl;
     if (printDebugInfo) {
         cout << "BH: ";
         for (size_t x : bh) {

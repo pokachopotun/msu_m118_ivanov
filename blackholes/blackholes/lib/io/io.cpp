@@ -2,11 +2,13 @@
 
 using namespace std;
 
-TGraph ReadGraphFromBinaryStream(std::istream& file) {
+TGraph ReadGraphFromBinaryFile(const std::string& filename) {
+    ifstream file(filename, ios::in | ios::binary);
     int n;
     long long m;
     file.read((char*)(&n), sizeof(int));
     file.read((char*)(&m), sizeof(long long));
+    cout << n << " " << m << endl;
     TGraph graph(n);
     vector<set<int>> tmp(n);
     for(long long i = 0; i < m; i++) {
@@ -25,11 +27,6 @@ TGraph ReadGraphFromBinaryStream(std::istream& file) {
         }
     }
     return graph;
-}
-
-TGraph ReadGraphFromBinaryFile(const std::string& filename) {
-    ifstream file(filename, ios::in | ios::binary);
-    return ReadGraphFromBinaryStream(file);
 }
 
 TGraph ReadGraphFromTextStream(std::istream& stream) {

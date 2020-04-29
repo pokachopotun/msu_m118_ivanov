@@ -12,13 +12,14 @@ using namespace std;
 
 int main(int argc, char * argv[]) {
     if (argc < 4){
-        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer" << endl;
+        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer useOpenMP" << endl;
         return 0;
     }
 
     const string inputFilePath(argv[1]);
     const int binaryInput(atoi(argv[2]));
     const int divideAndConquer(atoi(argv[3]));
+    const bool useOpenMP(atoi(argv[4]) > 0);
 
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -39,10 +40,10 @@ int main(int argc, char * argv[]) {
             TGraph graphCondUndir = GetUndirGraph(graphCond);
             vector<TGraph> weaks = GetWeakComponents(graphCond, graphCondUndir);
             for (const TGraph& weak : weaks) {
-                TopsortSolver(weak);
+                TopsortSolver(weak, useOpenMP);
             }
         } else {
-            TopsortSolver(graphCond);
+            TopsortSolver(graphCond, useOpenMP);
         }
     }
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
