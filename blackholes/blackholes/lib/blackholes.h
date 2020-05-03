@@ -15,6 +15,7 @@ void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const std
 bool BruteNext(std::vector<size_t>& pos, size_t vertexCount);
 
 void FoundBlackHole(const std::set<size_t>& bh, bool printDebugInfo = false);
+void FilteredCandidate();
 std::set<size_t> GetBlackHole(const TGraph& graph, const std::vector<size_t>& tsOrder, const std::vector<size_t>& pos);
 
 void Print(const std::string& tag, const std::set<size_t>& v, bool printDebugInfo);

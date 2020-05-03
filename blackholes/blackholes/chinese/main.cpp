@@ -36,7 +36,6 @@ set<size_t> GetBlackHoleChinese(const TGraph& graph, const vector<size_t>& tsOrd
 }
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, size_t bhSize) {
-    size_t filtered = 0;
     const size_t totalVertex = static_cast<size_t>(tsOrder.size());
     vector<size_t> pos;
     pos.reserve(totalVertex);
@@ -47,18 +46,14 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
         }
         while (true) {
             set<size_t> bh = GetBlackHoleChinese(graph, tsOrder, pos);
-            if (bh.size() == 0) {
-                filtered++;
-            }
             if (bh.size() == bhSize && CheckConnectivity(graphUndir, bh)) {
                 FoundBlackHole(bh, printDebugInfo);
+            } else {
+                FilteredCandidate();
             }
             if (!BruteNext(pos, totalVertex)) {
                 break;
             }
-        }
-        if (printDebugInfo) {
-            cout << "bh_filtered " << filtered << endl;
         }
     }
 }

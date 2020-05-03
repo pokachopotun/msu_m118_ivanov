@@ -57,8 +57,6 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
 }
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
-    size_t filtered = 0;
-    size_t skipped = 0;
     const size_t totalVertex = tsOrder.size();
     const size_t maxSampleSize = totalVertex;
     vector<size_t> pos;
@@ -72,12 +70,11 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
         bool stop = false;
         while (!stop) {
             set<size_t> bh = GetBlackHole(graph, tsOrder, pos);
-            if (bh.size() == 0) {
-                filtered++;
-            }
             if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
                 sampleSizeBlackholesFound++;
                 FoundBlackHole(bh);
+            } else {
+                FilteredCandidate();
             }
             while (true) {
                 stop = !BruteNext(pos, totalVertex);
@@ -90,7 +87,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
                     size_t v = tsOrder[p];
                     if (special[v]) {
                         skip = true;
-                        skipped += 1;
+                        FilteredCandidate();
                         break;
                     }
                 }
@@ -106,13 +103,7 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
 
         if (printDebugInfo) {
             cout << "sampleSize done " << sampleSize << endl;
-            cout << "bh_filtered " << filtered << endl;
-            cout << "bh_skipped " << skipped << endl;
         }
-    }
-    if (true) { //printDebugInfo) {
-        cout << "bh_filtered " << filtered << endl;
-        cout << "bh_skipped " << skipped << endl;
     }
 }
 
@@ -208,6 +199,13 @@ void FoundBlackHole(const set<size_t>& bh, bool printDebugInfo) {
         }
         cout << endl;
     }
+}
+
+void FilteredCandidate() {
+    static std::atomic<size_t> filtered(0);
+    size_t oldValue = filtered.fetch_add(1);
+    //printf("bh_count %zu\n", oldValue + 1);
+    cout << "bh_filtered " << oldValue + 1 << endl;
 }
 
 set<size_t> GetBlackHole(const TGraph& graph,
