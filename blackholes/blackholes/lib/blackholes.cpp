@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void TopsortSolver(const TGraph& graph, bool useOpenMP, bool printDebugInfo) {
+void TopsortSolver(const TGraph& graph, size_t ompThreads, bool printDebugInfo) {
     TGraph graphRev = GetReverseGraph(graph);
     TGraph graphUndir = GetUndirGraph(graph);
     vector<size_t> roots = GetRoots(graphRev);
@@ -29,8 +29,8 @@ void TopsortSolver(const TGraph& graph, bool useOpenMP, bool printDebugInfo) {
     vector<char> special(graph.size());
     vector<size_t> tsOrder = TopSort(graph, roots, special);
     Print("topsort", tsOrder, printDebugInfo);
-    if (useOpenMP) {
-        BruteForceParallel(graph, graphUndir, tsOrder, special);
+    if (ompThreads > 1) {
+        BruteForceParallel(graph, graphUndir, tsOrder, special, ompThreads);
     } else {
         BruteForce(graph, graphUndir, tsOrder, special);
     }
@@ -55,6 +55,18 @@ void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size
         }
     }
 }
+
+bool CheckOutdegree(const TGraph& graph, const set<size_t>& bh) {
+    for (size_t v : bh) {
+        for (size_t to : graph[v]) {
+            if (bh.find(to) == bh.end()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 void BruteForce(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
     const size_t totalVertex = tsOrder.size();
@@ -172,14 +184,13 @@ void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGr
     }
 }
 
-void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool printDebugInfo) {
-    const size_t numThreads = 2;
-#pragma omp parallel for num_threads(2)
-    for (size_t i = 0; i < numThreads; i++) {
-        size_t share = tsOrder.size() / numThreads;
+void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, size_t ompThreads, bool printDebugInfo) {
+    #pragma omp parallel for num_threads(ompThreads)
+    for (size_t i = 0; i < ompThreads; i++) {
+        size_t share = tsOrder.size() / ompThreads;
         size_t start = share * i;
         size_t end = start + share;
-        if (i == numThreads - 1) {
+        if (i == ompThreads - 1) {
             end = tsOrder.size();
         }
         ProcessSampleRange(start + 1, end + 1, graph, graphUndir, tsOrder, special, printDebugInfo);
@@ -208,8 +219,7 @@ void FilteredCandidate() {
     cout << "bh_filtered " << oldValue + 1 << endl;
 }
 
-set<size_t> GetBlackHole(const TGraph& graph,
-                         const vector<size_t>& tsOrder, const vector<size_t>& pos) {
+set<size_t> GetBlackHole(const TGraph& graph, const vector<size_t>& tsOrder, const vector<size_t>& pos) {
     set<size_t> blackhole;
     TUsed used;
     used.assign(graph.size(), 0);

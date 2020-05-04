@@ -21,10 +21,10 @@ target_link_libraries(blackholes PUBLIC
     common
     graph
     io
-    PRIVATE "${OpenMP_CXX_FLAGS}"
+    PUBLIC "${OpenMP_CXX_FLAGS}"
 )
 
-target_compile_options(blackholes PRIVATE "${OpenMP_CXX_FLAGS}")
+target_compile_options(blackholes PUBLIC "${OpenMP_CXX_FLAGS}")
 
 set_target_properties(blackholes PROPERTIES
     CXX_STANDARD 14

@@ -12,14 +12,14 @@ using namespace std;
 
 int main(int argc, char * argv[]) {
     if (argc < 4){
-        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer useOpenMP" << endl;
+        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer ompThreads" << endl;
         return 0;
     }
 
     const string inputFilePath(argv[1]);
     const int binaryInput(atoi(argv[2]));
     const int divideAndConquer(atoi(argv[3]));
-    const bool useOpenMP(atoi(argv[4]) > 0);
+    const size_t ompThreads(atoi(argv[4]));
 
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -40,14 +40,14 @@ int main(int argc, char * argv[]) {
             TGraph graphCondUndir = GetUndirGraph(graphCond);
             vector<TGraph> weaks = GetWeakComponents(graphCond, graphCondUndir);
             for (const TGraph& weak : weaks) {
-                TopsortSolver(weak, useOpenMP);
+                TopsortSolver(weak, ompThreads);
             }
         } else {
-            TopsortSolver(graphCond, useOpenMP);
+            TopsortSolver(graphCond, ompThreads);
         }
     }
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    duration<double> time_span = duration_cast<duration<double>>( t2 - t1 );
+    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
     cout << "It took me: "<< time_span.count() <<  " seconds" << endl;
     return 0;
 }
