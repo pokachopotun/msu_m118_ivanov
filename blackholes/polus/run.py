@@ -1,3 +1,4 @@
+import sys
 import os
 import subprocess
 
@@ -9,8 +10,24 @@ class Submission:
         pass
 
 if __name__ == "__main__":
+
+    if len(sys.argv) < 2:
+        print("use python3 run.py config.txt")
+        exit(0)
+
+    configFileName = sys.argv[1]
+
+    # run params
+    binaryInput = 1
+    maxBHSize = 0
+    printDebugInfo = 0
+    useDivideAndConquer = 0
+    useOpenMP = 0
+    # run params
+
     sub = list()
-    with open("config.txt") as file:
+    with open(configFileName, 'r') as file:
+        runName = file.readline().strip()
         n, a, b, t = [int(x) for x in file.readline().strip().split()]
         for i in range(t):
             typeStr1, typeStr2 = file.readline().strip().split()
@@ -23,13 +40,13 @@ if __name__ == "__main__":
             id_str = s.typeStr1 + "." + scale_str
             outfile = "outputs/" + id_str
             errfile = "errors/" + id_str
-            inputfile = "graphs/" + id_str + ".bin"
+            inputfile = "../../graphs/" + id_str + ".bin"
 
-            chinese = "../chinese_cli " + inputfile + " 0 0 0"
-            topsort = "../topsort_cli " + inputfile + " 0 0 0"
+            chinese = "../../chinese_cli " + inputfile + " {} {} {}".format(binaryInput, maxBHSize, printDebugInfo)
+            topsort = "../../topsort_cli " + inputfile + " {} {} {}".format(binaryInput, useDivideAndConquer, useOpenMP)
 
-            cmd1 = "bsub -n 1 -W 30 -o " + outfile + ".chinese " + chinese
-            cmd2 = "bsub -n 1 -W 30 -o " + outfile + ".topsort " + topsort
+            cmd1 = "bsub -n 1 -W 30 -oo " + outfile + ".chinese -eo " + errfile + ".chinese " + chinese
+            cmd2 = "bsub -n 1 -W 30 -oo " + outfile + ".topsort -eo " + errfile + ".topsort " + topsort
 
             print(cmd1)
             print(cmd2)
