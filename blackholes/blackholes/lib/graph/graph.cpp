@@ -89,6 +89,26 @@ TClosure ClosureBFS(const TGraph& g, TUsed& used, size_t s) {
     return closure;
 }
 
+TClosure SimpleClosureBFS(const TGraph& g, TUsed& used, size_t s) {
+    TClosure closure;
+    closure.insert(s);
+    queue<size_t> q;
+    q.push(s);
+    used[s] = 1;
+    while(!q.empty()) {
+        size_t v = q.front();
+        q.pop();
+        for (size_t to : g[v]) {
+            if (!used[to]) {
+                used[to] = 1;
+                q.push(to);
+                closure.insert(to);
+            }
+        }
+    }
+    return closure;
+}
+
 TGraph CarveComponent(const TGraph& graph, const TClosure& component) {
     TGraph weak;
     weak.resize(component.size());

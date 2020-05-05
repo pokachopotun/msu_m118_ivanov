@@ -127,9 +127,24 @@ void ChineseSolveSingleSize(size_t i,
     toRemove.clear();
     Print("F", curCandidates, printDebugInfo);
 
-    vector<size_t> order;
-    order.insert(order.end(), curCandidates.begin(), curCandidates.end());
-    BruteForce(graph, graphUndir, order, i);
+    {
+        TUsed used(graph.size(), 1);
+        for (size_t x : curCandidates) {
+            used[x] = 0;
+        }
+        for (size_t v : curCandidates) {
+            if (used[v]) {
+                continue;
+            }
+            TClosure closure = SimpleClosureBFS(graphUndir, used, v);
+            if (closure.size() < i) {
+                continue;
+            }
+            vector<size_t> order;
+            order.insert(order.end(), closure.begin(), closure.end());
+            BruteForce(graph, graphUndir, order, i);
+        }
+    }
 }
 
 void ChineseSolveAllSizesAsync(const TGraph& graph,

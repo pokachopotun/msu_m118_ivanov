@@ -13,3 +13,5 @@ std::vector<size_t> GetRoots(const TGraph& graphRev);
 TGraph BuildCondensedGraph(size_t compCnt, const TComponents& comp, const TGraph& graph);
 size_t GetCompCnt(const TComponents& comp);
 TSccMembers GetSccMembers(const TComponents& comp);
+
+TClosure SimpleClosureBFS(const TGraph& g, TUsed& used, size_t s);
