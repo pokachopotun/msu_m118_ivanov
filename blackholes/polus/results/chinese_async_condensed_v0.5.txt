@@ -1,0 +1,140 @@
+RMAT.04.1.0.chinese:38:It took me: 0.0013679 seconds
+RMAT.04.1.1.chinese:38:It took me: 0.000531635 seconds
+RMAT.04.2.0.chinese:38:It took me: 0.00123655 seconds
+RMAT.04.2.1.chinese:38:It took me: 0.0234154 seconds
+RMAT.04.4.0.chinese:38:It took me: 0.00111466 seconds
+RMAT.04.4.1.chinese:38:It took me: 0.000601589 seconds
+RMAT.04.8.0.chinese:38:It took me: 0.00112872 seconds
+RMAT.04.8.1.chinese:38:It took me: 0.000669587 seconds
+RMAT.05.1.0.chinese:38:It took me: 0.00590667 seconds
+RMAT.05.1.1.chinese:38:It took me: 0.00103392 seconds
+RMAT.05.2.0.chinese:38:It took me: 0.00488483 seconds
+RMAT.05.2.1.chinese:38:It took me: 0.0010906 seconds
+RMAT.05.4.0.chinese:38:It took me: 0.00400257 seconds
+RMAT.05.4.1.chinese:38:It took me: 0.0107383 seconds
+RMAT.05.8.0.chinese:38:It took me: 0.00312563 seconds
+RMAT.05.8.1.chinese:38:It took me: 0.00126904 seconds
+RMAT.06.1.0.chinese:38:It took me: 0.0422533 seconds
+RMAT.06.1.1.chinese:38:It took me: 0.00222863 seconds
+RMAT.06.2.0.chinese:38:It took me: 0.0261585 seconds
+RMAT.06.2.1.chinese:38:It took me: 0.00229301 seconds
+RMAT.06.4.0.chinese:38:It took me: 0.0203367 seconds
+RMAT.06.4.1.chinese:38:It took me: 0.0282126 seconds
+RMAT.06.8.0.chinese:38:It took me: 0.0117229 seconds
+RMAT.06.8.1.chinese:38:It took me: 0.00235826 seconds
+RMAT.07.1.0.chinese:38:It took me: 0.17452 seconds
+RMAT.07.1.1.chinese:38:It took me: 0.0185322 seconds
+RMAT.07.2.0.chinese:38:It took me: 0.163665 seconds
+RMAT.07.2.1.chinese:38:It took me: 0.00475115 seconds
+RMAT.07.4.0.chinese:38:It took me: 0.380381 seconds
+RMAT.07.4.1.chinese:38:It took me: 0.024517 seconds
+RMAT.07.8.0.chinese:38:It took me: 0.0469288 seconds
+RMAT.07.8.1.chinese:38:It took me: 0.0145166 seconds
+RMAT.08.1.0.chinese:38:It took me: 1.00711 seconds
+RMAT.08.1.1.chinese:38:It took me: 0.00999442 seconds
+RMAT.08.2.0.chinese:38:It took me: 2.98772 seconds
+RMAT.08.2.1.chinese:38:It took me: 0.0227243 seconds
+RMAT.08.4.0.chinese:38:It took me: 0.411833 seconds
+RMAT.08.4.1.chinese:38:It took me: 0.010096 seconds
+RMAT.08.8.0.chinese:38:It took me: 0.795509 seconds
+RMAT.08.8.1.chinese:38:It took me: 0.0469259 seconds
+RMAT.09.1.0.chinese:40:It took me: 5.46298 seconds
+RMAT.09.1.1.chinese:40:It took me: 0.0206841 seconds
+RMAT.09.2.0.chinese:40:It took me: 3.87335 seconds
+RMAT.09.2.1.chinese:40:It took me: 0.139021 seconds
+RMAT.09.4.0.chinese:40:It took me: 2.17699 seconds
+RMAT.09.4.1.chinese:40:It took me: 0.0311182 seconds
+RMAT.09.8.0.chinese:40:It took me: 1.37341 seconds
+SSCA2.04.1.0.chinese:53:It took me: 0.00215877 seconds
+SSCA2.04.1.1.chinese:53:It took me: 0.00227424 seconds
+SSCA2.04.2.0.chinese:53:It took me: 0.0115296 seconds
+SSCA2.04.2.1.chinese:53:It took me: 0.00207825 seconds
+SSCA2.04.4.0.chinese:53:It took me: 0.00143846 seconds
+SSCA2.04.4.1.chinese:53:It took me: 0.00159347 seconds
+SSCA2.04.8.0.chinese:53:It took me: 0.00119002 seconds
+SSCA2.04.8.1.chinese:53:It took me: 0.00141727 seconds
+SSCA2.05.1.0.chinese:100:It took me: 0.0130753 seconds
+SSCA2.05.1.1.chinese:100:It took me: 0.0122058 seconds
+SSCA2.05.2.0.chinese:100:It took me: 0.0119061 seconds
+SSCA2.05.2.1.chinese:100:It took me: 0.0119 seconds
+SSCA2.05.4.0.chinese:100:It took me: 0.00802946 seconds
+SSCA2.05.4.1.chinese:100:It took me: 0.00827214 seconds
+SSCA2.05.8.0.chinese:100:It took me: 0.00504461 seconds
+SSCA2.05.8.1.chinese:100:It took me: 0.00551155 seconds
+SSCA2.06.1.0.chinese:718780:It took me: 107.145 seconds
+SSCA2.06.1.1.chinese:2351:It took me: 0.0600045 seconds
+SSCA2.06.2.0.chinese:718780:It took me: 109.159 seconds
+SSCA2.06.2.1.chinese:2351:It took me: 0.0591641 seconds
+SSCA2.06.4.0.chinese:718780:It took me: 108.025 seconds
+SSCA2.06.4.1.chinese:2351:It took me: 0.0692504 seconds
+SSCA2.06.8.0.chinese:718780:It took me: 109.093 seconds
+SSCA2.06.8.1.chinese:2351:It took me: 0.0491251 seconds
+UR.04.1.0.chinese:38:It took me: 0.00104528 seconds
+UR.04.1.1.chinese:38:It took me: 0.000578563 seconds
+UR.04.2.0.chinese:38:It took me: 0.00105657 seconds
+UR.04.2.1.chinese:38:It took me: 0.000596984 seconds
+UR.04.4.0.chinese:38:It took me: 0.0349655 seconds
+UR.04.4.1.chinese:38:It took me: 0.000666434 seconds
+UR.04.8.0.chinese:38:It took me: 0.0011407 seconds
+UR.04.8.1.chinese:38:It took me: 0.000703745 seconds
+UR.05.1.0.chinese:38:It took me: 0.0201509 seconds
+UR.05.1.1.chinese:38:It took me: 0.00121346 seconds
+UR.05.2.0.chinese:38:It took me: 0.00553325 seconds
+UR.05.2.1.chinese:38:It took me: 0.00127307 seconds
+UR.05.4.0.chinese:38:It took me: 0.00474686 seconds
+UR.05.4.1.chinese:38:It took me: 0.00131966 seconds
+UR.05.8.0.chinese:38:It took me: 0.00354984 seconds
+UR.05.8.1.chinese:38:It took me: 0.0834402 seconds
+UR.06.1.0.chinese:38:It took me: 0.0600252 seconds
+UR.06.1.1.chinese:38:It took me: 0.00250314 seconds
+UR.06.2.0.chinese:38:It took me: 0.0444966 seconds
+UR.06.2.1.chinese:38:It took me: 0.00252208 seconds
+UR.06.4.0.chinese:38:It took me: 0.0742687 seconds
+UR.06.4.1.chinese:38:It took me: 0.00259277 seconds
+UR.06.8.0.chinese:38:It took me: 0.013378 seconds
+UR.06.8.1.chinese:38:It took me: 0.00261538 seconds
+UR.07.1.0.chinese:38:It took me: 0.323021 seconds
+UR.07.1.1.chinese:38:It took me: 0.0740264 seconds
+UR.07.2.0.chinese:38:It took me: 0.197361 seconds
+UR.07.2.1.chinese:38:It took me: 0.0269092 seconds
+UR.07.4.0.chinese:38:It took me: 0.40863 seconds
+UR.07.4.1.chinese:38:It took me: 0.00520249 seconds
+UR.07.8.0.chinese:38:It took me: 0.0986174 seconds
+UR.07.8.1.chinese:38:It took me: 0.0436972 seconds
+UR.08.1.0.chinese:38:It took me: 1.41836 seconds
+UR.08.1.1.chinese:38:It took me: 0.0547588 seconds
+UR.08.2.0.chinese:38:It took me: 0.857543 seconds
+UR.08.2.1.chinese:38:It took me: 0.0419069 seconds
+UR.08.4.0.chinese:38:It took me: 0.452371 seconds
+UR.08.4.1.chinese:38:It took me: 0.0549018 seconds
+UR.08.8.0.chinese:38:It took me: 0.2493 seconds
+UR.08.8.1.chinese:38:It took me: 0.0320794 seconds
+UR.09.1.0.chinese:38:It took me: 6.87258 seconds
+UR.09.1.1.chinese:38:It took me: 0.0472421 seconds
+UR.09.2.0.chinese:38:It took me: 14.4845 seconds
+UR.09.2.1.chinese:38:It took me: 0.0214516 seconds
+UR.09.4.0.chinese:38:It took me: 1.90508 seconds
+UR.09.4.1.chinese:38:It took me: 0.0389745 seconds
+SSCA2.07.1.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.1.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.2.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.2.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.4.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.4.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.8.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.07.8.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.1.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.1.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.2.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.2.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.4.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.4.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.8.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.08.8.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.1.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.1.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.2.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.2.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.4.0.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+SSCA2.09.4.1.chinese:19:TERM_RUNLIMIT: job killed after reaching LSF run time limit.
+
