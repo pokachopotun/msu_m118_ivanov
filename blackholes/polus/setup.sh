@@ -1,7 +1,7 @@
 #!/bin/bash
 
 folder=$1
-config=$1.txt
+config=$1.conf
 
 mkdir $folder
 cd $folder
