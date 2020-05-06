@@ -157,6 +157,8 @@ void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGr
             if (bh.size() > 0 && CheckConnectivity(graphUndir, bh)) {
                 sampleSizeBlackholesFound++;
                 FoundBlackHole(bh);
+            } else {
+                FilteredCandidate();
             }
             while (true) {
                 stop = !BruteNext(pos, totalVertex);
@@ -169,6 +171,7 @@ void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGr
                     size_t v = tsOrder[p];
                     if (special[v]) {
                         skip = true;
+                        FilteredCandidate();
                         break;
                     }
                 }
