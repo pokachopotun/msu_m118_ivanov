@@ -1,0 +1,10 @@
+RMAT.12.1.0.chinese 56
+RMAT.12.8.1.chinese 420
+RMAT.14.1.0.chinese 350
+RMAT.14.8.1.chinese 352
+RMAT.16.1.0.chinese 1192
+RMAT.16.8.1.chinese 2056
+RMAT.18.1.0.chinese 7346
+RMAT.18.8.1.chinese 12505
+RMAT.22.1.0.chinese 194
+RMAT.22.8.1.chinese 0
