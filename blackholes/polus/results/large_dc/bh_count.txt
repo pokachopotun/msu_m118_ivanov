@@ -1,0 +1,3 @@
+outputs/RMAT.18.8.chinese.cond.short:1:bh_count 12505
+outputs/RMAT.18.chinese.short:1:bh_count 7346
+outputs/RMAT.22.1.chinese.short:1:bh_count 194
