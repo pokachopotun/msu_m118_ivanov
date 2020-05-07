@@ -1,0 +1,4 @@
+RMAT.12.8.1.topsort 313938
+RMAT.14.8.1.topsort 735128
+RMAT.16.8.1.topsort 373705
+RMAT.18.8.1.topsort 10286
