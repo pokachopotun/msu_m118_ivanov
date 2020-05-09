@@ -1,5 +1,0 @@
-article_graph_single_thread_no_dac
-1 4 22 3
-RMAT rmat
-SSCA2 market
-UR rgg
