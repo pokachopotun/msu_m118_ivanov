@@ -19,7 +19,6 @@ if __name__ == "__main__":
 
     # run params
     binaryInput = 1
-    maxBHSize = 0
     printDebugInfo = 0
     useDivideAndConquer = 1
     useCondensation = 0
@@ -29,7 +28,7 @@ if __name__ == "__main__":
     sub = list()
     with open(configFileName, 'r') as file:
         runName = file.readline().strip()
-        utility = file.readline().strip()
+        utils = [x.strip() for x in file.readline().strip().split()]
         n, a, b, step, t = [int(x) for x in file.readline().strip().split()]
         for i in range(t):
             typeStr1, typeStr2 = file.readline().strip().split()
@@ -37,26 +36,30 @@ if __name__ == "__main__":
 
         useOpenMP = [int(x) for x in file.readline().strip().split()[1:]]
         useCondensation = [int(x) for x in file.readline().strip().split()[1:]]
+        maxBHSize = [int(x) for x in file.readline().strip().split()[1:]]
 
     for scale in range(a, b + 1, step):
         print("echo scale = " + str(scale))
         for ompThreads in useOpenMP:
             for useCond in useCondensation:
-                for s in sub:
-                    scale_str = "{:02d}".format(scale)
-                    id_str = "{}.{}".format(s.typeStr1, scale_str)
-                    outfile = "outputs/" + id_str + "." + str(ompThreads) + "." + str(useCond)
-                    errfile = "errors/" + id_str + "." + str(ompThreads) + "." + str(useCond)
-                    inputfile = "../../graphs/" + id_str + ".bin"
+                for bh_size in maxBHSize:
+                    for s in sub:
+                        scale_str = "{:02d}".format(scale)
+                        id_str = "{}.{}".format(s.typeStr1, scale_str)
+                        outfile = "outputs/" + id_str + "." + str(ompThreads) + "." + str(useCond)
+                        errfile = "errors/" + id_str + "." + str(ompThreads) + "." + str(useCond)
+                        inputfile = "../../graphs/" + id_str + ".bin"
 
-                    if utility == "chinese":
-                        cmd1 = "../../{}_cli ".format(utility) + "{} {} {} {} {} {}".format(inputfile, binaryInput, maxBHSize, useCond, ompThreads, printDebugInfo)
-                    if utility == "topsort":
-                        cmd1 = "../../{}_cli ".format(utility) + "{} {} {} {}".format(inputfile, binaryInput, useDivideAndConquer, ompThreads)
+                        for utility in utils:
 
-                    cmd = "bsub -n 1 -W 30 -oo {}.{} -eo {}".format(outfile, utility, errfile) + ".{} {}".format(utility, cmd1)
+                            if utility in ["chinese", "topsort_over_chinese"]:
+                                cmd1 = "../../{}_cli ".format(utility) + "{} {} {} {} {} {}".format(inputfile, binaryInput, bh_size, useCond, ompThreads, printDebugInfo)
+                            if utility == "topsort":
+                                cmd1 = "../../{}_cli ".format(utility) + "{} {} {} {}".format(inputfile, binaryInput, useDivideAndConquer, ompThreads)
 
-                    print(cmd)
+                            cmd = "bsub -n 1 -W 30 -oo {}.{} -eo {}".format(outfile, utility, errfile) + ".{} {}".format(utility, cmd1)
+
+                            print(cmd)
 
 #define graph
 #	./generator -s $(1) -directed -weighted -file inputs/$(1).$(2).graph.bin -type $(2)
