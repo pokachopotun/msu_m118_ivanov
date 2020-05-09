@@ -15,3 +15,5 @@ size_t GetCompCnt(const TComponents& comp);
 TSccMembers GetSccMembers(const TComponents& comp);
 
 TClosure SimpleClosureBFS(const TGraph& g, TUsed& used, size_t s);
+
+TGraph CarveComponent(const TGraph& graph, const TClosure& component);
