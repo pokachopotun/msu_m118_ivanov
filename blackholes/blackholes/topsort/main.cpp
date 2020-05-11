@@ -7,10 +7,12 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <ios>
 
 using namespace std;
 
 int main(int argc, char * argv[]) {
+    ios_base::sync_with_stdio(false);
     if (argc < 4){
         cout << "use ./topsort_cli input.txt binaryInput divideAndConquer ompThreads" << endl;
         return 0;

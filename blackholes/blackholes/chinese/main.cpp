@@ -8,6 +8,7 @@
 #include <common.h>
 #include <graph.h>
 #include <io.h>
+#include <ios>
 
 using namespace std;
 
@@ -197,6 +198,7 @@ void ChineseSolver(const TGraph& graph,
 }
 
 int main(int argc, char** argv) {
+    ios_base::sync_with_stdio(false);
     if (argc < 4) {
         cout << "use ./chinese_cli inputFileName binaryInput maxBHSize useCondensation ompThreads printDebugInfo" << endl;
         return 0;

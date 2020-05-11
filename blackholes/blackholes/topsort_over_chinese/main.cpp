@@ -12,6 +12,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <ios>
 
 using namespace std;
 
@@ -108,6 +109,7 @@ void ChineseSolveSingleSize(size_t i,
 }
 
 int main(int argc, char** argv) {
+    ios_base::sync_with_stdio(false);
     if (argc < 4) {
         cout << "use ./topsort_over_chinese_cli inputFileName binaryInput maxBHSize useCondensation ompThreads printDebugInfo" << endl;
         return 0;

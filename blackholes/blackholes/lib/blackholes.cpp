@@ -7,6 +7,8 @@
 
 #include <atomic>
 #include <iostream>
+#include <limits>
+#include <set>
 
 using namespace std;
 
@@ -141,7 +143,24 @@ bool BruteNext(vector<size_t>& pos, size_t vertexCount) {
     return res;
 }
 
-void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool) {
+
+void ForceSkip(std::vector<size_t>& pos, const vector<size_t>& tsOrder, const vector<char>& special) {
+    size_t skip = 0;
+    for (size_t i = 1; i < pos.size(); i++) {
+        size_t p = pos[i];
+        size_t v = tsOrder[p];
+        if (special[v]) {
+            skip = i;
+            break;
+        }
+    }
+
+    for (size_t i = skip + 1; i < pos.size(); i++) {
+        pos[i] = tsOrder.size() - pos.size() + i;
+    }
+}
+
+size_t ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, bool) {
     std::vector<size_t> pos;
     pos.reserve(end);
     for (size_t sampleSize = start; sampleSize < end; ++sampleSize) {
@@ -175,6 +194,9 @@ void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGr
                         break;
                     }
                 }
+                if (skip) {
+                    ForceSkip(pos, tsOrder, special);
+                }
                 if (!skip) {
                     break;
                 }
@@ -182,21 +204,26 @@ void ProcessSampleRange(size_t start, size_t end, const TGraph& graph, const TGr
         }
 
         if (sampleSizeBlackholesFound == 0) {
-            break;
+            return sampleSize;
         }
     }
+    return std::numeric_limits<size_t>::max();
 }
 
 void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const vector<size_t>& tsOrder, const vector<char>& special, size_t ompThreads, bool printDebugInfo) {
-    #pragma omp parallel for num_threads(ompThreads)
-    for (size_t i = 0; i < ompThreads; i++) {
-        size_t share = tsOrder.size() / ompThreads;
-        size_t start = share * i;
-        size_t end = start + share;
-        if (i == ompThreads - 1) {
-            end = tsOrder.size();
+    std::atomic<size_t> minimalEmptySize(std::numeric_limits<size_t>::max());
+    #pragma omp parallel for num_threads(ompThreads) schedule(dynamic)
+    for (size_t i = 0; i < tsOrder.size(); i++) {
+        size_t start = i;
+        size_t end = min(tsOrder.size(), i + 1);
+        if (start < end && start < tsOrder.size()) {
+            size_t ss = ProcessSampleRange(start + 1, end + 1, graph, graphUndir, tsOrder, special, printDebugInfo);
+            #pragma omp critical
+            {
+                size_t mes = minimalEmptySize.load();
+                minimalEmptySize.store(min(ss, mes));
+            }
         }
-        ProcessSampleRange(start + 1, end + 1, graph, graphUndir, tsOrder, special, printDebugInfo);
     }
     (void)printDebugInfo;
 }
@@ -204,8 +231,10 @@ void BruteForceParallel(const TGraph& graph, const TGraph& graphUndir, const vec
 void FoundBlackHole(const set<size_t>& bh, bool printDebugInfo) {
     static std::atomic<size_t> bhCount(0);
     size_t oldValue = bhCount.fetch_add(1);
-    //printf("bh_count %zu\n", oldValue + 1);
-    cout << "bh_count " << oldValue + 1 << endl;
+    cout << "bh_count " << oldValue + 1 << "\n";
+    if ((oldValue & (1 << 10)) == 0) {
+        cout.flush();
+    }
     if (printDebugInfo) {
         cout << "BH: ";
         for (size_t x : bh) {
@@ -219,7 +248,10 @@ void FilteredCandidate() {
     static std::atomic<size_t> filtered(0);
     size_t oldValue = filtered.fetch_add(1);
     //printf("bh_count %zu\n", oldValue + 1);
-    cout << "bh_filtered " << oldValue + 1 << endl;
+    cout << "bh_filtered " << oldValue + 1 << "\n";
+    if ((oldValue & (1 << 10)) == 0) {
+        cout.flush();
+    }
 }
 
 set<size_t> GetBlackHole(const TGraph& graph, const vector<size_t>& tsOrder, const vector<size_t>& pos) {
