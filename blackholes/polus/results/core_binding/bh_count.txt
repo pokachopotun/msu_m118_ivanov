@@ -1,0 +1,7 @@
+RMAT.18.001.1.aff.out bh_count 10286
+RMAT.18.002.1.aff.out bh_count 10286
+RMAT.18.004.1.aff.out bh_count 10286
+RMAT.18.008.1.aff.out bh_count 10286
+RMAT.18.012.1.aff.out bh_count 10286
+RMAT.18.016.1.aff.out bh_count 10286
+RMAT.18.020.1.aff.out bh_count 10286

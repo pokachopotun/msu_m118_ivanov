@@ -1,0 +1,8 @@
+RMAT.18.008.1.aff.out bh_count 10286
+RMAT.18.008.1.aff.out bh_filtered 1879449
+RMAT.18.012.1.aff.out bh_count 10286
+RMAT.18.012.1.aff.out bh_filtered 2765801
+RMAT.18.016.1.aff.out bh_count 10286
+RMAT.18.016.1.aff.out bh_filtered 3501466
+RMAT.18.020.1.aff.out bh_count 10286
+RMAT.18.020.1.aff.out bh_filtered 4277657
