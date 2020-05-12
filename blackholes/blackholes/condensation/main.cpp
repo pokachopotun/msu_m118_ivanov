@@ -36,7 +36,17 @@ int main(int argc, char** argv) {
         size_t compCnt = 0;
         TComponents comp2Vertex = GetStrongConnectivityComponents(graph, graphRev, compCnt);
         TGraph graphCond = BuildCondensedGraph(compCnt, comp2Vertex, graph);
-        cout << graphCond.size() << endl;
+
+        auto&& countEdges = [](const TGraph& graph) -> size_t {
+            size_t edges = 0;
+            for (const vector<size_t>& e : graph) {
+                edges += e.size();
+            }
+            return edges;
+        };
+
+        cout << "orig " << graph.size() << " " << countEdges(graph) << endl;
+        cout << "cond " << graphCond.size() << " " << countEdges(graphCond) << endl;
     }
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
