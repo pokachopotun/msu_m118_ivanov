@@ -1,7 +1,11 @@
 RMAT.18.008.1.out bh_count 10286
 RMAT.18.008.1.out bh_filtered 1015603
+RMAT.18.012.1.out bh_count 10286
+RMAT.18.012.1.out bh_filtered 1983317
 RMAT.18.016.1.out bh_count 10286
 RMAT.18.016.1.out bh_filtered 2038784
+RMAT.18.020.1.out bh_count 10286
+RMAT.18.020.1.out bh_filtered 3011584
 RMAT.18.024.1.out bh_count 10286
 RMAT.18.024.1.out bh_filtered 2968985
 RMAT.18.032.1.out bh_count 10286
