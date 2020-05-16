@@ -21,6 +21,7 @@ using TCandidates = set<size_t>;
 void ChineseSolveSingleSize(size_t i,
                             const TGraph& graph,
                             size_t ompThreads = 1,
+                            ESkipMode skipMode = ESkipMode::Precise,
                             bool printDebugInfo = false)
 {
     TGraph graphRev = GetReverseGraph(graph);
@@ -103,7 +104,7 @@ void ChineseSolveSingleSize(size_t i,
             }
             TClosure closure = SimpleClosureBFS(graphUndir, used, v);
             TGraph wccGraph = CarveComponent(graph, closure);
-            TopsortSolver(wccGraph, ompThreads, printDebugInfo);
+            TopsortSolver(wccGraph, ompThreads, skipMode, printDebugInfo);
         }
     }
 }
@@ -111,7 +112,7 @@ void ChineseSolveSingleSize(size_t i,
 int main(int argc, char** argv) {
     ios_base::sync_with_stdio(false);
     if (argc < 4) {
-        cout << "use ./topsort_over_chinese_cli inputFileName binaryInput maxBHSize useCondensation ompThreads printDebugInfo" << endl;
+        cout << "use ./topsort_over_chinese_cli inputFileName binaryInput maxBHSize useCondensation ompThreads skipMode printDebugInfo" << endl;
         return 0;
     }
     const string inputFileName(argv[1]);
@@ -119,12 +120,16 @@ int main(int argc, char** argv) {
     size_t maxBHSize = atoi(argv[3]);
     bool useCondensation = atoi(argv[4]);
     size_t ompThreads = 1;
+    ESkipMode skipMode = ESkipMode::Precise;
     bool printDebugInfo = false;
     if (argc > 5) {
         ompThreads = atoi(argv[5]);
     }
     if (argc > 6) {
-        printDebugInfo = atoi(argv[6]);
+        skipMode = static_cast<ESkipMode>(atoi(argv[6]));
+    }
+    if (argc > 7) {
+        printDebugInfo = atoi(argv[7]);
     }
 
     using namespace std::chrono;
@@ -143,9 +148,9 @@ int main(int argc, char** argv) {
             size_t compCnt = 0;
             TComponents comp2Vertex = GetStrongConnectivityComponents(graph, graphRev, compCnt);
             TGraph graphCond = BuildCondensedGraph(compCnt, comp2Vertex, graph);
-            ChineseSolveSingleSize(maxBHSize, graphCond, ompThreads, printDebugInfo);
+            ChineseSolveSingleSize(maxBHSize, graphCond, ompThreads, skipMode, printDebugInfo);
         } else {
-            ChineseSolveSingleSize(maxBHSize, graph, ompThreads, printDebugInfo);
+            ChineseSolveSingleSize(maxBHSize, graph, ompThreads, skipMode, printDebugInfo);
         }
     }
     high_resolution_clock::time_point t2 = high_resolution_clock::now();

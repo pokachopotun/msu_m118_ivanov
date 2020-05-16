@@ -13,8 +13,8 @@ using namespace std;
 
 int main(int argc, char * argv[]) {
     ios_base::sync_with_stdio(false);
-    if (argc < 4){
-        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer ompThreads" << endl;
+    if (argc < 5){
+        cout << "use ./topsort_cli input.txt binaryInput divideAndConquer ompThreads skipMode" << endl;
         return 0;
     }
 
@@ -22,6 +22,7 @@ int main(int argc, char * argv[]) {
     const int binaryInput(atoi(argv[2]));
     const int divideAndConquer(atoi(argv[3]));
     const size_t ompThreads(atoi(argv[4]));
+    const ESkipMode skipMode(static_cast<ESkipMode>(atoi(argv[5])));
 
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -42,10 +43,10 @@ int main(int argc, char * argv[]) {
             TGraph graphCondUndir = GetUndirGraph(graphCond);
             vector<TGraph> weaks = GetWeakComponents(graphCond, graphCondUndir);
             for (const TGraph& weak : weaks) {
-                TopsortSolver(weak, ompThreads);
+                TopsortSolver(weak, ompThreads, skipMode);
             }
         } else {
-            TopsortSolver(graphCond, ompThreads);
+            TopsortSolver(graphCond, ompThreads, skipMode);
         }
     }
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
