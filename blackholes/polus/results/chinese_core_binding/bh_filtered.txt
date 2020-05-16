@@ -1,6 +1,7 @@
-RMAT.18.12.1.aff.out 397776
-RMAT.18.16.1.aff.out 551936
-RMAT.18.20.1.aff.out 726016
-RMAT.18.2.1.aff.out 81351
-RMAT.18.4.1.aff.out 88854
-RMAT.18.8.1.aff.out 246704
+RMAT.18.001.1.aff.out 0
+RMAT.18.002.1.aff.out 81351
+RMAT.18.004.1.aff.out 88854
+RMAT.18.008.1.aff.out 246704
+RMAT.18.012.1.aff.out 397776
+RMAT.18.016.1.aff.out 551936
+RMAT.18.020.1.aff.out 726016
