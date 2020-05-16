@@ -12,23 +12,21 @@ def PlotGraphFromScale(data, graph, figid):
     fig.suptitle("{}".format(graph), fontsize=16)
     fig.tight_layout()
     top = fig.add_subplot(1, 1, 1)
-    top.set_xlabel('Graph scale')
+    top.set_xlabel('Threads')
     top.set_ylabel('Blackholes {}'.format(value))
-    for algo in ["topsort_over_chinese"]:
+    for algo in ["chinese"]:
         dga = data[algo][graph]
         if algo == "chinese":
             algo = "iBlackholeDC"
-        if algo == "topsort_over_chinese":
-            algo = "TopOver"
         if algo == "topsort":
             algo = "TopSort_BH"
         for cond in ["cond",]:
-            for skipMode in [0, 1]:
-                dgc = dga[1][cond][skipMode]
-                if skipMode == 0:
-                    skipStr = "precise"
-                else:
-                    skipStr = "fast"
+            for binding in [0, 1]:
+                dgc = dga[18][cond][binding]
+                if binding == 0:
+                    binding = "no binding"
+                if binding == 1:
+                    binding = "core binding"
                 scales = dgc.keys()
                 values = dgc.values()
                 if len(scales) > 0 and len(scales) == len(values):
@@ -36,10 +34,10 @@ def PlotGraphFromScale(data, graph, figid):
                     scales = scales
                     values = values
                     print(cond, scales, values)
-                    top.plot(scales, values, label = "{}.{}".format(algo, skipStr))
+                    top.plot(scales, values, label = "{}.{}".format(algo, binding))
                     top.grid(True)
                     top.legend()
-    top.set_yscale('symlog')
+#    top.set_xscale('symlog')
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -51,7 +49,7 @@ if __name__ == "__main__":
 
     # data -> graph -> threads -> scale -> time
     data = dict()
-    for algo in ["chinese","topsort","topsort_over_chinese"]:
+    for algo in ["chinese","topsort"]:
         data[algo] = dict()
         data[algo]["RMAT"] = dict()
         data[algo]["SSCA2"] = dict()
@@ -64,9 +62,9 @@ if __name__ == "__main__":
             vals =  [x.strip() for x in descr.strip().split('.')]
             print(vals)
             cond = "nocond"
-            graph, size, threads, useCond, skipMode, algo = vals
+            graph, size, threads, useCond, binding, algo = vals
 
-            skipMode = int(skipMode)
+            binding = int(binding)
             if int(useCond) == 1:
                 cond = "cond"
 
@@ -74,25 +72,25 @@ if __name__ == "__main__":
             threads = int(threads)
 
             dg = data[algo][graph]
-            if not threads in dg:
-                dg[threads] = dict()
-                dg[threads]["cond"] = dict()
-                dg[threads]["nocond"] = dict()
-                dg[threads]["cond"][0] = dict()
-                dg[threads]["cond"][1] = dict()
-                dg[threads]["nocond"][0] = dict()
-                dg[threads]["nocond"][1] = dict()
+            if not size in dg:
+                dg[size] = dict()
+                dg[size]["cond"] = dict()
+                dg[size]["nocond"] = dict()
+                dg[size]["cond"][0] = dict()
+                dg[size]["cond"][1] = dict()
+                dg[size]["nocond"][0] = dict()
+                dg[size]["nocond"][1] = dict()
 
-            dgc = dg[threads][cond][skipMode]
-            dgc[size] = blackholes
+            dgc = dg[size][cond][binding]
+            dgc[threads] = blackholes
 
     figid = 0
-    for graph in ["RMAT", "SSCA2"]:
+    for graph in ["RMAT"]:
         figid += 1
         PlotGraphFromScale(data, graph, figid)
 
     figid = 0
-    for graph in ["RMAT", "SSCA2"]:
+    for graph in ["RMAT"]:
         figid += 1
         plt.figure(figid).savefig(inputFileName + "{}_{}.pdf".format(figid, graph))
 
