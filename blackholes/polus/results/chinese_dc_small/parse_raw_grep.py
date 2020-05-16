@@ -82,12 +82,9 @@ if __name__ == "__main__":
     #plotConfig["RMAT"] = list([[4,5], [6,7], [8,8], [9,10]])
     #plotConfig["SSCA2"] = list([[4,5],[6,6]])
     #plotConfig["UR"] = list([[4,5], [6,7], [8,10], [11,12]])
-    plotConfig["RMAT"] = list([[4,10]])
-    plotConfig["SSCA2"] = list([[4,6]])
-    plotConfig["UR"] = list([[4,12]])
 
     figid = 0
-    for graph in plotConfig:
+    for graph in ["RMAT", "SSCA2", "UR"]:
         figid += 1
         PlotGraphFromScale(data, graph, figid)
 

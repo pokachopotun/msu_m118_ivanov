@@ -1,7 +1,7 @@
-RMAT.18.001.1.aff.out 7168
-RMAT.18.002.1.aff.out 7346
-RMAT.18.004.1.aff.out 7346
-RMAT.18.008.1.aff.out 12505
-RMAT.18.012.1.aff.out 7346
-RMAT.18.016.1.aff.out 12505
-RMAT.18.020.1.aff.out 12505
+RMAT.18.001.1.chinese 7168
+RMAT.18.002.1.chinese 7346
+RMAT.18.004.1.chinese 7346
+RMAT.18.008.1.chinese 12505
+RMAT.18.012.1.chinese 7346
+RMAT.18.016.1.chinese 12505
+RMAT.18.020.1.chinese 12505

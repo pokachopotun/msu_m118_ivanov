@@ -1,19 +1,19 @@
-outputs/RMAT.04.1.0.chinese.short:2:It took me: 0.0386534 seconds
-outputs/RMAT.05.1.0.chinese.short:2:It took me: 0.0437607 seconds
-outputs/RMAT.06.1.0.chinese.short:2:It took me: 0.0337365 seconds
-outputs/RMAT.07.1.0.chinese.short:2:It took me: 0.178475 seconds
-outputs/RMAT.08.1.0.chinese.short:2:It took me: 0.992569 seconds
-outputs/RMAT.09.1.0.chinese.short:2:It took me: 5.4646 seconds
-outputs/RMAT.10.1.0.chinese.short:3:It took me: 35.3759 seconds
-outputs/SSCA2.04.1.0.chinese.short:2:It took me: 0.00634447 seconds
-outputs/SSCA2.05.1.0.chinese.short:2:It took me: 0.0129596 seconds
-outputs/SSCA2.06.1.0.chinese.short:3:It took me: 109.552 seconds
-outputs/UR.04.1.0.chinese.short:2:It took me: 0.0139196 seconds
-outputs/UR.05.1.0.chinese.short:2:It took me: 0.00720623 seconds
-outputs/UR.06.1.0.chinese.short:2:It took me: 0.0494869 seconds
-outputs/UR.07.1.0.chinese.short:2:It took me: 0.282395 seconds
-outputs/UR.08.1.0.chinese.short:2:It took me: 1.38738 seconds
-outputs/UR.09.1.0.chinese.short:2:It took me: 6.79341 seconds
-outputs/UR.10.1.0.chinese.short:2:It took me: 30.2844 seconds
-outputs/UR.11.1.0.chinese.short:2:It took me: 131.009 seconds
-outputs/UR.12.1.0.chinese.short:2:It took me: 546.804 seconds
+RMAT.04.1.0.chinese 0.0386534 seconds
+RMAT.05.1.0.chinese 0.0437607 seconds
+RMAT.06.1.0.chinese 0.0337365 seconds
+RMAT.07.1.0.chinese 0.178475 seconds
+RMAT.08.1.0.chinese 0.992569 seconds
+RMAT.09.1.0.chinese 5.4646 seconds
+RMAT.10.1.0.chinese 35.3759 seconds
+SSCA2.04.1.0.chinese 0.00634447 seconds
+SSCA2.05.1.0.chinese 0.0129596 seconds
+SSCA2.06.1.0.chinese 109.552 seconds
+UR.04.1.0.chinese 0.0139196 seconds
+UR.05.1.0.chinese 0.00720623 seconds
+UR.06.1.0.chinese 0.0494869 seconds
+UR.07.1.0.chinese 0.282395 seconds
+UR.08.1.0.chinese 1.38738 seconds
+UR.09.1.0.chinese 6.79341 seconds
+UR.10.1.0.chinese 30.2844 seconds
+UR.11.1.0.chinese 131.009 seconds
+UR.12.1.0.chinese 546.804 seconds
