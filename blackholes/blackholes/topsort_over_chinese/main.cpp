@@ -24,6 +24,11 @@ void ChineseSolveSingleSize(size_t i,
                             ESkipMode skipMode = ESkipMode::Precise,
                             bool printDebugInfo = false)
 {
+    if (i == 0) {
+        i = graph.size();
+    } else {
+        i = min(i, graph.size());
+    }
     TGraph graphRev = GetReverseGraph(graph);
     TGraph graphUndir = GetUndirGraph(graph);
     TCandidates curCandidates;

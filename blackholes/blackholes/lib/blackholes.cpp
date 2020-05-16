@@ -40,7 +40,7 @@ void ForceSkipFast(const vector<size_t>& tsOrder, const vector<char>& special, s
     }
 
     size_t skipPos = pos[skip];
-    pos[0] = skipPos;
+    pos[0] = skipPos - 1;
     for (size_t i = 1; i < pos.size(); i++) {
         pos[i] = tsOrder.size() - pos.size() + i;
     }
