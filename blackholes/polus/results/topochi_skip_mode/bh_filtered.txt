@@ -1,0 +1,16 @@
+outputs/RMAT.12.1.1.0.topsort_over_chinese.short:2:bh_filtered 26822413
+outputs/RMAT.12.1.1.1.topsort_over_chinese.short:2:bh_filtered 215
+outputs/RMAT.14.1.1.0.topsort_over_chinese.short:2:bh_filtered 4855193
+outputs/RMAT.14.1.1.1.topsort_over_chinese.short:2:bh_filtered 1175
+outputs/RMAT.16.1.1.0.topsort_over_chinese.short:2:bh_filtered 1166386
+outputs/RMAT.16.1.1.1.topsort_over_chinese.short:2:bh_filtered 2896
+outputs/RMAT.18.1.1.0.topsort_over_chinese.short:2:bh_filtered 222208
+outputs/RMAT.18.1.1.1.topsort_over_chinese.short:2:bh_filtered 5124
+outputs/SSCA2.12.1.1.0.topsort_over_chinese.short:2:bh_filtered 18190450
+outputs/SSCA2.12.1.1.1.topsort_over_chinese.short:2:bh_filtered 3347456
+outputs/SSCA2.14.1.1.0.topsort_over_chinese.short:2:bh_filtered 6654976
+outputs/SSCA2.14.1.1.1.topsort_over_chinese.short:2:bh_filtered 4502528
+outputs/SSCA2.16.1.1.0.topsort_over_chinese.short:2:bh_filtered 6056425
+outputs/SSCA2.16.1.1.1.topsort_over_chinese.short:2:bh_filtered 4502269
+outputs/SSCA2.18.1.1.0.topsort_over_chinese.short:2:bh_filtered 253359
+outputs/SSCA2.18.1.1.1.topsort_over_chinese.short:2:bh_filtered 477971

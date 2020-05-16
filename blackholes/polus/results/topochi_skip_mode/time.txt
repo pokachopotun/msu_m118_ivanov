@@ -1,0 +1,8 @@
+outputs/UR.12.1.1.0.topsort_over_chinese.short:2:It took me: 0.205169 seconds
+outputs/UR.12.1.1.1.topsort_over_chinese.short:2:It took me: 0.231436 seconds
+outputs/UR.14.1.1.0.topsort_over_chinese.short:2:It took me: 1.52029 seconds
+outputs/UR.14.1.1.1.topsort_over_chinese.short:2:It took me: 1.12915 seconds
+outputs/UR.16.1.1.0.topsort_over_chinese.short:2:It took me: 6.41708 seconds
+outputs/UR.16.1.1.1.topsort_over_chinese.short:2:It took me: 4.63225 seconds
+outputs/UR.18.1.1.0.topsort_over_chinese.short:2:It took me: 21.0636 seconds
+outputs/UR.18.1.1.1.topsort_over_chinese.short:2:It took me: 23.6222 seconds

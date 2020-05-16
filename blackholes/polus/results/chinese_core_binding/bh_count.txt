@@ -1,0 +1,7 @@
+outputs/RMAT.18.1.1.aff.out.short:1:bh_count 7168
+outputs/RMAT.18.12.1.aff.out.short:1:bh_count 7346
+outputs/RMAT.18.16.1.aff.out.short:1:bh_count 12505
+outputs/RMAT.18.20.1.aff.out.short:1:bh_count 12505
+outputs/RMAT.18.2.1.aff.out.short:1:bh_count 7346
+outputs/RMAT.18.4.1.aff.out.short:1:bh_count 7346
+outputs/RMAT.18.8.1.aff.out.short:1:bh_count 12505

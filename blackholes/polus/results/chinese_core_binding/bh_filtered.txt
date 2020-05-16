@@ -1,0 +1,6 @@
+outputs/RMAT.18.12.1.aff.out.short:2:bh_filtered 397776
+outputs/RMAT.18.16.1.aff.out.short:2:bh_filtered 551936
+outputs/RMAT.18.20.1.aff.out.short:2:bh_filtered 726016
+outputs/RMAT.18.2.1.aff.out.short:2:bh_filtered 81351
+outputs/RMAT.18.4.1.aff.out.short:2:bh_filtered 88854
+outputs/RMAT.18.8.1.aff.out.short:2:bh_filtered 246704
