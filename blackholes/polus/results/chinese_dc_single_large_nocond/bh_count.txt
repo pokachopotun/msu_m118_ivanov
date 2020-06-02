@@ -1,0 +1,15 @@
+RMAT.12.1.0.0.chinese 56
+RMAT.13.1.0.0.chinese 80
+RMAT.14.1.0.0.chinese 187
+RMAT.15.1.0.0.chinese 482
+RMAT.16.1.0.0.chinese 1024
+RMAT.17.1.0.0.chinese 2811
+RMAT.18.1.0.0.chinese 2464
+SSCA2.12.1.0.0.chinese 2367
+SSCA2.13.1.0.0.chinese 3652
+SSCA2.14.1.0.0.chinese 5806
+SSCA2.15.1.0.0.chinese 12184
+SSCA2.16.1.0.0.chinese 21149
+SSCA2.17.1.0.0.chinese 41426
+SSCA2.18.1.0.0.chinese 62442
+UR.12.1.0.0.chinese 1
