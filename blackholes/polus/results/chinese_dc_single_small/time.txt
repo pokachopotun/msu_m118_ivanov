@@ -1,20 +1,20 @@
-outputs/RMAT.04.1.1.0.chinese.short:2:It took me: 0.0173252 seconds
-outputs/RMAT.05.1.1.0.chinese.short:2:It took me: 0.0219472 seconds
-outputs/RMAT.06.1.1.0.chinese.short:2:It took me: 0.0119753 seconds
-outputs/RMAT.07.1.1.0.chinese.short:2:It took me: 0.00910818 seconds
-outputs/RMAT.08.1.1.0.chinese.short:2:It took me: 0.0112612 seconds
-outputs/RMAT.09.1.1.0.chinese.short:2:It took me: 0.0409367 seconds
-outputs/RMAT.10.1.1.0.chinese.short:3:It took me: 0.0845848 seconds
-outputs/RMAT.11.1.1.0.chinese.short:3:It took me: 0.152469 seconds
-outputs/SSCA2.04.1.1.0.chinese.short:2:It took me: 0.0126213 seconds
-outputs/SSCA2.05.1.1.0.chinese.short:2:It took me: 0.0139684 seconds
-outputs/SSCA2.06.1.1.0.chinese.short:3:It took me: 0.0633091 seconds
-outputs/UR.04.1.1.0.chinese.short:2:It took me: 0.0228437 seconds
-outputs/UR.05.1.1.0.chinese.short:2:It took me: 0.00352399 seconds
-outputs/UR.06.1.1.0.chinese.short:2:It took me: 0.00642409 seconds
-outputs/UR.07.1.1.0.chinese.short:2:It took me: 0.00906716 seconds
-outputs/UR.08.1.1.0.chinese.short:2:It took me: 0.0121466 seconds
-outputs/UR.09.1.1.0.chinese.short:2:It took me: 0.0392476 seconds
-outputs/UR.10.1.1.0.chinese.short:2:It took me: 0.0833979 seconds
-outputs/UR.11.1.1.0.chinese.short:2:It took me: 0.104086 seconds
-outputs/UR.12.1.1.0.chinese.short:2:It took me: 0.193127 seconds
+RMAT.04.1.1.0.chinese 0.0173252 seconds
+RMAT.05.1.1.0.chinese 0.0219472 seconds
+RMAT.06.1.1.0.chinese 0.0119753 seconds
+RMAT.07.1.1.0.chinese 0.00910818 seconds
+RMAT.08.1.1.0.chinese 0.0112612 seconds
+RMAT.09.1.1.0.chinese 0.0409367 seconds
+RMAT.10.1.1.0.chinese 0.0845848 seconds
+RMAT.11.1.1.0.chinese 0.152469 seconds
+SSCA2.04.1.1.0.chinese 0.0126213 seconds
+SSCA2.05.1.1.0.chinese 0.0139684 seconds
+SSCA2.06.1.1.0.chinese 0.0633091 seconds
+UR.04.1.1.0.chinese 0.0228437 seconds
+UR.05.1.1.0.chinese 0.00352399 seconds
+UR.06.1.1.0.chinese 0.00642409 seconds
+UR.07.1.1.0.chinese 0.00906716 seconds
+UR.08.1.1.0.chinese 0.0121466 seconds
+UR.09.1.1.0.chinese 0.0392476 seconds
+UR.10.1.1.0.chinese 0.0833979 seconds
+UR.11.1.1.0.chinese 0.104086 seconds
+UR.12.1.1.0.chinese 0.193127 seconds

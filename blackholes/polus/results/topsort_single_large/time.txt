@@ -1,7 +1,7 @@
-outputs/UR.12.1.1.0.topsort.short:2:It took me: 0.252109 seconds
-outputs/UR.13.1.1.0.topsort.short:2:It took me: 0.415134 seconds
-outputs/UR.14.1.1.0.topsort.short:2:It took me: 0.852996 seconds
-outputs/UR.15.1.1.0.topsort.short:2:It took me: 1.80672 seconds
-outputs/UR.16.1.1.0.topsort.short:2:It took me: 3.93832 seconds
-outputs/UR.17.1.1.0.topsort.short:2:It took me: 8.73797 seconds
-outputs/UR.18.1.1.0.topsort.short:2:It took me: 18.2217 seconds
+UR.12.1.1.0.topsort 0.252109 seconds
+UR.13.1.1.0.topsort 0.415134 seconds
+UR.14.1.1.0.topsort 0.852996 seconds
+UR.15.1.1.0.topsort 1.80672 seconds
+UR.16.1.1.0.topsort 3.93832 seconds
+UR.17.1.1.0.topsort 8.73797 seconds
+UR.18.1.1.0.topsort 18.2217 seconds

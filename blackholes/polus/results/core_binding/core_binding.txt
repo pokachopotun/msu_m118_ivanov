@@ -1,6 +1,6 @@
-outputs/RMAT.18.1.1.aff.out.short:1:bh_count 10286
-outputs/RMAT.18.1.1.aff.out.short:2:bh_filtered 252220
-outputs/RMAT.18.2.1.aff.out.short:1:bh_count 10286
-outputs/RMAT.18.2.1.aff.out.short:2:bh_filtered 495804
-outputs/RMAT.18.4.1.aff.out.short:1:bh_count 10286
-outputs/RMAT.18.4.1.aff.out.short:2:bh_filtered 988089
+RMAT.18.1.1.aff.out.short:1:bh_count 10286
+RMAT.18.1.1.aff.out.short:2:bh_filtered 252220
+RMAT.18.2.1.aff.out.short:1:bh_count 10286
+RMAT.18.2.1.aff.out.short:2:bh_filtered 495804
+RMAT.18.4.1.aff.out.short:1:bh_count 10286
+RMAT.18.4.1.aff.out.short:2:bh_filtered 988089

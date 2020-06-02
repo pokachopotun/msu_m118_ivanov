@@ -1,7 +1,7 @@
-outputs/UR.12.1.1.0.chinese.short:2:It took me: 0.196605 seconds
-outputs/UR.13.1.1.0.chinese.short:2:It took me: 0.458431 seconds
-outputs/UR.14.1.1.0.chinese.short:2:It took me: 0.871967 seconds
-outputs/UR.15.1.1.0.chinese.short:2:It took me: 1.88115 seconds
-outputs/UR.16.1.1.0.chinese.short:2:It took me: 3.91371 seconds
-outputs/UR.17.1.1.0.chinese.short:2:It took me: 8.6277 seconds
-outputs/UR.18.1.1.0.chinese.short:2:It took me: 19.2783 seconds
+UR.12.1.1.0.chinese 0.196605 seconds
+UR.13.1.1.0.chinese 0.458431 seconds
+UR.14.1.1.0.chinese 0.871967 seconds
+UR.15.1.1.0.chinese 1.88115 seconds
+UR.16.1.1.0.chinese 3.91371 seconds
+UR.17.1.1.0.chinese 8.6277 seconds
+UR.18.1.1.0.chinese 19.2783 seconds

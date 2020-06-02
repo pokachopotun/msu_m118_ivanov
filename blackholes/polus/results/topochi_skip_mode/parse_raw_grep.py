@@ -26,9 +26,9 @@ def PlotGraphFromScale(data, graph, figid):
             for skipMode in [0, 1]:
                 dgc = dga[1][cond][skipMode]
                 if skipMode == 0:
-                    skipStr = "precise"
+                    skipStr = "SkipPrecise"
                 else:
-                    skipStr = "fast"
+                    skipStr = "SkipFast"
                 scales = dgc.keys()
                 values = dgc.values()
                 if len(scales) > 0 and len(scales) == len(values):

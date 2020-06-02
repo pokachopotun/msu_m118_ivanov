@@ -1,20 +1,20 @@
-outputs/RMAT.04.8.1.chinese.short:2:It took me: 0.0206728 seconds
-outputs/RMAT.05.8.1.chinese.short:2:It took me: 0.019834 seconds
-outputs/RMAT.06.8.1.chinese.short:2:It took me: 0.0156838 seconds
-outputs/RMAT.07.8.1.chinese.short:2:It took me: 0.012998 seconds
-outputs/RMAT.08.8.1.chinese.short:2:It took me: 0.0271338 seconds
-outputs/RMAT.09.8.1.chinese.short:2:It took me: 0.0405536 seconds
-outputs/RMAT.10.8.1.chinese.short:3:It took me: 0.0441909 seconds
-outputs/RMAT.11.8.1.chinese.short:3:It took me: 0.504675 seconds
-outputs/SSCA2.04.8.1.chinese.short:2:It took me: 0.0241671 seconds
-outputs/SSCA2.05.8.1.chinese.short:2:It took me: 0.00617286 seconds
-outputs/SSCA2.06.8.1.chinese.short:3:It took me: 0.0602059 seconds
-outputs/UR.04.8.1.chinese.short:2:It took me: 0.0226919 seconds
-outputs/UR.05.8.1.chinese.short:2:It took me: 0.00243265 seconds
-outputs/UR.06.8.1.chinese.short:2:It took me: 0.0113433 seconds
-outputs/UR.07.8.1.chinese.short:2:It took me: 0.0256937 seconds
-outputs/UR.08.8.1.chinese.short:2:It took me: 0.0205098 seconds
-outputs/UR.09.8.1.chinese.short:2:It took me: 0.0440188 seconds
-outputs/UR.10.8.1.chinese.short:2:It took me: 0.22094 seconds
-outputs/UR.11.8.1.chinese.short:2:It took me: 0.162556 seconds
-outputs/UR.12.8.1.chinese.short:2:It took me: 0.190157 seconds
+RMAT.04.8.1.chinese 0.0206728 seconds
+RMAT.05.8.1.chinese 0.019834 seconds
+RMAT.06.8.1.chinese 0.0156838 seconds
+RMAT.07.8.1.chinese 0.012998 seconds
+RMAT.08.8.1.chinese 0.0271338 seconds
+RMAT.09.8.1.chinese 0.0405536 seconds
+RMAT.10.8.1.chinese 0.0441909 seconds
+RMAT.11.8.1.chinese 0.504675 seconds
+SSCA2.04.8.1.chinese 0.0241671 seconds
+SSCA2.05.8.1.chinese 0.00617286 seconds
+SSCA2.06.8.1.chinese 0.0602059 seconds
+UR.04.8.1.chinese 0.0226919 seconds
+UR.05.8.1.chinese 0.00243265 seconds
+UR.06.8.1.chinese 0.0113433 seconds
+UR.07.8.1.chinese 0.0256937 seconds
+UR.08.8.1.chinese 0.0205098 seconds
+UR.09.8.1.chinese 0.0440188 seconds
+UR.10.8.1.chinese 0.22094 seconds
+UR.11.8.1.chinese 0.162556 seconds
+UR.12.8.1.chinese 0.190157 seconds
