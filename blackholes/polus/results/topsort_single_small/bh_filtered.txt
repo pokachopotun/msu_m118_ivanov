@@ -1,0 +1,13 @@
+outputs/RMAT.09.1.1.0.topsort.short:2:bh_filtered 3
+outputs/RMAT.10.1.1.0.topsort.short:2:bh_filtered 33
+outputs/RMAT.11.1.1.0.topsort.short:2:bh_filtered 8994
+outputs/RMAT.12.1.1.0.topsort.short:2:bh_filtered 29542886
+outputs/SSCA2.04.1.1.0.topsort.short:2:bh_filtered 120
+outputs/SSCA2.05.1.1.0.topsort.short:2:bh_filtered 465
+outputs/SSCA2.06.1.1.0.topsort.short:2:bh_filtered 856
+outputs/SSCA2.07.1.1.0.topsort.short:2:bh_filtered 17265664
+outputs/SSCA2.08.1.1.0.topsort.short:2:bh_filtered 8236032
+outputs/SSCA2.09.1.1.0.topsort.short:2:bh_filtered 9455001
+outputs/SSCA2.10.1.1.0.topsort.short:2:bh_filtered 15097613
+outputs/SSCA2.11.1.1.0.topsort.short:2:bh_filtered 10914283
+outputs/SSCA2.12.1.1.0.topsort.short:2:bh_filtered 20248333

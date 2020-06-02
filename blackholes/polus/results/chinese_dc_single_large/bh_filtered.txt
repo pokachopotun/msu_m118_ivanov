@@ -1,0 +1,13 @@
+outputs/RMAT.12.1.1.0.chinese.short:2:bh_filtered 51202390
+outputs/RMAT.13.1.1.0.chinese.short:2:bh_filtered 11588006
+outputs/RMAT.14.1.1.0.chinese.short:2:bh_filtered 11595142
+outputs/RMAT.15.1.1.0.chinese.short:2:bh_filtered 2046831
+outputs/RMAT.16.1.1.0.chinese.short:2:bh_filtered 883539
+outputs/RMAT.17.1.1.0.chinese.short:2:bh_filtered 182381
+outputs/SSCA2.12.1.1.0.chinese.short:2:bh_filtered 20717719
+outputs/SSCA2.13.1.1.0.chinese.short:2:bh_filtered 12439309
+outputs/SSCA2.14.1.1.0.chinese.short:2:bh_filtered 6990848
+outputs/SSCA2.15.1.1.0.chinese.short:2:bh_filtered 3577651
+outputs/SSCA2.16.1.1.0.chinese.short:2:bh_filtered 1694635
+outputs/SSCA2.17.1.1.0.chinese.short:2:bh_filtered 590064
+outputs/SSCA2.18.1.1.0.chinese.short:2:bh_filtered 10910
