@@ -1,6 +1,7 @@
-outputs/RMAT.18.12.1.aff.out.short:2:bh_filtered 397776
-outputs/RMAT.18.16.1.aff.out.short:2:bh_filtered 551936
-outputs/RMAT.18.20.1.aff.out.short:2:bh_filtered 726016
-outputs/RMAT.18.2.1.aff.out.short:2:bh_filtered 81351
-outputs/RMAT.18.4.1.aff.out.short:2:bh_filtered 88854
-outputs/RMAT.18.8.1.aff.out.short:2:bh_filtered 246704
+RMAT.18.001.1.chinese 0
+RMAT.18.002.1.chinese 81351
+RMAT.18.004.1.chinese 88854
+RMAT.18.008.1.chinese 246704
+RMAT.18.012.1.chinese 397776
+RMAT.18.016.1.chinese 551936
+RMAT.18.020.1.chinese 726016

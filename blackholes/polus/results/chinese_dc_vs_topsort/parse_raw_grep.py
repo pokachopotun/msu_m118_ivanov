@@ -11,16 +11,20 @@ def PlotGraphFromScale(data, graph, figid):
     top.set_xlabel('Graph scale')
     top.set_ylabel('Time (s)')
     for algo in ["topsort", "chinese"]:
+        dg = data[algo][graph]
+        if algo == "topsort":
+            algo = "TopSort_BH"
+        if algo == "chinese":
+            algo = "iBlackholeDC"
         for threads in [1, 8]:
             for cond in ["cond", "nocond"]:
-                dg = data[algo][graph]
                 if not threads in dg:
                     continue
                 dgc = dg[threads][cond]
                 scales = dgc.keys()
                 times = dgc.values()
                 if len(scales) > 0 and len(scales) == len(times):
-                    top.plot(scales, times, label = "{},threads={},{}".format(algo, threads, cond))
+                    top.plot(scales, times, label = "{}".format(algo))
                     top.grid(True)
                     top.legend()
     top.set_yscale('symlog')
@@ -70,12 +74,9 @@ if __name__ == "__main__":
     #plotConfig["RMAT"] = list([[4,5], [6,7], [8,8], [9,10]])
     #plotConfig["SSCA2"] = list([[4,5],[6,6]])
     #plotConfig["UR"] = list([[4,5], [6,7], [8,10], [11,12]])
-    plotConfig["RMAT"] = list([[4,10]])
-    plotConfig["SSCA2"] = list([[4,6]])
-    plotConfig["UR"] = list([[4,12]])
 
     figid = 0
-    for graph in plotConfig:
+    for graph in ["RMAT", "SSCA2", "UR"]:
         figid += 1
         PlotGraphFromScale(data, graph, figid)
 
