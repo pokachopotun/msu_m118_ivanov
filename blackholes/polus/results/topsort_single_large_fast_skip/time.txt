@@ -1,0 +1,7 @@
+UR.12.1.1.1.topsort 0.453036 seconds
+UR.13.1.1.1.topsort 0.50814 seconds
+UR.14.1.1.1.topsort 1.03624 seconds
+UR.15.1.1.1.topsort 1.95283 seconds
+UR.16.1.1.1.topsort 4.24148 seconds
+UR.17.1.1.1.topsort 9.27999 seconds
+UR.18.1.1.1.topsort 19.8644 seconds

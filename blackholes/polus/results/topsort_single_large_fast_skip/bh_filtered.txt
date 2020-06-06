@@ -1,0 +1,14 @@
+RMAT.12.1.1.1.topsort 215
+RMAT.13.1.1.1.topsort 330
+RMAT.14.1.1.1.topsort 1297
+RMAT.15.1.1.1.topsort 719
+RMAT.16.1.1.1.topsort 2955
+RMAT.17.1.1.1.topsort 2397
+RMAT.18.1.1.1.topsort 5128
+SSCA2.12.1.1.1.topsort 3510674
+SSCA2.13.1.1.1.topsort 7885824
+SSCA2.14.1.1.1.topsort 4782555
+SSCA2.15.1.1.1.topsort 7459398
+SSCA2.16.1.1.1.topsort 4857867
+SSCA2.17.1.1.1.topsort 3828115
+SSCA2.18.1.1.1.topsort 2097796
