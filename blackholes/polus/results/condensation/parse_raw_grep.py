@@ -1,28 +1,12 @@
+#!/usr/bin/python3
 import matplotlib.pyplot as plt
 
 import sys
 import os
 
-def PlotGraphFromThreads(data, graph, figid, size_a, size_b):
-    fig = plt.figure(figid)
-    fig.suptitle(graph, fontsize=16)
-    fig.tight_layout()
-    top = fig.add_subplot(1, 1, 1)
-    top.set_xlabel('Threads')
-    top.set_ylabel('Time (s)')
-    dg = data[graph]
-    for size in range(size_a, size_b + 1):
-        for cond in ["cond", "nocond"]:
-            dgc = dg[size][cond]
-            time = dgc["time"]
-            threads = dgc["threads"]
-            top.plot(threads, time, label = "scale={},{}".format(size, cond))
-            top.grid(True)
-            top.legend()
-    top.set_yscale('symlog')
-
 def PlotGraphSimple(data, graph, figid):
     fig = plt.figure(figid)
+    plt.rcParams.update({'font.size': 14})
     fig.suptitle("{}".format(graph), fontsize=16)
     fig.tight_layout()
     top = fig.add_subplot(1, 1, 1)
@@ -32,28 +16,9 @@ def PlotGraphSimple(data, graph, figid):
     scales = dg.keys()
     times = dg.values()
     if len(scales) > 0 and len(scales) == len(times):
-        top.plot(scales, times, label = "Condensation")
+        top.plot(scales, times, label = "Condensation", linewidth = 3)
         top.grid(True)
         top.legend()
-    top.set_yscale('symlog')
-
-def PlotGraphFromScale(data, graph, figid):
-    fig = plt.figure(figid)
-    fig.suptitle("{}".format(graph), fontsize=16)
-    fig.tight_layout()
-    top = fig.add_subplot(1, 1, 1)
-    top.set_xlabel('Graph scale')
-    top.set_ylabel('Time (s)')
-    dg = data[graph]
-    for threads in [1, 8]:
-        for cond in ["cond", "nocond"]:
-            dgc = dg[threads][cond]
-            scales = dgc.keys()
-            times = dgc.values()
-            if len(scales) > 0 and len(scales) == len(times):
-                top.plot(scales, times, label = "Condensation,threads={},{}".format(threads, cond))
-                top.grid(True)
-                top.legend()
     top.set_yscale('symlog')
 
 if __name__ == "__main__":

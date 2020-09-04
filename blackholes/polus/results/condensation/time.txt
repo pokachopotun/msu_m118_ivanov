@@ -1,51 +1,51 @@
-RMAT.04.condensation:39:It took me: 0.00527456 seconds
-RMAT.05.condensation:39:It took me: 0.0120694 seconds
-RMAT.06.condensation:39:It took me: 0.00697619 seconds
-RMAT.07.condensation:39:It took me: 0.0258889 seconds
-RMAT.08.condensation:39:It took me: 0.0113066 seconds
-RMAT.09.condensation:39:It took me: 0.027917 seconds
-RMAT.10.condensation:39:It took me: 0.0580234 seconds
-RMAT.11.condensation:39:It took me: 0.109561 seconds
-RMAT.12.condensation:39:It took me: 0.205055 seconds
-RMAT.13.condensation:39:It took me: 0.427385 seconds
-RMAT.14.condensation:39:It took me: 0.950401 seconds
-RMAT.15.condensation:39:It took me: 2.23747 seconds
-RMAT.16.condensation:39:It took me: 5.82515 seconds
-RMAT.17.condensation:39:It took me: 16.3961 seconds
-RMAT.18.condensation:39:It took me: 56.1449 seconds
-RMAT.19.condensation:39:It took me: 196.805 seconds
-RMAT.20.condensation:39:It took me: 823.31 seconds
-SSCA2.04.condensation:39:It took me: 0.000940766 seconds
-SSCA2.05.condensation:39:It took me: 0.00161608 seconds
-SSCA2.06.condensation:39:It took me: 0.0224072 seconds
-SSCA2.07.condensation:39:It took me: 0.00629926 seconds
-SSCA2.08.condensation:39:It took me: 0.00921564 seconds
-SSCA2.09.condensation:39:It took me: 0.0143138 seconds
-SSCA2.10.condensation:39:It took me: 0.032792 seconds
-SSCA2.11.condensation:39:It took me: 0.102897 seconds
-SSCA2.12.condensation:39:It took me: 0.251876 seconds
-SSCA2.13.condensation:39:It took me: 0.777437 seconds
-SSCA2.14.condensation:39:It took me: 2.57095 seconds
-SSCA2.15.condensation:39:It took me: 9.51258 seconds
-SSCA2.16.condensation:39:It took me: 36.6971 seconds
-SSCA2.17.condensation:39:It took me: 142.422 seconds
-SSCA2.18.condensation:39:It took me: 559.22 seconds
-UR.04.condensation:39:It took me: 0.0150587 seconds
-UR.05.condensation:39:It took me: 0.014739 seconds
-UR.06.condensation:39:It took me: 0.00397914 seconds
-UR.07.condensation:39:It took me: 0.00693038 seconds
-UR.08.condensation:39:It took me: 0.012488 seconds
-UR.09.condensation:39:It took me: 0.0312019 seconds
-UR.10.condensation:39:It took me: 0.0672816 seconds
-UR.11.condensation:39:It took me: 0.128891 seconds
-UR.12.condensation:39:It took me: 0.261782 seconds
-UR.13.condensation:39:It took me: 0.442758 seconds
-UR.14.condensation:39:It took me: 0.931707 seconds
-UR.15.condensation:39:It took me: 1.96688 seconds
-UR.16.condensation:39:It took me: 4.12336 seconds
-UR.17.condensation:39:It took me: 8.82907 seconds
-UR.18.condensation:39:It took me: 18.6769 seconds
-UR.19.condensation:39:It took me: 39.2725 seconds
-UR.20.condensation:39:It took me: 86.6983 seconds
-UR.21.condensation:39:It took me: 188.743 seconds
-UR.22.condensation:39:It took me: 423.091 seconds
+RMAT.04.condensation 0.00527456 seconds
+RMAT.05.condensation 0.0120694 seconds
+RMAT.06.condensation 0.00697619 seconds
+RMAT.07.condensation 0.0258889 seconds
+RMAT.08.condensation 0.0113066 seconds
+RMAT.09.condensation 0.027917 seconds
+RMAT.10.condensation 0.0580234 seconds
+RMAT.11.condensation 0.109561 seconds
+RMAT.12.condensation 0.205055 seconds
+RMAT.13.condensation 0.427385 seconds
+RMAT.14.condensation 0.950401 seconds
+RMAT.15.condensation 2.23747 seconds
+RMAT.16.condensation 5.82515 seconds
+RMAT.17.condensation 16.3961 seconds
+RMAT.18.condensation 56.1449 seconds
+RMAT.19.condensation 196.805 seconds
+RMAT.20.condensation 823.31 seconds
+SSCA2.04.condensation 0.000940766 seconds
+SSCA2.05.condensation 0.00161608 seconds
+SSCA2.06.condensation 0.0224072 seconds
+SSCA2.07.condensation 0.00629926 seconds
+SSCA2.08.condensation 0.00921564 seconds
+SSCA2.09.condensation 0.0143138 seconds
+SSCA2.10.condensation 0.032792 seconds
+SSCA2.11.condensation 0.102897 seconds
+SSCA2.12.condensation 0.251876 seconds
+SSCA2.13.condensation 0.777437 seconds
+SSCA2.14.condensation 2.57095 seconds
+SSCA2.15.condensation 9.51258 seconds
+SSCA2.16.condensation 36.6971 seconds
+SSCA2.17.condensation 142.422 seconds
+SSCA2.18.condensation 559.22 seconds
+UR.04.condensation 0.0150587 seconds
+UR.05.condensation 0.014739 seconds
+UR.06.condensation 0.00397914 seconds
+UR.07.condensation 0.00693038 seconds
+UR.08.condensation 0.012488 seconds
+UR.09.condensation 0.0312019 seconds
+UR.10.condensation 0.0672816 seconds
+UR.11.condensation 0.128891 seconds
+UR.12.condensation 0.261782 seconds
+UR.13.condensation 0.442758 seconds
+UR.14.condensation 0.931707 seconds
+UR.15.condensation 1.96688 seconds
+UR.16.condensation 4.12336 seconds
+UR.17.condensation 8.82907 seconds
+UR.18.condensation 18.6769 seconds
+UR.19.condensation 39.2725 seconds
+UR.20.condensation 86.6983 seconds
+UR.21.condensation 188.743 seconds
+UR.22.condensation 423.091 seconds
